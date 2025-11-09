@@ -1,0 +1,246 @@
+{
+  "critical_issues": [
+    {
+      "id": "ISSUE-001",
+      "title": "BQX backfill process hung at 34.3%",
+      "severity": "CRITICAL",
+      "status": "Identified, awaiting resolution",
+      "discovered": "2025-11-09T07:45:00Z",
+      "impact": "Blocks Phase 1 completion, prevents feature engineering progress",
+      "affected_components": [
+        "BQX data tables (17/28 pairs empty)",
+        "Phase 1 timeline",
+        "Phase 2 feature engineering (depends on complete data)"
+      ],
+      "root_cause": {
+        "summary": "Import path broken after file migration to bqx-ml repository",
+        "details": "Script running from /home/ubuntu/Robkei-Ring/sandbox/scripts imports from hardcoded path that no longer exists after migration. Python import fails, threads hang waiting for module.",
+        "technical": "Line 15 of backward_worker_threaded.py: sys.path.insert(0, '/home/ubuntu/Robkei-Ring/sandbox/scripts') - this path no longer has backward_worker.py"
+      },
+      "symptoms": [
+        "Process PID 216204 active but not progressing (6h+ runtime)",
+        "Log file shows last entry at 32.1% progress (EURAUD completion)",
+        "No errors in log file (silent hang)",
+        "Process status 'Sl' (sleeping/waiting)"
+      ],
+      "resolution": {
+        "immediate": "Kill PID 216204 and 216181",
+        "fix": "Edit line 15 of /home/ubuntu/bqx-ml/scripts/backfill/backward_worker_threaded.py to point to '/home/ubuntu/bqx-ml/scripts/backfill'",
+        "restart": "Run backfill from /home/ubuntu/bqx-ml/scripts/backfill/ directory",
+        "verification": "Monitor log for progress, verify rows increasing in database"
+      },
+      "estimated_fix_time": "30 minutes",
+      "estimated_completion_time": "3-4 hours after restart",
+      "workaround": "None - must fix and restart",
+      "prevention": "Use relative imports or environment variables instead of hardcoded paths"
+    }
+  ],
+  "high_priority_issues": [
+    {
+      "id": "ISSUE-002",
+      "title": "Phase 0 infrastructure not started (prerequisite for other phases)",
+      "severity": "HIGH",
+      "status": "Identified, tasks created",
+      "discovered": "2025-11-09T05:30:00Z",
+      "impact": "SageMaker, VPC, and secrets infrastructure needed before Phase 4-10 can proceed",
+      "affected_components": [
+        "SageMaker Studio",
+        "VPC configuration",
+        "IAM roles",
+        "Secrets management"
+      ],
+      "root_cause": {
+        "summary": "Infrastructure setup was missing actionable tasks",
+        "details": "Gap analysis revealed Phase 0 stages had no tasks defined. Remediation added 9 tasks but they remain unexecuted."
+      },
+      "resolution": {
+        "immediate": "Begin executing Phase 0 tasks (TSK-0.1.2 through TSK-0.3.3)",
+        "dependencies": "None - can start immediately",
+        "estimated_time": "24 hours for all 9 tasks"
+      },
+      "status_note": "2 of 9 tasks already complete (TSK-0.1.1, TSK-0.3.1), 7 remaining"
+    },
+    {
+      "id": "ISSUE-003",
+      "title": "EURCAD partially populated (50.9%) - inconsistent state",
+      "severity": "HIGH",
+      "status": "Known, will resolve with backfill restart",
+      "discovered": "2025-11-09T07:45:00Z",
+      "impact": "One pair has incomplete data (187,179 rows vs expected 368,000)",
+      "affected_components": ["bqx_eurcad table"],
+      "root_cause": {
+        "summary": "Backfill process hung mid-processing of EURCAD",
+        "details": "Process completed ~6 months of EURCAD before hanging, leaving partial data"
+      },
+      "resolution": {
+        "immediate": "Backfill restart will complete remaining months",
+        "verification": "Verify EURCAD reaches ~368,000 rows",
+        "data_quality": "Check for gaps in monthly coverage"
+      },
+      "workaround": "None needed - restart will handle",
+      "risk": "Low - script should detect existing data and append remaining months"
+    }
+  ],
+  "medium_priority_issues": [
+    {
+      "id": "ISSUE-004",
+      "title": "Budget allocation not documented at phase level",
+      "severity": "MEDIUM",
+      "status": "Tasks created (TSK-GAP3.1-3.3)",
+      "discovered": "2025-11-09T05:30:00Z",
+      "impact": "Difficult to track spending by phase, unclear infrastructure costs",
+      "affected_components": ["Airtable plan budget tracking"],
+      "root_cause": {
+        "summary": "Original plan had $650 budget but $422 task costs, $228 unexplained",
+        "details": "Gap analysis revealed budget discrepancy. Updated to $1,050 but breakdown needed."
+      },
+      "resolution": {
+        "immediate": "Execute TSK-GAP3.1-3.3 to document budget breakdown",
+        "deliverables": [
+          "Budget breakdown: $1,002 tasks + $48 contingency",
+          "Infrastructure costs: $150 (SageMaker, Aurora, Lambda, etc.)",
+          "Phase-level budget allocation"
+        ]
+      },
+      "estimated_fix_time": "7 hours"
+    },
+    {
+      "id": "ISSUE-005",
+      "title": "No explicit dependency tracking between stages",
+      "severity": "MEDIUM",
+      "status": "Tasks created (TSK-GAP4.1-4.3)",
+      "discovered": "2025-11-09T05:30:00Z",
+      "impact": "Harder to track critical path, risk of executing stages out of order",
+      "affected_components": ["Airtable Stages table"],
+      "root_cause": {
+        "summary": "Airtable schema lacks 'Prerequisites' field for stages",
+        "details": "Dependencies are implicit (based on phase ordering) rather than explicit"
+      },
+      "resolution": {
+        "immediate": "Execute TSK-GAP4.1-4.3 to implement dependency tracking",
+        "deliverables": [
+          "Add 'Prerequisites' field to Stages table",
+          "Document critical path: Phase 0→1→2→3→4→6→7→8→9→10",
+          "Populate dependencies for Phases 0-5"
+        ]
+      },
+      "estimated_fix_time": "8 hours"
+    }
+  ],
+  "low_priority_issues": [
+    {
+      "id": "ISSUE-006",
+      "title": "11 stages without tasks (26% of stages)",
+      "severity": "LOW",
+      "status": "Accepted (mostly operational stages)",
+      "discovered": "2025-11-09T05:30:00Z",
+      "impact": "Some stages lack detailed breakdown, but most are operational/ongoing",
+      "affected_components": [
+        "Stage 2.7, 2.8, 2.9 (feature engineering extensions)",
+        "Stage 7.3 (Redis cache)",
+        "Stages 10.1-10.8 (operational cadence)"
+      ],
+      "root_cause": {
+        "summary": "Ongoing/operational stages don't require discrete tasks",
+        "details": "Phase 10 operational stages (10.1-10.8) describe processes, not one-time tasks"
+      },
+      "resolution": {
+        "recommendation": "Add tasks as specific instances arise (e.g., 'Investigate EURUSD drift alert')",
+        "priority": "Low - not blocking",
+        "estimated_time": "10 hours if needed"
+      },
+      "workaround": "Stage descriptions provide sufficient guidance"
+    },
+    {
+      "id": "ISSUE-007",
+      "title": "EURUSD has only test run data (8.9% populated)",
+      "severity": "LOW",
+      "status": "Expected, will resolve with backfill restart",
+      "discovered": "2025-11-09T07:45:00Z",
+      "impact": "One pair has minimal data from original test run",
+      "affected_components": ["bqx_eurusd table (32,687 rows)"],
+      "root_cause": {
+        "summary": "EURUSD was used for initial backfill testing",
+        "details": "Test run populated some EURUSD data, full backfill will complete it"
+      },
+      "resolution": {
+        "immediate": "Backfill restart will populate full dataset",
+        "verification": "EURUSD should reach ~368,000 rows",
+        "risk": "Low - may have duplicate data from test run (script should handle)"
+      }
+    }
+  ],
+  "resolved_issues": [
+    {
+      "id": "ISSUE-R001",
+      "title": "Gap analysis revealed missing tasks for Phase 0 and Phase 9",
+      "severity": "MEDIUM",
+      "status": "RESOLVED",
+      "discovered": "2025-11-09T05:30:00Z",
+      "resolved": "2025-11-09T05:45:00Z",
+      "resolution": "Created 26 remediation tasks across 4 work packages, all added to Airtable",
+      "outcome": "Task coverage improved from 55% to 73%"
+    },
+    {
+      "id": "ISSUE-R002",
+      "title": "Budget discrepancy ($650 plan vs $422 tasks)",
+      "severity": "LOW",
+      "status": "RESOLVED",
+      "discovered": "2025-11-09T05:30:00Z",
+      "resolved": "2025-11-09T05:45:00Z",
+      "resolution": "Updated plan budget to $1,050 (reflects $1,002 task costs + $48 contingency)",
+      "outcome": "Budget now realistic and justified"
+    },
+    {
+      "id": "ISSUE-R003",
+      "title": "BQX files in wrong repository (Robkei-Ring instead of bqx-ml)",
+      "severity": "MEDIUM",
+      "status": "RESOLVED",
+      "discovered": "2025-11-09T04:00:00Z",
+      "resolved": "2025-11-09T04:53:00Z",
+      "resolution": "Migrated 34 BQX files to bqx-ml repository, removed from Robkei-Ring",
+      "outcome": "Clean repository separation achieved",
+      "unintended_consequence": "Broke running backfill process → ISSUE-001"
+    }
+  ],
+  "watching": [
+    {
+      "id": "WATCH-001",
+      "title": "Aurora database storage usage",
+      "current": "~1.4 GB",
+      "expected_final": "~4.3 GB",
+      "headroom": "Plenty",
+      "monitoring": "Check after backfill completion"
+    },
+    {
+      "id": "WATCH-002",
+      "title": "Aurora connection count",
+      "current": "6 connections (backfill threads)",
+      "limit": "Unknown, but 6 is conservative",
+      "risk": "Low - not approaching limits"
+    },
+    {
+      "id": "WATCH-003",
+      "title": "EC2 disk space for logs",
+      "current": "/tmp/bqx_backfill_*.log files accumulating",
+      "action": "Archive old logs after validation",
+      "priority": "Low"
+    }
+  ],
+  "issue_summary": {
+    "total_issues": 7,
+    "by_severity": {
+      "critical": 1,
+      "high": 2,
+      "medium": 2,
+      "low": 2
+    },
+    "by_status": {
+      "identified_pending": 7,
+      "in_progress": 0,
+      "resolved": 3
+    },
+    "blocking_progress": 1,
+    "estimated_total_fix_time": "48 hours (mostly backfill wait time)"
+  }
+}

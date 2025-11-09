@@ -1,0 +1,246 @@
+{
+  "databases": {
+    "aurora_postgresql": {
+      "cluster_id": "trillium-bqx-cluster",
+      "endpoint": "trillium-bqx-cluster.cluster-cgb6gegwk5qz.us-east-1.rds.amazonaws.com",
+      "port": 5432,
+      "database": "bqx",
+      "schemas": {
+        "bqx": "BQX tables (28 parent + 336 partitions)",
+        "public": "Default schema (not used for BQX)"
+      },
+      "credentials": {
+        "username": "postgres",
+        "password": "REDACTED_SEE_AWS_SECRETS_MANAGER",
+        "secrets_manager": "trillium/aurora/bqx-connection",
+        "note": "Password stored in AWS Secrets Manager"
+      },
+      "connection_string": "Get credentials from AWS Secrets Manager: trillium/aurora/bqx-connection",
+      "status": "Available",
+      "region": "us-east-1"
+    }
+  },
+  "airtable": {
+    "api_key": "REDACTED_SEE_AWS_SECRETS_MANAGER",
+    "api_key_location": "Environment variable AIRTABLE_API_KEY or AWS Secrets Manager",
+    "bases": {
+      "bqx_ml": {
+        "base_id": "appR3PPnrNkVo48mO",
+        "base_name": "BQX-ML",
+        "description": "Dedicated base for BQX ML project management",
+        "tables": {
+          "plans": {
+            "table_id": "Plans",
+            "master_plan_id": "recSb2RvwT60eSu8U",
+            "master_plan_name": "MP-BQX_ML-001"
+          },
+          "phases": {
+            "table_id": "Phases",
+            "total_records": 11,
+            "key_fields": ["Phase ID", "Description", "Status", "Duration", "Plan (Link)"]
+          },
+          "stages": {
+            "table_id": "Stages",
+            "total_records": 42,
+            "key_fields": ["Stage ID", "Description", "Status", "Duration", "Plan (Link)", "Phase (Link)"]
+          },
+          "tasks": {
+            "table_id": "Tasks",
+            "total_records": 89,
+            "key_fields": ["Task ID", "Task Name", "Status", "Priority", "Assigned To", "Estimated Hours", "Estimated Cost", "Plan (Link)", "Stage (Link)"]
+          }
+        },
+        "field_conventions": {
+          "linking_fields": "Use singular with ' (Link)' suffix (e.g., 'Plan (Link)', not 'Plans')",
+          "status_values": {
+            "phases": ["Not Started", "In Progress", "Completed"],
+            "stages": ["Todo", "In Progress", "Done"],
+            "tasks": ["Todo", "In Progress", "Done"]
+          },
+          "priority_values": ["High", "Medium", "Low"]
+        }
+      },
+      "robkei_ring": {
+        "base_id": "appkKH0u1BhAHUao6",
+        "base_name": "Robkei-Ring",
+        "description": "Original base (deprecated for BQX-ML, use BQX-ML base instead)",
+        "status": "DEPRECATED for BQX work"
+      }
+    },
+    "api_url": "https://api.airtable.com/v0/",
+    "headers": {
+      "Authorization": "Bearer {API_KEY}",
+      "Content-Type": "application/json"
+    }
+  },
+  "aws": {
+    "region": "us-east-1",
+    "account_id": "Unknown (use 'aws sts get-caller-identity' to retrieve)",
+    "credentials": {
+      "access_key_id": "REDACTED_USE_IAM_ROLE",
+      "secret_access_key": "REDACTED_USE_IAM_ROLE",
+      "note": "Use IAM role credentials or configure AWS CLI with 'aws configure'"
+    },
+    "services": {
+      "secrets_manager": {
+        "secrets": {
+          "aurora_connection": "trillium/aurora/bqx-connection",
+          "github_access": "bqx-mirror/bqx/github/robkei-control-github-access"
+        }
+      },
+      "rds": {
+        "cluster": "trillium-bqx-cluster",
+        "engine": "Aurora PostgreSQL Serverless v2",
+        "status": "Available"
+      },
+      "sagemaker": {
+        "status": "Not yet provisioned",
+        "required_for": "Phase 4-10",
+        "components_needed": [
+          "SageMaker Studio domain",
+          "VPC configuration",
+          "IAM roles",
+          "S3 buckets for training data"
+        ]
+      },
+      "vpc": {
+        "status": "Not yet created",
+        "required_for": "SageMaker, Lambda production deployment",
+        "task": "TSK-0.2.1"
+      }
+    }
+  },
+  "github": {
+    "repositories": {
+      "bqx_ml": {
+        "url": "https://github.com/schmidtlappin/bqx-ml",
+        "local_path": "/home/ubuntu/bqx-ml",
+        "description": "Dedicated repository for BQX ML project",
+        "structure": {
+          "docs/": "Documentation (gap analysis, status reports, architecture)",
+          "docs/artifacts/": "Generated reports and analysis documents",
+          "scripts/": "Python scripts",
+          "scripts/backfill/": "BQX data backfill scripts",
+          "sql/": "SQL scripts for database operations",
+          "models/": "Trained model artifacts (future)",
+          "notebooks/": "Jupyter notebooks for analysis (future)",
+          ".claude/": "Session continuity JSON files"
+        },
+        "key_files": {
+          "scripts/backfill/backward_worker.py": "Core backfill logic",
+          "scripts/backfill/backward_worker_threaded.py": "Multi-threaded backfill orchestrator",
+          ".claude/project-state.json": "Current project state",
+          ".claude/session-context.json": "Session handoff context",
+          ".claude/active-tasks.json": "Tasks in progress",
+          ".claude/known-issues.json": "Known issues and blockers",
+          ".claude/key-resources.json": "This file"
+        }
+      },
+      "robkei_ring": {
+        "url": "https://github.com/[organization]/Robkei-Ring",
+        "local_path": "/home/ubuntu/Robkei-Ring",
+        "description": "Robkei-Engine infrastructure (separate from BQX-ML)",
+        "note": "BQX files migrated out on 2025-11-09"
+      }
+    }
+  },
+  "file_locations": {
+    "documentation": {
+      "gap_analysis": "/home/ubuntu/bqx-ml/docs/artifacts/BQX-ML-PLAN-GAP-ANALYSIS.md",
+      "gap_remediation": "/home/ubuntu/bqx-ml/docs/artifacts/BQX-ML-GAP-REMEDIATION-COMPLETE.md",
+      "table_status": "/home/ubuntu/bqx-ml/docs/artifacts/BQX-TABLE-CREATION-STATUS-REPORT.md",
+      "backfill_investigation": "/home/ubuntu/bqx-ml/docs/artifacts/BQX-BACKFILL-STATUS-INVESTIGATION-2025-11-09.md",
+      "operational_cadence": "/home/ubuntu/bqx-ml/docs/OPERATIONAL-CADENCE.md",
+      "repository_migration": "/home/ubuntu/bqx-ml/docs/artifacts/BQX-ML-REPOSITORY-MIGRATION-COMPLETE.md"
+    },
+    "scripts": {
+      "backfill_worker": "/home/ubuntu/bqx-ml/scripts/backfill/backward_worker.py",
+      "backfill_threaded": "/home/ubuntu/bqx-ml/scripts/backfill/backward_worker_threaded.py",
+      "backfill_parallel": "/home/ubuntu/bqx-ml/scripts/backfill/backward_worker_parallel.py",
+      "backfill_test": "/home/ubuntu/bqx-ml/scripts/backfill/test_backward_worker.py"
+    },
+    "logs": {
+      "current_backfill": "/tmp/bqx_backfill_threaded.log",
+      "future_restarts": "/tmp/bqx_backfill_restart_YYYYMMDD_HHMM.log",
+      "note": "Logs stored in /tmp, should archive after completion"
+    },
+    "temp_work": {
+      "gap_analysis_scripts": "/tmp/add_phase*.py",
+      "upload_scripts": "/tmp/upload_*.py",
+      "work_package_data": "/tmp/gap_remediation_*.json"
+    }
+  },
+  "data_schema": {
+    "bqx_tables": {
+      "naming_convention": "bqx_{pair}",
+      "pairs": [
+        "audcad", "audchf", "audjpy", "audnzd", "audusd",
+        "cadchf", "cadjpy", "chfjpy",
+        "euraud", "eurcad", "eurchf", "eurgbp", "eurjpy", "eurnzd", "eurusd",
+        "gbpaud", "gbpcad", "gbpchf", "gbpjpy", "gbpnzd", "gbpusd",
+        "nzdcad", "nzdchf", "nzdjpy", "nzdusd",
+        "usdcad", "usdchf", "usdjpy"
+      ],
+      "total_parent_tables": 28,
+      "partition_convention": "bqx_{pair}_{year}_{month}",
+      "partition_range": "2024-07 through 2025-06",
+      "total_partitions": 336,
+      "fields": {
+        "core": ["ts_utc", "rate", "pair"],
+        "bqx_windows": ["w15", "w30", "w45", "w60", "w75"],
+        "metrics_per_window": ["_bqx_return", "_bqx_rate_min", "_bqx_rate_max", "_bqx_rate_mean", "_bqx_volatility", "_bqx_volume"],
+        "aggregates": 7,
+        "total_fields": 40
+      },
+      "expected_rows_per_pair": "~368,000",
+      "expected_total_rows": "~10,300,000",
+      "null_pattern": "First 75 rows of each partition have NULL values in longer windows (expected edge effect)"
+    },
+    "m1_tables": {
+      "naming_convention": "m1_{pair}",
+      "description": "Source 1-minute forex data",
+      "status": "Existing, used as input for BQX calculation"
+    },
+    "reg_tables": {
+      "naming_convention": "reg_{pair}",
+      "description": "Regular features (72 per pair)",
+      "status": "Existing, will be merged with BQX features"
+    }
+  },
+  "monitoring": {
+    "database_health": {
+      "command": "PGPASSWORD='<PASSWORD_FROM_SECRETS_MANAGER>' psql -h trillium-bqx-cluster.cluster-cgb6gegwk5qz.us-east-1.rds.amazonaws.com -U postgres -d bqx -c 'SELECT version();'",
+      "check_row_count": "SELECT 'audcad', COUNT(*) FROM bqx.bqx_audcad UNION ALL SELECT 'eurusd', COUNT(*) FROM bqx.bqx_eurusd;"
+    },
+    "process_health": {
+      "check_backfill": "ps aux | grep backward_worker | grep -v grep",
+      "check_log": "tail -f /tmp/bqx_backfill_*.log",
+      "check_progress": "grep Progress /tmp/bqx_backfill_*.log | tail -1"
+    },
+    "disk_space": {
+      "check_usage": "df -h /home/ubuntu /tmp",
+      "database_storage": "Check in AWS RDS Console"
+    }
+  },
+  "quick_reference": {
+    "restart_backfill": "cd /home/ubuntu/bqx-ml/scripts/backfill && nohup python3 -u backward_worker_threaded.py > /tmp/bqx_backfill_restart_$(date +%Y%m%d_%H%M).log 2>&1 &",
+    "check_bqx_rows": "PGPASSWORD='<PASSWORD_FROM_SECRETS_MANAGER>' psql -h trillium-bqx-cluster.cluster-cgb6gegwk5qz.us-east-1.rds.amazonaws.com -U postgres -d bqx -c \"SELECT COUNT(*) FROM bqx.bqx_{PAIR};\"",
+    "kill_hung_process": "kill -9 216204 216181",
+    "airtable_api_example": "curl -H 'Authorization: Bearer <AIRTABLE_API_KEY>' 'https://api.airtable.com/v0/appR3PPnrNkVo48mO/Plans/recSb2RvwT60eSu8U'"
+  },
+  "contact_info": {
+    "project_owner": "User",
+    "agent": "RobkeiRingMaster (RM-001)",
+    "support": {
+      "github_issues": "https://github.com/schmidtlappin/bqx-ml/issues",
+      "airtable_base": "https://airtable.com/appR3PPnrNkVo48mO"
+    }
+  },
+  "metadata": {
+    "created": "2025-11-09T08:00:00Z",
+    "last_updated": "2025-11-09T08:00:00Z",
+    "version": "1.0",
+    "purpose": "Session continuity resource reference",
+    "next_session": "Start from /home/ubuntu/bqx-ml directory"
+  }
+}
