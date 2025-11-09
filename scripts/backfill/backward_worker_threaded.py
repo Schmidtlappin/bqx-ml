@@ -12,7 +12,7 @@ from queue import Queue
 from datetime import datetime
 
 # Add backward_worker to path
-sys.path.insert(0, '/home/ubuntu/Robkei-Ring/sandbox/scripts')
+sys.path.insert(0, '/home/ubuntu/bqx-ml/scripts/backfill')
 from backward_worker import process_backward_analysis
 
 # Preferred forex pairs (28 total)
