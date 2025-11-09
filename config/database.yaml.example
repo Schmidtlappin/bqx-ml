@@ -1,0 +1,29 @@
+# Aurora PostgreSQL Configuration
+# Copy to database.yaml and fill in credentials
+
+aurora:
+  host: trillium-bqx-cluster.cluster-cgb6gegwk5qz.us-east-1.rds.amazonaws.com
+  port: 5432
+  database: bqx
+  user: postgres
+  password: ${AURORA_PASSWORD}  # Set via environment variable or AWS Secrets Manager
+  sslmode: require
+
+  # Connection pool settings
+  pool:
+    min_connections: 1
+    max_connections: 10
+    timeout: 30
+
+# AWS Secrets Manager (alternative to hardcoded password)
+aws_secrets:
+  enabled: true
+  secret_name: trillium/aurora/bqx-connection
+  region: us-east-1
+
+# Query settings
+query:
+  timeout: 300  # seconds
+  fetch_size: 10000
+  cache_enabled: true
+  cache_ttl: 3600  # seconds

@@ -1,0 +1,73 @@
+# BQX Feature Engineering Configuration
+
+# BQX Windows (backward-looking momentum)
+bqx:
+  windows: [15, 30, 45, 60, 75]  # minutes
+  metrics:
+    - bqx_return      # Cumulative return
+    - bqx_max         # Maximum rate
+    - bqx_min         # Minimum rate
+    - bqx_avg         # Average rate
+    - bqx_stdev       # Standard deviation
+    - bqx_endpoint    # Endpoint return
+  aggregates:
+    - agg_bqx_return
+    - agg_bqx_max
+    - agg_bqx_min
+    - agg_bqx_avg
+    - agg_bqx_stdev
+    - agg_bqx_range
+    - agg_bqx_volatility
+
+# REG Features (regression patterns)
+reg:
+  windows: [60, 90, 150, 240, 390, 630]  # minutes
+  metrics:
+    - slope           # Linear slope
+    - intercept       # Linear intercept
+    - r2              # R-squared
+    - quad_a          # Quadratic coefficient a
+    - quad_b          # Quadratic coefficient b
+    - quad_c          # Quadratic coefficient c
+    - quad_norm       # Normalized quadratic curvature
+
+# Lagged Features
+lags:
+  bqx_lags: [60, 120, 180]  # minutes (t-60, t-120, t-180)
+  reg_lags: [60, 120]       # minutes
+
+# Derived Features
+derived:
+  momentum_alignment:
+    enabled: true
+    description: "Count of aligned window directions"
+
+  volatility_regime:
+    enabled: true
+    thresholds: [0.0001, 0.0005, 0.001]  # Low, medium, high
+
+  multi_timeframe_divergence:
+    enabled: true
+    windows: [[15, 30], [30, 60], [60, 75]]
+
+# Feature Selection
+selection:
+  method: mutual_information  # mutual_information, correlation, lasso
+  max_features: 50
+  min_importance: 0.01
+
+# Feature Scaling
+scaling:
+  method: standard  # standard, robust, minmax
+  clip_outliers: true
+  clip_std: 3.0
+
+# Feature Engineering Pipeline
+pipeline:
+  steps:
+    - load_raw_features
+    - create_lagged_features
+    - create_derived_features
+    - remove_correlated_features  # Remove features with correlation > 0.95
+    - scale_features
+    - select_features

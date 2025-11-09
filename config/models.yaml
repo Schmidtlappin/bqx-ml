@@ -1,0 +1,109 @@
+# ML Model Configuration
+
+# Baseline Autoregressive Model
+baseline:
+  type: random_forest
+  params:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 20
+    min_samples_leaf: 10
+    random_state: 42
+
+  target: w60_bqx_return  # Predict BQX return 60 minutes ahead
+  horizon: 60  # minutes
+
+# Hierarchical Multi-Horizon Model
+hierarchical:
+  enabled: true
+  horizons: [15, 30, 60, 90, 120]  # minutes
+
+  # Short-term model (15-30 min)
+  short_term:
+    type: gradient_boosting
+    params:
+      n_estimators: 200
+      learning_rate: 0.05
+      max_depth: 5
+
+  # Medium-term model (60 min)
+  medium_term:
+    type: random_forest
+    params:
+      n_estimators: 150
+      max_depth: 8
+
+  # Long-term model (90-120 min)
+  long_term:
+    type: xgboost
+    params:
+      n_estimators: 200
+      learning_rate: 0.03
+      max_depth: 6
+
+# Ensemble Model
+ensemble:
+  enabled: true
+  models:
+    - random_forest
+    - gradient_boosting
+    - xgboost
+
+  aggregation: weighted_average
+  weights: [0.4, 0.3, 0.3]
+
+  uncertainty_quantification:
+    enabled: true
+    method: bootstrap  # bootstrap, quantile
+
+# Training Configuration
+training:
+  # Data split
+  train_start: 2024-07-01
+  train_end: 2024-12-31
+  val_start: 2025-01-01
+  val_end: 2025-03-31
+  test_start: 2025-04-01
+  test_end: 2025-06-30
+
+  # Walk-forward optimization
+  walk_forward:
+    enabled: true
+    train_window: 180  # days
+    retrain_frequency: 30  # days
+
+  # Cross-validation
+  cv:
+    method: time_series_split
+    n_splits: 5
+
+  # Hyperparameter tuning
+  hyperparameter_tuning:
+    enabled: true
+    method: random_search  # grid_search, random_search, bayesian
+    n_iter: 50
+    cv_folds: 3
+
+# Evaluation Metrics
+metrics:
+  regression:
+    - mae
+    - rmse
+    - r2
+    - mape
+
+  directional:
+    - directional_accuracy
+    - hit_rate
+
+  trading:
+    - sharpe_ratio
+    - sortino_ratio
+    - max_drawdown
+    - profit_factor
+
+# Model Persistence
+persistence:
+  save_path: models/saved/
+  versioning: true
+  format: joblib  # joblib, pickle, onnx
