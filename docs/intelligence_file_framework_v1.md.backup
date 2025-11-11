@@ -1,0 +1,959 @@
+# Intelligence File Framework
+
+**Purpose:** Define and maintain critical intelligence files that capture institutional knowledge, context, semantics, ontology, and decision rationale throughout the project lifecycle.
+
+**Created:** 2025-11-10
+**Owner:** BQX ML Team
+
+---
+
+## Overview
+
+Intelligence files serve as the project's institutional memory, ensuring knowledge persists beyond individual contributors and preventing repeated mistakes. They complement code and documentation by capturing the **WHY** behind decisions, not just the **WHAT**.
+
+### Core Principle
+**"If it's not in an intelligence file, it will be forgotten."**
+
+---
+
+## Intelligence File Types
+
+### 1. Context Intelligence Files
+**Purpose:** Capture project context, business requirements, and strategic direction
+
+**Location:** `docs/intelligence/context/`
+
+**Files:**
+- `project_context.md` - High-level project goals, stakeholders, success criteria
+- `business_requirements.md` - Business needs driving technical decisions
+- `user_stories.md` - User personas and their needs
+- `competitive_landscape.md` - Alternative approaches considered
+
+**Update Trigger:**
+- Phase planning (when requirements change)
+- Quarterly strategy reviews
+- Major stakeholder feedback
+
+**Owner:** Product/Project Lead
+
+---
+
+### 2. Semantics Intelligence Files
+**Purpose:** Define domain terminology, metrics, and their precise meanings
+
+**Location:** `docs/intelligence/semantics/`
+
+**Files:**
+- `forex_terminology.md` - Forex-specific terms (pip, spread, rate_index, etc.)
+- `ml_metrics_definitions.md` - R², RMSE, precision, recall exact definitions
+- `bqx_semantics.md` - BQX metrics (forward/backward), calculation formulas
+- `feature_definitions.md` - Every feature name → exact calculation
+- `glossary.md` - Master terminology reference
+
+**Update Trigger:**
+- Daily: When new terms introduced
+- Weekly: When ambiguities discovered
+- Monthly: Glossary review and cleanup
+
+**Owner:** Technical Lead
+
+**Example Entry:**
+```markdown
+## rate_index
+
+**Definition:** Normalized forex rate relative to baseline date (2024-07-01)
+
+**Formula:** `rate_index = (current_rate / baseline_rate) * 100`
+
+**Purpose:** Enable cross-pair comparability by eliminating absolute rate differences
+
+**Example:**
+- EURUSD baseline: 1.07535 (2024-07-01)
+- EURUSD current: 1.08000
+- rate_index: (1.08000 / 1.07535) * 100 = 100.432
+
+**Related Terms:** baseline_rate, absolute_rate, normalized_rate
+
+**Introduced:** Phase 1.5, Stage 1.5.1 (Baseline Rate Determination)
+**Commit:** 4187bcd
+**Decision Rationale:** See ADR-005
+```
+
+---
+
+### 3. Ontology Intelligence Files
+**Purpose:** Define data models, schemas, relationships, and entity hierarchies
+
+**Location:** `docs/intelligence/ontology/`
+
+**Files:**
+- `database_schema_ontology.md` - Complete database entity relationships
+- `feature_hierarchy.md` - Feature categorization and dependencies
+- `data_pipeline_ontology.md` - Data flow from source → features → model
+- `table_relationships.md` - FK relationships, partitioning strategy
+- `type_system.md` - Data types used across system (Decimal, float, numpy types)
+
+**Update Trigger:**
+- Immediate: When schema changes
+- Weekly: When new relationships discovered
+- Monthly: Full ontology review
+
+**Owner:** Data Engineer / Architect
+
+**Example Entry:**
+```markdown
+## BQX Table Ontology
+
+### Entity: bqx_{pair}_YYYY_MM
+**Type:** Partitioned table (child of bqx_{pair} parent)
+**Partitioning:** RANGE on ts_utc (monthly boundaries)
+**Purpose:** Store backward-looking metrics for forex pair
+
+**Schema:**
+- ts_utc (timestamp, PK) - Observation timestamp
+- rate_index (numeric) - Normalized rate (base-100)
+- w60_bqx_return (numeric) - 60min cumulative deviation
+- w60_bqx_max_index (numeric) - 60min max rate_index
+- ... [57 total fields]
+
+**Relationships:**
+- Source: M1_{pair}_YYYY_MM (reads rate_index column)
+- Consumers: ML training pipeline, REG regression analysis
+- Partition Parent: bqx_{pair} (empty parent table)
+
+**Indexes:**
+- PRIMARY KEY (ts_utc)
+- INDEX idx_bqx_{pair}_YYYY_MM_rate_index ON (rate_index)
+
+**Data Quality:**
+- NOT NULL constraints: ts_utc, rate_index
+- CHECK constraint: rate_index > 0
+- Expected range: 99-101 (±1% from baseline)
+
+**Storage:**
+- Typical size: ~45 MB per partition
+- Row count: ~30,000-32,000 per month
+- Total partitions: 336 (28 pairs × 12 months)
+
+**Created:** Phase 1.5, Stage 1.5.4
+**Schema Version:** 2.0 (index-based, removed _norm fields)
+**Migration:** See docs/stage_1_5_4_status.md
+```
+
+---
+
+### 4. Architecture Decision Records (ADRs)
+**Purpose:** Document significant architectural decisions and their rationale
+
+**Location:** `docs/intelligence/decisions/`
+
+**Files:**
+- `ADR-001_baseline_date_selection.md`
+- `ADR-002_index_based_architecture.md`
+- `ADR-003_partition_strategy.md`
+- `ADR-004_decimal_to_float_conversion.md`
+- `ADR-005_cross_pair_normalization.md`
+
+**Format:** Standard ADR template (see template below)
+
+**Update Trigger:**
+- Immediate: When significant technical decision made
+- Never modified after creation (append new ADR if decision changes)
+
+**Owner:** Technical Lead / Architect
+
+**Template:**
+```markdown
+# ADR-XXX: [Decision Title]
+
+**Date:** YYYY-MM-DD
+**Status:** [Proposed | Accepted | Deprecated | Superseded by ADR-YYY]
+**Deciders:** [Names]
+**Tags:** [architecture, database, performance, etc.]
+
+## Context
+
+[Describe the context and problem statement. What forces are at play?]
+
+## Decision
+
+[Describe the decision that was made. "We will..."]
+
+## Rationale
+
+[Explain WHY this decision was made. What were the driving factors?]
+
+## Alternatives Considered
+
+### Alternative 1: [Name]
+**Description:** [What it is]
+**Pros:**
+- [Pro 1]
+- [Pro 2]
+
+**Cons:**
+- [Con 1]
+- [Con 2]
+
+**Why Rejected:** [Reason]
+
+### Alternative 2: [Name]
+[Same format]
+
+## Consequences
+
+**Positive:**
+- [Consequence 1]
+- [Consequence 2]
+
+**Negative:**
+- [Consequence 1]
+- [Consequence 2]
+
+**Neutral:**
+- [Consequence 1]
+
+## Implementation
+
+**Affected Components:**
+- [Component 1]
+- [Component 2]
+
+**Required Changes:**
+- [Change 1]
+- [Change 2]
+
+**Migration Path:** [If applicable]
+
+## Verification
+
+**Success Criteria:**
+- [Criterion 1]
+- [Criterion 2]
+
+**Metrics to Monitor:**
+- [Metric 1: expected value]
+- [Metric 2: expected value]
+
+## Related
+
+**Related ADRs:** ADR-XXX, ADR-YYY
+**Related Stages:** Stage X.Y.Z
+**Commits:** abc123, def456
+**Issues:** ISS-001, ISS-002
+```
+
+---
+
+### 5. Lessons Learned Intelligence
+**Purpose:** Capture what worked, what didn't, and why
+
+**Location:** `docs/intelligence/lessons/`
+
+**Files:**
+- `phase_1_5_lessons.md` - Lessons from index-based refactor
+- `bug_patterns.md` - Common bug types and how to avoid
+- `performance_insights.md` - Performance optimization learnings
+- `postgres_quirks.md` - Database-specific gotchas
+
+**Update Trigger:**
+- Weekly: During gap assessment
+- Phase completion: Comprehensive lessons learned
+- Immediate: When critical bug discovered
+
+**Owner:** All developers (collective)
+
+**Example Entry:**
+```markdown
+## Lesson: PostgreSQL Decimal Type Incompatibility with Numpy
+
+**Date:** 2025-11-10
+**Context:** Stage 1.5.5 REG backfill
+**Severity:** Critical (caused 0-row bug)
+
+### What Happened
+PostgreSQL returns numeric columns as Python `Decimal` type. When passed to `numpy.polyfit()`, numpy creates `dtype=object` array instead of `float64`, causing "unsupported operand type" errors.
+
+### Root Cause
+- PostgreSQL driver (psycopg2) automatically converts NUMERIC → Decimal
+- Numpy doesn't recognize Decimal as numeric type
+- Error was silently caught by try/except, causing function to return None
+
+### How We Fixed It
+```python
+# Before (broken)
+rate_indexes = np.array([row[1] for row in rows])  # dtype=object
+
+# After (fixed)
+rate_indexes = np.array([float(row[1]) for row in rows])  # dtype=float64
+```
+
+### Prevention
+1. **Always explicitly convert** PostgreSQL numeric → float when using numpy
+2. **Add type checks** before numpy operations: `assert arr.dtype == np.float64`
+3. **Avoid bare try/except** that silently swallow errors
+4. **Unit test** with actual PostgreSQL data, not mocked data
+
+### Related Issues
+- ISS-001: REG 0-row backfill
+- Similar pattern in backward_worker_index.py (proactively fixed)
+
+### Cost
+- 2 hours debugging
+- 112 partitions re-processed (wasted compute)
+
+### Documentation Updated
+- Added to `docs/postgres_quirks.md`
+- Added to `docs/bug_patterns.md`
+- Updated code comments in regression_worker_index.py
+
+### Tags
+#postgresql #numpy #type-conversion #critical-bug
+```
+
+---
+
+### 6. Best Practices Intelligence
+**Purpose:** Document patterns that work well and should be replicated
+
+**Location:** `docs/intelligence/best_practices/`
+
+**Files:**
+- `code_patterns.md` - Proven code patterns for this project
+- `testing_practices.md` - Effective test strategies
+- `database_practices.md` - Database query optimization patterns
+- `monitoring_practices.md` - Effective monitoring approaches
+
+**Update Trigger:**
+- Weekly: When new pattern emerges
+- Monthly: Best practices review session
+
+**Owner:** Tech Lead (curated from team contributions)
+
+---
+
+### 7. Known Issues & Limitations Intelligence
+**Purpose:** Document technical debt, workarounds, and system limitations
+
+**Location:** `docs/intelligence/known_issues/`
+
+**Files:**
+- `technical_debt_register.md` - Active technical debt items
+- `workarounds.md` - Temporary solutions and why
+- `system_limitations.md` - Hard constraints (CPU, memory, Aurora)
+- `deferred_improvements.md` - Good ideas for later
+
+**Update Trigger:**
+- Immediate: When workaround implemented
+- Monthly: During architecture review
+
+**Owner:** Tech Lead
+
+---
+
+### 8. System Knowledge Intelligence
+**Purpose:** Document how the system actually works (vs. how it should work)
+
+**Location:** `docs/intelligence/system_knowledge/`
+
+**Files:**
+- `data_flow.md` - Actual data flow through the system
+- `dependency_map.md` - What depends on what
+- `failure_modes.md` - How system fails and recovery procedures
+- `performance_characteristics.md` - Actual performance profiles
+- `quirks_and_gotchas.md` - Non-obvious system behaviors
+
+**Update Trigger:**
+- Immediate: When non-obvious behavior discovered
+- Quarterly: System knowledge audit
+
+**Owner:** Operations/SRE
+
+---
+
+## Intelligence File Update Cadence
+
+### Daily Updates (As Discovered)
+
+**Files:** Semantics, ADRs, Lessons Learned, Known Issues
+
+**Process:**
+1. During development, capture new terms in `semantics/`
+2. When decision made, create ADR in `decisions/`
+3. When bug/issue discovered, document in `lessons/` or `known_issues/`
+4. At end of day, commit intelligence file updates with code
+
+**Example:**
+```bash
+# During development
+vim docs/intelligence/semantics/feature_definitions.md
+# Add new feature: w390_reg_r2
+
+# End of day
+git add docs/intelligence/ scripts/
+git commit -m "feat(TSK-160): Add 390min regression features
+
+- Added w390_reg_* features (6 new features)
+- Updated feature_definitions.md with formulas
+- Created ADR-006 for window size selection
+
+Intelligence Updated:
+- docs/intelligence/semantics/feature_definitions.md
+- docs/intelligence/decisions/ADR-006_regression_windows.md
+..."
+```
+
+---
+
+### Weekly Intelligence Review (Monday, with Gap Assessment)
+
+**Duration:** +15 minutes (added to gap assessment)
+
+**Process:**
+1. Review all intelligence files modified this week
+2. Check for inconsistencies or outdated information
+3. Identify gaps in coverage (terms used but not defined)
+4. Update `glossary.md` with week's new terms
+
+**Script:** `scripts/intelligence/weekly_intelligence_review.sh`
+```bash
+#!/bin/bash
+# Generate report of intelligence file changes this week
+
+echo "Intelligence File Changes (past 7 days):"
+git log --since="7 days ago" --name-only --pretty=format: -- docs/intelligence/ | sort | uniq
+
+echo "\n\nNew Terms (grepped from code, not in glossary):"
+# Grep codebase for potential undefined terms
+# Compare against docs/intelligence/semantics/glossary.md
+# Report gaps
+```
+
+---
+
+### Monthly Intelligence Audit (First Monday, with Architecture Review)
+
+**Duration:** +30 minutes (added to architecture review)
+
+**Process:**
+1. **Ontology Review:** Verify schema diagrams match actual database
+2. **ADR Review:** Check if any ADRs should be deprecated/superseded
+3. **Lessons Review:** Consolidate related lessons, remove duplicates
+4. **Best Practices:** Promote proven patterns to official best practices
+5. **System Knowledge:** Update based on production observations
+
+**Deliverable:** Intelligence Audit Report (stored in `docs/intelligence/audits/YYYY-MM-audit.md`)
+
+---
+
+### Phase Completion Intelligence Update (When Phase 100%)
+
+**Duration:** 1-2 hours
+
+**Process:**
+1. **Context Update:** Document how phase changed project direction
+2. **Comprehensive Lessons:** Phase-level lessons learned document
+3. **Ontology Snapshot:** Capture schema state at phase completion
+4. **ADR Review:** Ensure all major decisions documented
+5. **Best Practices Extraction:** Extract patterns from phase
+
+**Deliverable:**
+- `docs/intelligence/lessons/phase_X_Y_lessons.md`
+- Updated ontology diagrams
+- Phase completion ADR if architectural changes made
+
+---
+
+## Intelligence File Quality Standards
+
+### Required Elements
+
+**All Intelligence Files Must Have:**
+1. **Header:** Title, date, owner, status
+2. **Purpose:** Why this file exists
+3. **Last Updated:** Date of last modification
+4. **Related Files:** Links to related intelligence files
+5. **Tags:** For searchability
+
+### Writing Guidelines
+
+**DO:**
+- ✅ Use concrete examples
+- ✅ Include code snippets
+- ✅ Link to commits/PRs
+- ✅ Explain WHY, not just WHAT
+- ✅ Use diagrams where helpful
+- ✅ Keep updated (mark outdated sections)
+
+**DON'T:**
+- ❌ Duplicate information (link instead)
+- ❌ Use vague language ("it might...", "probably...")
+- ❌ Leave stale information
+- ❌ Mix multiple concerns in one file
+- ❌ Assume prior knowledge
+
+---
+
+## Intelligence File Templates
+
+### Semantic Definition Template
+
+```markdown
+## [Term Name]
+
+**Type:** [Metric | Feature | Concept | Formula]
+**Status:** [Active | Deprecated | Superseded by X]
+**Domain:** [Forex | ML | Database | etc.]
+
+### Definition
+[Precise, unambiguous definition]
+
+### Formula (if applicable)
+```
+mathematical_formula
+```
+
+```python
+# Python implementation
+def calculate_term():
+    ...
+```
+
+### Purpose
+[Why this exists, what problem it solves]
+
+### Example
+[Concrete example with real numbers]
+
+### Related Terms
+- [Related Term 1]
+- [Related Term 2]
+
+### Usage Context
+[Where/when this term is used]
+
+### Common Confusions
+[What this is NOT, common misunderstandings]
+
+### History
+- **Introduced:** [Date, Phase, Stage]
+- **Modified:** [List of changes with dates]
+- **Deprecated:** [If applicable]
+
+### References
+- Commit: [hash]
+- ADR: [ADR-XXX]
+- Code: [file:line]
+```
+
+---
+
+### Ontology Entry Template
+
+```markdown
+## [Entity Name]
+
+**Type:** [Table | View | Feature Group | Relationship]
+**Status:** [Active | Deprecated | Planned]
+**Schema Version:** [X.Y]
+
+### Description
+[What this entity represents]
+
+### Structure
+[Schema definition, fields, types]
+
+### Relationships
+**Upstream (Sources):**
+- [Entity 1] → [relationship type]
+
+**Downstream (Consumers):**
+- → [Entity 2] [relationship type]
+
+### Constraints
+- [Constraint 1]
+- [Constraint 2]
+
+### Data Quality
+**Expected Ranges:**
+- [Field]: [min-max or pattern]
+
+**Validation Rules:**
+- [Rule 1]
+- [Rule 2]
+
+### Performance Characteristics
+- Typical size: [size]
+- Row count: [count]
+- Query patterns: [patterns]
+- Indexes: [list]
+
+### Evolution History
+**Version 1.0** (YYYY-MM-DD):
+- Initial creation
+- [Details]
+
+**Version 2.0** (YYYY-MM-DD):
+- [Changes made]
+- Migration: [link to migration script]
+
+### Related
+- Schema: [link to schema file]
+- Migrations: [link]
+- ADRs: [ADR-XXX]
+```
+
+---
+
+### Lesson Learned Template
+
+```markdown
+## Lesson: [Title]
+
+**Date:** YYYY-MM-DD
+**Context:** [Where this happened]
+**Severity:** [Critical | Major | Minor | Note]
+**Cost:** [Time/money/opportunity cost]
+
+### What Happened
+[Narrative of what occurred]
+
+### Root Cause
+[Why it happened, not just symptoms]
+
+### How We Fixed It
+[Solution implemented]
+```code
+# Before
+...
+
+# After
+...
+```
+
+### Prevention
+1. [Action 1 to prevent recurrence]
+2. [Action 2]
+3. [Action 3]
+
+### Related Issues
+- [ISS-XXX]: [Description]
+- Similar pattern in: [Location]
+
+### Documentation Updated
+- [File 1]
+- [File 2]
+
+### Tags
+#tag1 #tag2 #tag3
+```
+
+---
+
+## Intelligence File Discovery & Search
+
+### File Organization
+
+```
+docs/intelligence/
+├── README.md (This file - index of all intelligence)
+├── context/
+│   ├── project_context.md
+│   ├── business_requirements.md
+│   └── user_stories.md
+├── semantics/
+│   ├── glossary.md (Master index)
+│   ├── forex_terminology.md
+│   ├── ml_metrics_definitions.md
+│   ├── bqx_semantics.md
+│   └── feature_definitions.md
+├── ontology/
+│   ├── database_schema_ontology.md
+│   ├── feature_hierarchy.md
+│   ├── data_pipeline_ontology.md
+│   └── type_system.md
+├── decisions/
+│   ├── README.md (ADR index)
+│   ├── ADR-001_baseline_date_selection.md
+│   ├── ADR-002_index_based_architecture.md
+│   └── ADR-template.md
+├── lessons/
+│   ├── phase_1_5_lessons.md
+│   ├── bug_patterns.md
+│   ├── performance_insights.md
+│   └── postgres_quirks.md
+├── best_practices/
+│   ├── code_patterns.md
+│   ├── testing_practices.md
+│   ├── database_practices.md
+│   └── monitoring_practices.md
+├── known_issues/
+│   ├── technical_debt_register.md
+│   ├── workarounds.md
+│   ├── system_limitations.md
+│   └── deferred_improvements.md
+├── system_knowledge/
+│   ├── data_flow.md
+│   ├── dependency_map.md
+│   ├── failure_modes.md
+│   └── quirks_and_gotchas.md
+└── audits/
+    ├── 2025-11-audit.md
+    └── 2025-12-audit.md
+```
+
+### Search Tools
+
+**1. Grep Intelligence Files:**
+```bash
+# Find term across all intelligence files
+grep -r "rate_index" docs/intelligence/
+
+# Find all ADRs about performance
+grep -l "performance" docs/intelligence/decisions/*.md
+
+# Find lessons related to PostgreSQL
+grep -l "postgres\|PostgreSQL" docs/intelligence/lessons/*.md
+```
+
+**2. Intelligence Search Script:**
+`scripts/intelligence/search_intelligence.sh`
+```bash
+#!/bin/bash
+# Search all intelligence files for a term
+
+TERM=$1
+if [ -z "$TERM" ]; then
+    echo "Usage: $0 <search-term>"
+    exit 1
+fi
+
+echo "Searching intelligence files for: $TERM"
+echo "========================================"
+
+echo "\n## Semantics Matches:"
+grep -n "$TERM" docs/intelligence/semantics/*.md
+
+echo "\n## Ontology Matches:"
+grep -n "$TERM" docs/intelligence/ontology/*.md
+
+echo "\n## ADR Matches:"
+grep -n "$TERM" docs/intelligence/decisions/*.md
+
+echo "\n## Lessons Matches:"
+grep -n "$TERM" docs/intelligence/lessons/*.md
+
+echo "\n## Best Practices Matches:"
+grep -n "$TERM" docs/intelligence/best_practices/*.md
+```
+
+---
+
+## Integration with Airtable Operational Cadence
+
+### Daily Workflow (Updated)
+
+**Activities:**
+1. **Development Work**
+2. **Capture Intelligence** (as discovered):
+   - New terms → `semantics/`
+   - Decisions → `decisions/` (ADR)
+   - Bugs/issues → `lessons/` or `known_issues/`
+3. **End-of-Day Git Commit** (includes intelligence files)
+4. **Airtable Update**
+
+### Weekly Gap Assessment (Updated)
+
+**Activities:**
+1. Compare git commits to Airtable tasks
+2. **Intelligence File Review:**
+   - Files modified this week
+   - Gaps in coverage
+   - Glossary update
+3. Identify missing work
+4. Update forecasts
+
+**New Deliverable:**
+- Intelligence Coverage Report (part of gap assessment)
+
+### Monthly Architecture Review (Updated)
+
+**Activities:**
+1. Technical debt assessment
+2. **Intelligence Audit:**
+   - Ontology accuracy check
+   - ADR deprecation review
+   - Lessons consolidation
+   - Best practices promotion
+3. Architecture evolution planning
+4. Documentation audit
+
+**New Deliverable:**
+- Monthly Intelligence Audit Report
+
+---
+
+## Metrics & KPIs
+
+### Intelligence File Health Metrics
+
+1. **Coverage Rate:**
+   - Formula: (Terms in Glossary / Terms Used in Code) × 100%
+   - Target: >90%
+   - Measured: Weekly
+
+2. **Freshness:**
+   - Formula: Days since last update per file
+   - Target: <30 days for active files
+   - Measured: Monthly
+
+3. **ADR Completeness:**
+   - Formula: (Major Decisions with ADRs / Total Major Decisions) × 100%
+   - Target: 100%
+   - Measured: Per phase
+
+4. **Lesson Capture Rate:**
+   - Formula: (Critical Bugs with Lessons / Total Critical Bugs) × 100%
+   - Target: 100%
+   - Measured: Monthly
+
+5. **Intelligence File Usage:**
+   - Formula: References to intelligence files in code/docs
+   - Target: Increasing trend
+   - Measured: Quarterly
+
+---
+
+## Automation Scripts
+
+### 1. Intelligence Coverage Checker
+`scripts/intelligence/check_coverage.sh`
+
+```bash
+#!/bin/bash
+# Check if all technical terms used in code are defined in glossary
+
+echo "Checking intelligence file coverage..."
+
+# Extract potential technical terms from code (camelCase, snake_case identifiers)
+CODE_TERMS=$(find . -name "*.py" -exec grep -oh "\b[a-z_]*_[a-z_]*\b" {} \; | sort | uniq)
+
+# Extract defined terms from glossary
+DEFINED_TERMS=$(grep "^## " docs/intelligence/semantics/glossary.md | sed 's/^## //')
+
+# Find gaps
+MISSING_TERMS=$(comm -23 <(echo "$CODE_TERMS" | sort) <(echo "$DEFINED_TERMS" | sort))
+
+if [ -n "$MISSING_TERMS" ]; then
+    echo "⚠️  Terms used in code but not defined in glossary:"
+    echo "$MISSING_TERMS"
+    exit 1
+else
+    echo "✓ All terms covered in glossary"
+    exit 0
+fi
+```
+
+### 2. ADR Generator
+`scripts/intelligence/new_adr.sh`
+
+```bash
+#!/bin/bash
+# Create new ADR from template
+
+TITLE=$1
+if [ -z "$TITLE" ]; then
+    read -p "ADR Title: " TITLE
+fi
+
+# Find next ADR number
+LAST_ADR=$(ls docs/intelligence/decisions/ADR-*.md | sort | tail -1)
+LAST_NUM=$(echo "$LAST_ADR" | grep -oP "ADR-\K\d+")
+NEXT_NUM=$(printf "%03d" $((10#$LAST_NUM + 1)))
+
+# Create new ADR from template
+NEW_ADR="docs/intelligence/decisions/ADR-${NEXT_NUM}_${TITLE// /_}.md"
+
+cp docs/intelligence/decisions/ADR-template.md "$NEW_ADR"
+
+# Replace placeholders
+sed -i "s/XXX/$NEXT_NUM/g" "$NEW_ADR"
+sed -i "s/\[Decision Title\]/$TITLE/g" "$NEW_ADR"
+sed -i "s/YYYY-MM-DD/$(date +%Y-%m-%d)/g" "$NEW_ADR"
+
+echo "Created: $NEW_ADR"
+echo "Please edit and fill in the template"
+
+# Open in editor
+${EDITOR:-vim} "$NEW_ADR"
+```
+
+---
+
+## Success Stories (Expected Benefits)
+
+1. **Onboarding:** New developers can read intelligence files to understand WHY the system is designed this way
+2. **Decision Speed:** Team can reference ADRs instead of re-litigating decisions
+3. **Bug Prevention:** Lessons learned prevent repeating mistakes
+4. **Knowledge Transfer:** Critical knowledge doesn't leave with departing developers
+5. **Compliance:** Clear audit trail of technical decisions
+6. **Pattern Reuse:** Best practices can be replicated across codebase
+
+---
+
+## Getting Started
+
+### Week 1: Bootstrap Intelligence Files
+
+1. Create directory structure
+2. Populate glossary with current terms (from existing docs)
+3. Create ADRs for major decisions already made:
+   - ADR-001: Baseline date selection (2024-07-01)
+   - ADR-002: Index-based architecture
+   - ADR-003: Decimal→float conversion pattern
+4. Document current phase lessons learned
+5. Create ontology for existing tables
+
+### Week 2-4: Establish Habit
+
+1. Daily: Capture new terms as discovered
+2. Weekly: Intelligence file review in gap assessment
+3. Create ADR for every significant decision
+4. Document every critical bug in lessons
+
+### Month 2+: Continuous Improvement
+
+1. Monthly intelligence audits
+2. Refine templates based on usage
+3. Automate coverage checking
+4. Integrate with onboarding process
+
+---
+
+## Revision History
+
+| Date | Version | Changes | Author |
+|------|---------|---------|--------|
+| 2025-11-10 | 1.0 | Initial intelligence file framework | Claude Code |
+
+---
+
+## Next Steps
+
+**Immediate:**
+1. Create `docs/intelligence/` directory structure
+2. Populate glossary with terms from this session
+3. Create ADRs for index-based architecture decisions
+4. Document Decimal→float lesson learned
+
+**Short-Term (Next 2 Weeks):**
+1. Bootstrap all intelligence file categories
+2. Train team on intelligence file usage
+3. Integrate into daily workflow
+4. Create automation scripts
+
+**Long-Term (Next Month):**
+1. Full intelligence audit
+2. Metrics dashboard for intelligence file health
+3. Intelligence file quality linting
+4. Link intelligence files to Airtable
