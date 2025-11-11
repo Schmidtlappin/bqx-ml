@@ -82,7 +82,7 @@ def create_phase3_record():
 **TIMELINE:** 113 hours (6 weeks at 20 hours/week)
 **SUCCESS CRITERIA:** R² > 0.85, Latency P99 < 200ms, Sharpe > 1.5, Cost < $400/month""",
             "Duration": "113 hours",
-            "Status": "Todo",
+            "Status": "Not Started",
         }
     }
 
@@ -131,7 +131,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • Total wall time: ~10-15 minutes for all 28 pairs""",
             "Duration": "22 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         },
         {
             "Stage ID": "Stage 3.2: Hyperparameter Optimization & Model Registry",
@@ -155,7 +155,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • Approval: Automated (R² > 0.85) or manual""",
             "Duration": "14 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         },
         {
             "Stage ID": "Stage 3.3: Model Deployment Infrastructure",
@@ -182,7 +182,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • Throughput: 7 req/sec per instance sustained""",
             "Duration": "16 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         },
         {
             "Stage ID": "Stage 3.4: Real-Time Inference System",
@@ -209,7 +209,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • End-to-end latency: <200ms (100ms features + 10ms inference + 90ms overhead)""",
             "Duration": "18 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         },
         {
             "Stage ID": "Stage 3.5: Monitoring & MLOps Infrastructure",
@@ -238,7 +238,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • Savings Plan: 20% discount (-$98/month)""",
             "Duration": "19 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         },
         {
             "Stage ID": "Stage 3.6: Validation & Production Readiness",
@@ -269,7 +269,7 @@ def create_stages(phase_id: str) -> Dict[str, str]:
 • Load testing: 100 req/sec for 10 minutes, verify auto-scaling 1→2 instances""",
             "Duration": "24 hours",
             "Status": "Todo",
-            "Phase": [phase_id]
+            "Phase (Link)": phase_id
         }
     ]
 
