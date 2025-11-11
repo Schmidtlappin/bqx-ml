@@ -1,0 +1,20 @@
+<type>(<scope>): <subject>
+
+<body>
+
+Task/Stage: [ID or link]
+Duration: [Time spent]
+Testing: [Verification performed]
+
+# Type: feat, fix, docs, refactor, test, chore
+# Scope: TSK-XXX, Stage X.Y.Z, or component name
+# Subject: Imperative mood, <50 chars, no period
+#
+# Body: Explain WHY, not WHAT. Reference issues/tasks.
+#       Wrap at 72 chars.
+#
+# Footer: Task/Stage IDs, duration, testing notes
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

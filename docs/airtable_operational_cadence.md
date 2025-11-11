@@ -29,12 +29,14 @@ This document defines the operational cadence for maintaining the BQX ML Airtabl
 **Owner:** Active developer
 
 **Activities:**
-1. Run progress update script for any in-progress stages
-2. Mark completed tasks as "Complete" with actual duration
-3. Create new tasks for discovered work
-4. Log any blockers or issues encountered
+1. **Git Commit:** Run end-of-day commit script (Level 5 commit)
+2. Run progress update script for any in-progress stages
+3. Mark completed tasks as "Complete" with actual duration
+4. Create new tasks for discovered work
+5. Log any blockers or issues encountered
 
 **Scripts:**
+- `scripts/git/end_of_day_commit.sh` - Automated daily git commit
 - `scripts/airtable/daily_progress_update.py` (to be created)
 - Automatically updates stage progress percentages
 - Creates task entries for new work discovered
@@ -42,13 +44,19 @@ This document defines the operational cadence for maintaining the BQX ML Airtabl
 
 **Example:**
 ```bash
-# End of day update
+# End of day git commit + Airtable update
+/home/ubuntu/bqx-ml/scripts/git/end_of_day_commit.sh
+
+# Then update Airtable
 export AIRTABLE_API_KEY="..."
 python3 scripts/airtable/daily_progress_update.py \
   --stage "1.5.4" \
   --progress 38.3 \
   --notes "BQX backfill progressing, 129/336 partitions complete"
 ```
+
+**Git Integration:**
+See [Git Commit Cadence Strategy](git_commit_cadence.md) for detailed commit levels and procedures.
 
 ---
 
