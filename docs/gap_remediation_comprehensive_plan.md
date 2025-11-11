@@ -1,9 +1,19 @@
 # BQX ML Gap Remediation - Comprehensive Plan
 
+**⚠️ SUPERSEDED BY:** See [gap_remediation_corrected.md](gap_remediation_corrected.md) for corrected version
+**⚠️ FEATURE COUNT CORRECTED:** 228 base features (not 111) - See [feature_count_reconciliation.md](feature_count_reconciliation.md)
+
 **Plan Date:** 2025-11-11
-**Current Status:** 50% Complete (56/111 features implemented)
+**Current Status:** 50% Complete (56/228 base features implemented, excluding BQX 40 + REG 57)
 **Critical Path:** Track 1 Completion → Track 2 Parallel Execution → Validation & QA
 **Estimated Completion:** 30 hours (2-3 days with parallel execution)
+
+**IMPORTANT CORRECTIONS:**
+- Original "111 features" excluded BQX (40), REG (57), and derived (3) features
+- Arithmetic error: Stated 55 missing, actually 72 (15 + 45 + 12 = 72)
+- With lagging: 809 total features (4 lag windows + causality)
+- After selection: 70 features used for model training
+- See Phase 3 SageMaker plan for complete ML pipeline: [sagemaker_phase3_deployment_plan.md](sagemaker_phase3_deployment_plan.md)
 
 ---
 
