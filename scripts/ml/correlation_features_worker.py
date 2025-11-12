@@ -134,26 +134,25 @@ def process_partition(conn, pair, year, month):
     partition_name = f'{table_name}_{year}_{month:02d}'
 
     try:
-        # Create parent table if not exists
+        # Create parent table if not exists (match existing schema)
         cur.execute(f"""
             CREATE TABLE IF NOT EXISTS bqx.{table_name} (
                 ts_utc TIMESTAMP WITH TIME ZONE NOT NULL,
-                pair VARCHAR(6) NOT NULL,
-                corr_eur_aud DOUBLE PRECISION,
-                corr_eur_cad DOUBLE PRECISION,
-                corr_eur_gbp DOUBLE PRECISION,
-                corr_eur_jpy DOUBLE PRECISION,
-                corr_eur_usd DOUBLE PRECISION,
-                corr_gbp_aud DOUBLE PRECISION,
-                corr_gbp_cad DOUBLE PRECISION,
-                corr_gbp_chf DOUBLE PRECISION,
-                corr_gbp_jpy DOUBLE PRECISION,
-                corr_gbp_usd DOUBLE PRECISION,
-                corr_usd_aud DOUBLE PRECISION,
-                corr_usd_cad DOUBLE PRECISION,
-                corr_usd_chf DOUBLE PRECISION,
-                corr_usd_jpy DOUBLE PRECISION,
-                corr_usd_eur DOUBLE PRECISION,
+                corr_base_pairs_15min DOUBLE PRECISION,
+                corr_base_pairs_60min DOUBLE PRECISION,
+                corr_quote_pairs_15min DOUBLE PRECISION,
+                corr_quote_pairs_60min DOUBLE PRECISION,
+                relative_strength_vs_base_pairs DOUBLE PRECISION,
+                relative_strength_vs_quote_pairs DOUBLE PRECISION,
+                base_pair_divergence DOUBLE PRECISION,
+                quote_pair_divergence DOUBLE PRECISION,
+                triangular_arb_divergence DOUBLE PRECISION,
+                cross_pair_momentum_divergence INTEGER,
+                correlation_stability DOUBLE PRECISION,
+                lead_lag_indicator DOUBLE PRECISION,
+                cointegration_residual DOUBLE PRECISION,
+                pair_spread_z_score DOUBLE PRECISION,
+                cross_pair_volatility_ratio DOUBLE PRECISION,
                 PRIMARY KEY (ts_utc)
             ) PARTITION BY RANGE (ts_utc);
         """)

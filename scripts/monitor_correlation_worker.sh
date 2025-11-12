@@ -21,15 +21,21 @@ while true; do
     echo ""
 
     # Worker Status
-    echo -e "${BLUE}[CORRELATION FEATURES WORKER]${NC}"
+    echo -e "${BLUE}[CORRELATION FEATURES WORKER V4 - BQX-CENTRIC]${NC}"
     echo "--------------------------------------------------------------------------------"
-    CORR_PID=$(ps aux | grep "python3.*correlation_features_worker" | grep -v grep | awk '{print $2}')
+    CORR_PID=$(ps aux | grep "python3.*correlation_features_worker_v4" | grep -v grep | awk '{print $2}')
     if [ -n "$CORR_PID" ]; then
         CORR_CPU=$(ps -p $CORR_PID -o %cpu --no-headers 2>/dev/null | xargs)
         CORR_MEM=$(ps -p $CORR_PID -o %mem --no-headers 2>/dev/null | xargs)
         CORR_TIME=$(ps -p $CORR_PID -o etime --no-headers 2>/dev/null | xargs)
         echo -e "Status: ${GREEN}RUNNING${NC} (PID: $CORR_PID)"
         echo "CPU: ${CORR_CPU}% | Memory: ${CORR_MEM}% | Runtime: ${CORR_TIME}"
+
+        # Show latest progress from log
+        LATEST_PROGRESS=$(tail -3 /tmp/correlation_v4.log 2>/dev/null | grep "Progress:" | tail -1)
+        if [ -n "$LATEST_PROGRESS" ]; then
+            echo "Latest: $LATEST_PROGRESS"
+        fi
     else
         echo -e "Status: ${RED}NOT RUNNING${NC}"
     fi
