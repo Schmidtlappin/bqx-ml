@@ -86,7 +86,7 @@ BEGIN
 
     FOREACH pair_name IN ARRAY pairs
     LOOP
-        FOR year IN 2024..2024  -- Extend to 2025 if needed
+        FOR year IN 2024..2025  -- Extended to 2025 to match data range (2024-07 to 2025-06)
         LOOP
             FOR month IN 1..12
             LOOP
@@ -194,7 +194,7 @@ BEGIN
 
     FOREACH pair_name IN ARRAY pairs
     LOOP
-        FOR year IN 2024..2024
+        FOR year IN 2024..2025  -- Extended to 2025 to match data range (2024-07 to 2025-06)
         LOOP
             FOR month IN 1..12
             LOOP
@@ -263,9 +263,10 @@ ORDER BY description;
 
 -- Expected results:
 -- - technical_rate parent tables: 28
--- - technical_rate partitions: 336
+-- - technical_rate partitions: 672 (28 pairs × 24 months)
 -- - technical_bqx parent tables: 28
--- - technical_bqx partitions: 336
+-- - technical_bqx partitions: 672 (28 pairs × 24 months)
+-- Total: 1,400 new tables (56 parent + 1,344 partitions)
 
 COMMIT;
 
