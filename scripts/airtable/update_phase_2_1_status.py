@@ -44,7 +44,6 @@ def main():
     # Stage 2.1.1: Track 1 - Bollinger BQX (COMPLETE)
     stage_2_1_1 = {
         'Status': 'Done',
-        'Completion Date': today,
         'Notes': '''✅ TRACK 1 COMPLETE
 
 **Status:** 426/672 partitions populated (63.4%)
@@ -67,18 +66,23 @@ def main():
         'Status': 'In Progress',
         'Notes': '''🔄 TRACK 2 IN PROGRESS
 
-**Status:** Running (started 2025-11-13)
-- 336 partitions total (28 pairs × 12 months: Jul 2024 - Jun 2025)
-- 180 features: 90 rate domain + 90 BQX domain
+**Status:** 92/336 partitions complete (27.4%)
+- Started: 2025-11-13 20:20
+- 180 features: 90 rate_index domain + 90 BQX domain
 - 6 windows × 15 metrics per domain
-- 4 parallel workers at 99% CPU
+- 8 parallel workers at 90-95% CPU (optimized from 4)
 
 **Issues Fixed:**
-1. Table/column mismatch: Separated M1 and BQX queries
-2. Timezone mismatch: Added UTC conversion for M1 timestamps
-3. NaT insertion error: Filter out NaT values before database insertion
+1. Critical NaT serialization bug: Switched from .iterrows() to .values
+2. Worker optimization: 4 → 8 workers for 2x throughput
+3. CPU utilization: 50% → 87% (optimal)
 
-**ETA:** 8-12 hours (most compute-intensive track)
+**Performance:**
+- 0 failures since fix applied
+- ETA: ~3 hours remaining (completion ~02:00 AM Nov 14)
+- Memory: 5.7 GiB / 30 GiB (19%)
+- CPU Load: 8.92 / 8.0 cores
+
 **Tables:** reg_rate_{pair}_{year_month}, reg_bqx_{pair}_{year_month}
 '''
     }
@@ -86,7 +90,6 @@ def main():
     # Stage 2.1.3: Track 3 - Feature Extraction (COMPLETE)
     stage_2_1_3 = {
         'Status': 'Done',
-        'Completion Date': today,
         'Notes': '''✅ TRACK 3 COMPLETE
 
 **Status:** 28/28 Parquet files extracted (100%)
@@ -117,7 +120,7 @@ def main():
     # Search for stages
     search_url = f'https://api.airtable.com/v0/{BASE_ID}/{STAGES_TABLE}'
     params = {
-        'filterByFormula': "OR({Stage ID}='2.1.1', {Stage ID}='2.1.2', {Stage ID}='2.1.3')"
+        'pageSize': 100
     }
 
     response = requests.get(search_url, headers=headers, params=params)
@@ -127,9 +130,12 @@ def main():
 
     records = response.json().get('records', [])
 
-    if len(records) != 3:
-        print(f"⚠️  Expected 3 records, found {len(records)}")
-        print("Records found:", [r['fields'].get('Stage ID') for r in records])
+    # Filter for Phase 2.1 stages (2.1.1, 2.1.2, 2.1.3)
+    phase_2_1_records = [r for r in records if r['fields'].get('Stage ID', '').startswith('2.1.')]
+
+    if len(phase_2_1_records) != 3:
+        print(f"⚠️  Expected 3 Phase 2.1 records, found {len(phase_2_1_records)}")
+        print("Records found:", [r['fields'].get('Stage ID') for r in phase_2_1_records])
 
     # Update each stage
     updates = {
@@ -138,18 +144,21 @@ def main():
         '2.1.3': stage_2_1_3
     }
 
-    for record in records:
-        stage_id_field = record['fields'].get('Stage ID')
+    for record in phase_2_1_records:
+        stage_id_full = record['fields'].get('Stage ID', '')
         record_id = record['id']
 
-        if stage_id_field in updates:
-            print(f"\nUpdating Stage {stage_id_field}...")
+        # Extract just the numeric part (e.g., "2.1.2" from "2.1.2 - Track 2: Regression Features")
+        stage_id_short = stage_id_full.split(' ')[0] if ' ' in stage_id_full else stage_id_full
+
+        if stage_id_short in updates:
+            print(f"\nUpdating Stage {stage_id_full}...")
             try:
-                result = update_stage(record_id, updates[stage_id_field])
-                status = updates[stage_id_field]['Status']
-                print(f"✅ Stage {stage_id_field} updated: {status}")
+                result = update_stage(record_id, updates[stage_id_short])
+                status = updates[stage_id_short]['Status']
+                print(f"✅ Stage {stage_id_short} updated: {status}")
             except Exception as e:
-                print(f"❌ Failed to update Stage {stage_id_field}: {e}")
+                print(f"❌ Failed to update Stage {stage_id_short}: {e}")
 
     print()
     print("=" * 80)
