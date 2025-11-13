@@ -144,10 +144,47 @@ print("   • Phase 1.7 and 1.8 stages present")
 print()
 print("READY FOR EXECUTION:")
 print()
-print("   🚨 IMMEDIATE NEXT STEP:")
-print("   → Execute Stage 1.6.9: Table Renaming")
-print("   → Duration: 1 hour")
-print("   → Status: Todo (blocks all subsequent work)")
-print("   → Script: scripts/refactor/phase_1_6_9_rename_rate_tables.sql")
+
+# Dynamically determine next incomplete stage
+stage_metadata = {
+    '1.6.9': {
+        'name': 'Table Renaming',
+        'duration': '1 hour',
+        'script': 'scripts/refactor/phase_1_6_9_rename_rate_tables.sql'
+    },
+    '1.6.10': {
+        'name': 'Create technical_idx Tables',
+        'duration': '6 hours',
+        'script': 'scripts/refactor/phase_1_6_10_create_technical_schemas.sql'
+    },
+    '1.6.16': {
+        'name': 'Create correlation_idx Tables',
+        'duration': '6 hours',
+        'script': 'scripts/refactor/phase_1_6_16_create_correlation_schemas.sql'
+    },
+    '1.6.18': {
+        'name': 'Create Error Correction Tables',
+        'duration': '12 hours',
+        'script': 'scripts/refactor/phase_1_6_18_create_error_correction_schemas.sql'
+    }
+}
+
+next_stage = None
+for key in ['1.6.9', '1.6.10', '1.6.16', '1.6.18']:  # Check in order
+    if critical_stages[key]['found'] and critical_stages[key]['status'] not in ['Done', 'Complete', 'Completed']:
+        next_stage = key
+        break
+
+if next_stage:
+    metadata = stage_metadata[next_stage]
+    print("   🚨 IMMEDIATE NEXT STEP:")
+    print(f"   → Execute Stage {next_stage}: {metadata['name']}")
+    print(f"   → Duration: {metadata['duration']}")
+    print(f"   → Status: {critical_stages[next_stage]['status']}")
+    print(f"   → Script: {metadata['script']}")
+else:
+    print("   ✅ ALL CRITICAL STAGES COMPLETE!")
+    print("   → Ready to proceed to Phase 1.7 or Phase 2")
+
 print()
 print("=" * 80)
