@@ -1,0 +1,141 @@
+{
+  "description": "Currency grouping mappings for cross-pair analysis",
+  "created": "2025-11-13",
+  "purpose": "Preparation for Stage 2.3 (Cross-Pair Currency Indices)",
+
+  "currencies": {
+    "EUR": {
+      "name": "Euro",
+      "pairs_as_base": ["EURAUD", "EURCAD", "EURCHF", "EURGBP", "EURJPY", "EURNZD", "EURUSD"],
+      "pairs_as_quote": [],
+      "total_pairs": 7
+    },
+    "USD": {
+      "name": "US Dollar",
+      "pairs_as_base": ["USDCAD", "USDCHF", "USDJPY"],
+      "pairs_as_quote": ["AUDUSD", "EURUSD", "GBPUSD", "NZDUSD"],
+      "total_pairs": 7
+    },
+    "GBP": {
+      "name": "British Pound",
+      "pairs_as_base": ["GBPAUD", "GBPCAD", "GBPCHF", "GBPJPY", "GBPNZD", "GBPUSD"],
+      "pairs_as_quote": ["EURGBP"],
+      "total_pairs": 7
+    },
+    "JPY": {
+      "name": "Japanese Yen",
+      "pairs_as_base": [],
+      "pairs_as_quote": ["AUDJPY", "CADJPY", "CHFJPY", "EURJPY", "GBPJPY", "NZDJPY", "USDJPY"],
+      "total_pairs": 7
+    },
+    "AUD": {
+      "name": "Australian Dollar",
+      "pairs_as_base": ["AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD"],
+      "pairs_as_quote": ["EURAUD", "GBPAUD"],
+      "total_pairs": 7
+    },
+    "NZD": {
+      "name": "New Zealand Dollar",
+      "pairs_as_base": ["NZDCAD", "NZDCHF", "NZDJPY", "NZDUSD"],
+      "pairs_as_quote": ["AUDNZD", "EURNZD", "GBPNZD"],
+      "total_pairs": 7
+    },
+    "CAD": {
+      "name": "Canadian Dollar",
+      "pairs_as_base": ["CADCHF", "CADJPY"],
+      "pairs_as_quote": ["AUDCAD", "EURCAD", "GBPCAD", "NZDCAD", "USDCAD"],
+      "total_pairs": 7
+    },
+    "CHF": {
+      "name": "Swiss Franc",
+      "pairs_as_base": ["CHFJPY"],
+      "pairs_as_quote": ["AUDCHF", "CADCHF", "EURCHF", "GBPCHF", "NZDCHF", "USDCHF"],
+      "total_pairs": 7
+    }
+  },
+
+  "all_pairs": [
+    "AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD",
+    "CADCHF", "CADJPY", "CHFJPY",
+    "EURAUD", "EURCAD", "EURCHF", "EURGBP", "EURJPY", "EURNZD", "EURUSD",
+    "GBPAUD", "GBPCAD", "GBPCHF", "GBPJPY", "GBPNZD", "GBPUSD",
+    "NZDCAD", "NZDCHF", "NZDJPY", "NZDUSD",
+    "USDCAD", "USDCHF", "USDJPY"
+  ],
+
+  "pair_relationship_matrix": {
+    "description": "28x28 matrix indicating shared currencies between pairs",
+    "note": "Generated programmatically - see currency_relationship_generator.py",
+    "example": {
+      "EURUSD_GBPUSD": {
+        "shared_currency": "USD",
+        "relationship": "quote_quote",
+        "can_compute_cross_rate": true,
+        "cross_pair": "EURGBP"
+      },
+      "EURUSD_EURGBP": {
+        "shared_currency": "EUR",
+        "relationship": "base_base",
+        "can_compute_cross_rate": true,
+        "implied_pair": "GBPUSD"
+      }
+    }
+  },
+
+  "currency_strength_calculation": {
+    "method": "weighted_average",
+    "formula": "Index = mean(rate_index for all pairs containing currency)",
+    "normalization": "All pairs normalized to ~100 scale via rate_index",
+    "example_EUR": {
+      "pairs": ["EURAUD", "EURCAD", "EURCHF", "EURGBP", "EURJPY", "EURNZD", "EURUSD"],
+      "calculation": "EUR_strength = (EURAUD + EURCAD + EURCHF + EURGBP + EURJPY + EURNZD + EURUSD) / 7"
+    },
+    "example_USD": {
+      "pairs_as_base": ["USDCAD", "USDCHF", "USDJPY"],
+      "pairs_as_quote": ["AUDUSD", "EURUSD", "GBPUSD", "NZDUSD"],
+      "calculation": "USD_strength = (USDCAD + USDCHF + USDJPY + (100/AUDUSD) + (100/EURUSD) + (100/GBPUSD) + (100/NZDUSD)) / 7",
+      "note": "Invert quote pairs to get USD strength"
+    }
+  },
+
+  "cross_correlation_pairs": {
+    "description": "Pairs of currency pairs for rolling correlation analysis",
+    "groups": {
+      "EUR_majors": ["EURUSD", "EURGBP", "EURJPY", "EURCHF"],
+      "USD_majors": ["EURUSD", "GBPUSD", "USDJPY", "USDCHF"],
+      "GBP_majors": ["GBPUSD", "EURGBP", "GBPJPY", "GBPCHF"],
+      "JPY_crosses": ["USDJPY", "EURJPY", "GBPJPY", "AUDJPY", "CADJPY", "CHFJPY", "NZDJPY"],
+      "AUD_NZD_cluster": ["AUDUSD", "NZDUSD", "AUDNZD", "AUDJPY", "NZDJPY"],
+      "commodity_currencies": ["AUDUSD", "NZDUSD", "USDCAD"]
+    }
+  },
+
+  "database_views": [
+    {
+      "view_name": "bqx.eur_pairs_view",
+      "description": "All pairs containing EUR",
+      "sql": "CREATE OR REPLACE VIEW bqx.eur_pairs_view AS SELECT * FROM bqx.bqx_{pair} WHERE pair IN ('euraud','eurcad','eurchf','eurgbp','eurjpy','eurnzd','eurusd')"
+    },
+    {
+      "view_name": "bqx.usd_pairs_view",
+      "description": "All pairs containing USD",
+      "sql": "CREATE OR REPLACE VIEW bqx.usd_pairs_view AS SELECT * FROM bqx.bqx_{pair} WHERE pair IN ('audusd','eurusd','gbpusd','nzdusd','usdcad','usdchf','usdjpy')"
+    }
+  ],
+
+  "feature_output": {
+    "table_name": "bqx.currency_indices_{pair}",
+    "columns": [
+      "ts_utc",
+      "base_currency_index",
+      "quote_currency_index",
+      "currency_index_differential",
+      "base_currency_strength_percentile",
+      "quote_currency_strength_percentile",
+      "pair_divergence_from_index",
+      "related_pairs_correlation_60min",
+      "triangular_consistency_score"
+    ],
+    "total_features": 8
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "data_split": {
+    "description": "80/10/10 chronological split for train/val/test",
+    "total_period": {
+      "start": "2024-07-01",
+      "end": "2025-06-30",
+      "total_days": 365
+    },
+    "train": {
+      "start": "2024-07-01",
+      "end": "2025-03-27",
+      "days": 292,
+      "percentage": 80.0
+    },
+    "validation": {
+      "start": "2025-03-28",
+      "end": "2025-05-13",
+      "days": 37,
+      "percentage": 10.1
+    },
+    "test": {
+      "start": "2025-05-14",
+      "end": "2025-06-30",
+      "days": 48,
+      "percentage": 13.2
+    }
+  },
+  "temporal_rules": {
+    "min_lag_minutes": 61,
+    "description": "Features must use data from at least 61 minutes before target",
+    "rationale": "Longest window is w60 (60 minutes) + 1 minute buffer to prevent look-ahead bias",
+    "validation_checks": [
+      "No feature timestamp > target timestamp - 61 minutes",
+      "All rolling windows complete before target timestamp",
+      "No future data contamination in any feature",
+      "Train/val/test splits are strictly chronological (no shuffling)"
+    ]
+  },
+  "test_suite": {
+    "test_1": "Train/Val/Test split verification",
+    "test_2": "61-minute lag verification (100 samples)",
+    "test_3": "Future data contamination check",
+    "test_4": "Rolling window completeness (50 samples)",
+    "test_5": "NaN leakage pattern check"
+  }
+}

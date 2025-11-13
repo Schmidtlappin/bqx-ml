@@ -1,0 +1,244 @@
+{
+  "description": "S3 Export Configuration for Stage 2.7 (Export to S3 Parquet)",
+  "created": "2025-11-13",
+  "purpose": "Preparation for exporting all Phase 2 features to S3 for SageMaker training",
+
+  "s3_bucket": {
+    "bucket_name": "bqx-ml-features",
+    "region": "us-east-1",
+    "base_path": "s3://bqx-ml-features/",
+    "access_method": "IAM role (EC2 instance profile) or AWS credentials"
+  },
+
+  "directory_structure": {
+    "description": "Hierarchical structure for feature organization",
+    "paths": {
+      "raw_features": "s3://bqx-ml-features/features/raw/",
+      "normalized_features": "s3://bqx-ml-features/features/normalized/",
+      "train_split": "s3://bqx-ml-features/features/splits/train/",
+      "validation_split": "s3://bqx-ml-features/features/splits/validation/",
+      "test_split": "s3://bqx-ml-features/features/splits/test/",
+      "scaler_artifacts": "s3://bqx-ml-features/scalers/",
+      "metadata": "s3://bqx-ml-features/metadata/"
+    }
+  },
+
+  "parquet_partitioning": {
+    "strategy": "partition_by_pair_and_month",
+    "rationale": "Enables efficient filtering by currency pair and time period",
+    "partition_columns": ["pair", "year_month"],
+    "example_paths": [
+      "s3://bqx-ml-features/features/raw/pair=EURUSD/year_month=2024_07/data.parquet",
+      "s3://bqx-ml-features/features/raw/pair=GBPUSD/year_month=2024_08/data.parquet"
+    ],
+    "benefits": [
+      "Partition pruning reduces query costs",
+      "Parallel loading in SageMaker",
+      "Easy to filter by specific pairs or time ranges"
+    ]
+  },
+
+  "feature_schema": {
+    "description": "Complete feature schema for exported Parquet files",
+    "columns": {
+      "timestamp": "ts_utc (TIMESTAMP)",
+      "metadata": ["pair", "year_month"],
+      "target": ["rate_index (target variable for ML)"],
+
+      "bollinger_features": {
+        "count": 21,
+        "windows": ["w20", "w30", "w60", "w120"],
+        "metrics": [
+          "upper_band", "lower_band", "middle_band", "bandwidth", "percent_b"
+        ],
+        "slopes": ["slope_bqx", "slope_idx"]
+      },
+
+      "regression_features": {
+        "count": 180,
+        "domains": ["rate_index", "bqx"],
+        "windows": ["w20", "w30", "w45", "w60", "w75", "agg"],
+        "metrics": [
+          "a2", "a1", "b", "r2", "rmse", "residual_mean", "residual_std",
+          "pred_interval_lower", "pred_interval_upper", "prediction",
+          "vertex_x", "vertex_y", "curvature", "fit_quality", "extrapolation_error"
+        ]
+      },
+
+      "statistics_features": {
+        "count": 23,
+        "metrics": [
+          "mean", "std", "variance", "skewness", "kurtosis", "min", "max",
+          "range", "percentile_25", "percentile_50", "percentile_75", "iqr",
+          "cv", "mad", "sem", "z_score", "autocorrelation", "entropy",
+          "momentum_1", "momentum_5", "momentum_15", "rsi", "stochastic"
+        ]
+      },
+
+      "volume_features": {
+        "count": 10,
+        "metrics": [
+          "volume_mean", "volume_std", "volume_trend", "volume_acceleration",
+          "volume_ratio", "volume_spike", "volume_percentile", "obv",
+          "vwap", "mfi"
+        ]
+      },
+
+      "spread_features": {
+        "count": 20,
+        "metrics": [
+          "spread_mean", "spread_std", "spread_min", "spread_max",
+          "spread_range", "spread_trend", "spread_volatility",
+          "spread_percentile", "bid_ask_imbalance", "liquidity_score"
+        ]
+      },
+
+      "time_features": {
+        "count": 8,
+        "metrics": [
+          "hour", "day_of_week", "day_of_month", "week_of_year",
+          "is_market_open", "session", "time_since_market_open",
+          "time_until_market_close"
+        ]
+      },
+
+      "lagged_features": {
+        "description": "From Stage 2.2 (Lagged Feature Creation)",
+        "count": "TBD (depends on selected features)",
+        "lags": [5, 15, 30, 60]
+      },
+
+      "currency_indices": {
+        "description": "From Stage 2.3 (Cross-Pair Currency Indices)",
+        "count": 8,
+        "metrics": [
+          "base_currency_index", "quote_currency_index",
+          "currency_index_differential", "base_currency_strength_percentile",
+          "quote_currency_strength_percentile", "pair_divergence_from_index",
+          "related_pairs_correlation_60min", "triangular_consistency_score"
+        ]
+      },
+
+      "arbitrage_features": {
+        "description": "From Stage 2.4 (Arbitrage Detection)",
+        "count": 4,
+        "metrics": [
+          "arbitrage_profit_pct", "arbitrage_opportunity",
+          "arbitrage_direction", "arbitrage_max_profit"
+        ]
+      }
+    },
+
+    "total_features_estimate": 274
+  },
+
+  "data_normalization": {
+    "method": "StandardScaler (sklearn)",
+    "description": "Z-score normalization (mean=0, std=1) fitted on train set only",
+
+    "scaler_configuration": {
+      "fit_on": "train_split (2024-07-01 to 2025-03-27)",
+      "transform": ["train_split", "validation_split", "test_split"],
+      "persist_scaler": true,
+      "scaler_path": "s3://bqx-ml-features/scalers/standard_scaler.pkl"
+    },
+
+    "features_to_scale": {
+      "include": [
+        "All regression features",
+        "All bollinger features",
+        "All statistics features",
+        "All volume features",
+        "All spread features",
+        "All currency index features",
+        "All arbitrage features"
+      ],
+      "exclude": [
+        "ts_utc (timestamp)",
+        "pair (categorical)",
+        "year_month (categorical)",
+        "Time features (hour, day_of_week, etc.) - already normalized 0-1"
+      ]
+    },
+
+    "per_pair_scaling": {
+      "description": "Option to scale each pair independently (if cross-pair comparability not needed)",
+      "recommended": false,
+      "rationale": "We prefer global scaling across all pairs to maintain cross-pair comparability"
+    }
+  },
+
+  "export_process": {
+    "steps": [
+      "1. Query all features from Aurora for train period (2024-07-01 to 2025-03-27)",
+      "2. Fit StandardScaler on train data only",
+      "3. Transform train data and export to s3://bqx-ml-features/features/splits/train/",
+      "4. Query validation data (2025-03-28 to 2025-05-13)",
+      "5. Transform validation data using fitted scaler and export to .../validation/",
+      "6. Query test data (2025-05-14 to 2025-06-30)",
+      "7. Transform test data using fitted scaler and export to .../test/",
+      "8. Save scaler object to s3://bqx-ml-features/scalers/standard_scaler.pkl",
+      "9. Generate metadata JSON with schema, feature names, and statistics"
+    ],
+
+    "export_format": {
+      "format": "Parquet",
+      "compression": "snappy",
+      "row_group_size": 100000,
+      "estimated_file_sizes": {
+        "train_per_pair": "~1-2 GB per pair (292 days × 274 features)",
+        "validation_per_pair": "~150 MB per pair (37 days)",
+        "test_per_pair": "~200 MB per pair (48 days)",
+        "total_estimate": "~40-50 GB for all 28 pairs"
+      }
+    }
+  },
+
+  "aws_credentials": {
+    "required": true,
+    "options": [
+      "Option 1: EC2 IAM Instance Profile (recommended)",
+      "Option 2: AWS credentials in ~/.aws/credentials",
+      "Option 3: Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)"
+    ],
+    "verification_command": "aws s3 ls s3://bqx-ml-features/ --region us-east-1"
+  },
+
+  "metadata_export": {
+    "description": "Metadata JSON file for SageMaker",
+    "path": "s3://bqx-ml-features/metadata/feature_metadata.json",
+    "contents": {
+      "feature_names": "List of all 274 feature column names",
+      "feature_types": "Data type for each feature (float, int, categorical)",
+      "feature_statistics": {
+        "train_set": {
+          "mean": "Mean for each feature (from scaler)",
+          "std": "Std for each feature (from scaler)",
+          "min": "Minimum value",
+          "max": "Maximum value",
+          "missing_pct": "Percentage of missing values"
+        }
+      },
+      "data_splits": {
+        "train": "2024-07-01 to 2025-03-27 (292 days, 80%)",
+        "validation": "2025-03-28 to 2025-05-13 (37 days, 10.1%)",
+        "test": "2025-05-14 to 2025-06-30 (48 days, 13.2%)"
+      },
+      "scaler_path": "s3://bqx-ml-features/scalers/standard_scaler.pkl",
+      "total_rows": "~10.3M rows across all pairs",
+      "export_date": "2025-11-XX"
+    }
+  },
+
+  "sagemaker_integration": {
+    "description": "Configuration for SageMaker training jobs",
+    "input_data_config": {
+      "train": "s3://bqx-ml-features/features/splits/train/",
+      "validation": "s3://bqx-ml-features/features/splits/validation/",
+      "test": "s3://bqx-ml-features/features/splits/test/"
+    },
+    "content_type": "application/x-parquet",
+    "s3_data_type": "S3Prefix",
+    "s3_data_distribution_type": "ShardedByS3Key"
+  }
+}

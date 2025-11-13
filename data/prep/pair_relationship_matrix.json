@@ -1,0 +1,5317 @@
+{
+  "description": "28\u00d728 matrix indicating shared currencies and relationship types between all currency pairs",
+  "total_pairs": 28,
+  "total_relationships": 784,
+  "created": "2025-11-13",
+  "purpose": "Preparation for Stage 2.3 (Cross-Pair Currency Indices)",
+  "relationship_type_counts": {
+    "identical": 28,
+    "base_base": 112,
+    "quote_base_cross": 56,
+    "independent": 420,
+    "base_quote_cross": 56,
+    "quote_quote": 112
+  },
+  "relationship_types_explained": {
+    "identical": "Same pair (diagonal)",
+    "base_base": "Share base currency (e.g., EURUSD & EURGBP share EUR)",
+    "quote_quote": "Share quote currency (e.g., EURUSD & GBPUSD share USD)",
+    "base_quote_cross": "Pair1 base = Pair2 quote (e.g., EUR in EURUSD & GBPEUR)",
+    "quote_base_cross": "Pair1 quote = Pair2 base (e.g., USD in EURUSD & USDCAD)",
+    "independent": "No shared currencies (e.g., EURUSD & AUDJPY)"
+  },
+  "examples": {
+    "identical": {
+      "AUDCAD_AUDCAD": {
+        "relationship_type": "identical",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": 1.0
+      },
+      "AUDCHF_AUDCHF": {
+        "relationship_type": "identical",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": 1.0
+      },
+      "AUDJPY_AUDJPY": {
+        "relationship_type": "identical",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": 1.0
+      }
+    },
+    "base_base": {
+      "AUDCAD_AUDCHF": {
+        "relationship_type": "base_base",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "CADCHF",
+        "correlation_expected": "high_positive"
+      },
+      "AUDCAD_AUDJPY": {
+        "relationship_type": "base_base",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "CADJPY",
+        "correlation_expected": "high_positive"
+      },
+      "AUDCAD_AUDNZD": {
+        "relationship_type": "base_base",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "CADNZD",
+        "correlation_expected": "high_positive"
+      }
+    },
+    "quote_quote": {
+      "AUDCAD_EURCAD": {
+        "relationship_type": "quote_quote",
+        "shared_currency": "CAD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "AUDEUR",
+        "correlation_expected": "high_positive"
+      },
+      "AUDCAD_GBPCAD": {
+        "relationship_type": "quote_quote",
+        "shared_currency": "CAD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "AUDGBP",
+        "correlation_expected": "high_positive"
+      },
+      "AUDCAD_NZDCAD": {
+        "relationship_type": "quote_quote",
+        "shared_currency": "CAD",
+        "can_compute_cross_rate": true,
+        "implied_pair": "AUDNZD",
+        "correlation_expected": "high_positive"
+      }
+    },
+    "base_quote_cross": {
+      "AUDCAD_EURAUD": {
+        "relationship_type": "base_quote_cross",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "cross_pair": "EURCAD",
+        "formula": "AUDCAD \u00d7 EURAUD = EURCAD",
+        "correlation_expected": "inverse"
+      },
+      "AUDCAD_GBPAUD": {
+        "relationship_type": "base_quote_cross",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "cross_pair": "GBPCAD",
+        "formula": "AUDCAD \u00d7 GBPAUD = GBPCAD",
+        "correlation_expected": "inverse"
+      },
+      "AUDCHF_EURAUD": {
+        "relationship_type": "base_quote_cross",
+        "shared_currency": "AUD",
+        "can_compute_cross_rate": true,
+        "cross_pair": "EURCHF",
+        "formula": "AUDCHF \u00d7 EURAUD = EURCHF",
+        "correlation_expected": "inverse"
+      }
+    },
+    "quote_base_cross": {
+      "AUDCAD_CADCHF": {
+        "relationship_type": "quote_base_cross",
+        "shared_currency": "CAD",
+        "can_compute_cross_rate": true,
+        "cross_pair": "AUDCHF",
+        "formula": "AUDCAD \u00d7 CADCHF = AUDCHF",
+        "correlation_expected": "moderate_positive"
+      },
+      "AUDCAD_CADJPY": {
+        "relationship_type": "quote_base_cross",
+        "shared_currency": "CAD",
+        "can_compute_cross_rate": true,
+        "cross_pair": "AUDJPY",
+        "formula": "AUDCAD \u00d7 CADJPY = AUDJPY",
+        "correlation_expected": "moderate_positive"
+      },
+      "AUDCHF_CHFJPY": {
+        "relationship_type": "quote_base_cross",
+        "shared_currency": "CHF",
+        "can_compute_cross_rate": true,
+        "cross_pair": "AUDJPY",
+        "formula": "AUDCHF \u00d7 CHFJPY = AUDJPY",
+        "correlation_expected": "moderate_positive"
+      }
+    },
+    "independent": {
+      "AUDCAD_CHFJPY": {
+        "relationship_type": "independent",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": "low"
+      },
+      "AUDCAD_EURCHF": {
+        "relationship_type": "independent",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": "low"
+      },
+      "AUDCAD_EURGBP": {
+        "relationship_type": "independent",
+        "shared_currency": null,
+        "can_compute_cross_rate": false,
+        "correlation_expected": "low"
+      }
+    }
+  },
+  "matrix": {
+    "AUDCAD_AUDCAD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "AUDCAD_AUDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_AUDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADJPY",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_AUDNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_AUDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_CADCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "AUDCAD \u00d7 CADCHF = AUDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDCAD_CADJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "AUDCAD \u00d7 CADJPY = AUDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDCAD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_EURAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "AUDCAD \u00d7 EURAUD = EURCAD",
+      "correlation_expected": "inverse"
+    },
+    "AUDCAD_EURCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_GBPAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "AUDCAD \u00d7 GBPAUD = GBPCAD",
+      "correlation_expected": "inverse"
+    },
+    "AUDCAD_GBPCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_NZDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_USDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCAD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCAD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_AUDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_AUDCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "AUDCHF_AUDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_AUDNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_AUDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_CADCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "AUDCHF \u00d7 CHFJPY = AUDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDCHF_EURAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "AUDCHF \u00d7 EURAUD = EURCHF",
+      "correlation_expected": "inverse"
+    },
+    "AUDCHF_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_EURCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_GBPAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "AUDCHF \u00d7 GBPAUD = GBPCHF",
+      "correlation_expected": "inverse"
+    },
+    "AUDCHF_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_GBPCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_NZDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDCHF_USDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDCHF_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_AUDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_AUDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_AUDJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "AUDJPY_AUDNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_AUDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_EURAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "AUDJPY \u00d7 EURAUD = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "AUDJPY_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_GBPAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "AUDJPY \u00d7 GBPAUD = GBPJPY",
+      "correlation_expected": "inverse"
+    },
+    "AUDJPY_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDJPY_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_AUDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_AUDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_AUDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_AUDNZD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "AUDNZD_AUDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_EURAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURNZD",
+      "formula": "AUDNZD \u00d7 EURAUD = EURNZD",
+      "correlation_expected": "inverse"
+    },
+    "AUDNZD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_EURNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_GBPAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPNZD",
+      "formula": "AUDNZD \u00d7 GBPAUD = GBPNZD",
+      "correlation_expected": "inverse"
+    },
+    "AUDNZD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_GBPNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "AUDNZD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_NZDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCAD",
+      "formula": "AUDNZD \u00d7 NZDCAD = AUDCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDNZD_NZDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "AUDNZD \u00d7 NZDCHF = AUDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDNZD_NZDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "AUDNZD \u00d7 NZDJPY = AUDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDNZD_NZDUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDUSD",
+      "formula": "AUDNZD \u00d7 NZDUSD = AUDUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDNZD_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDNZD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_AUDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_AUDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_AUDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_AUDNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_AUDUSD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "AUDUSD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "AUDUSD \u00d7 EURAUD = EURUSD",
+      "correlation_expected": "inverse"
+    },
+    "AUDUSD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_EURUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_GBPAUD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPUSD",
+      "formula": "AUDUSD \u00d7 GBPAUD = GBPUSD",
+      "correlation_expected": "inverse"
+    },
+    "AUDUSD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_GBPUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "AUDUSD_NZDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "AUDUSD_USDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCAD",
+      "formula": "AUDUSD \u00d7 USDCAD = AUDCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDUSD_USDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "AUDUSD \u00d7 USDCHF = AUDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "AUDUSD_USDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "AUDUSD \u00d7 USDJPY = AUDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "CADCHF_AUDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "CADCHF \u00d7 AUDCAD = AUDCHF",
+      "correlation_expected": "inverse"
+    },
+    "CADCHF_AUDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADAUD",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_CADCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "CADCHF_CADJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "CADJPY",
+      "formula": "CADCHF \u00d7 CHFJPY = CADJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "CADCHF_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_EURCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "CADCHF \u00d7 EURCAD = EURCHF",
+      "correlation_expected": "inverse"
+    },
+    "CADCHF_EURCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADEUR",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_GBPCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "CADCHF \u00d7 GBPCAD = GBPCHF",
+      "correlation_expected": "inverse"
+    },
+    "CADCHF_GBPCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADGBP",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_NZDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCHF",
+      "formula": "CADCHF \u00d7 NZDCAD = NZDCHF",
+      "correlation_expected": "inverse"
+    },
+    "CADCHF_NZDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADNZD",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADCHF_USDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDCHF",
+      "formula": "CADCHF \u00d7 USDCAD = USDCHF",
+      "correlation_expected": "inverse"
+    },
+    "CADCHF_USDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "CADCHF_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_AUDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "CADJPY \u00d7 AUDCAD = AUDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CADJPY_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADAUD",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_CADCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_CADJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "CADJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_EURCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "CADJPY \u00d7 EURCAD = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "CADJPY_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADEUR",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_GBPCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "CADJPY \u00d7 GBPCAD = GBPJPY",
+      "correlation_expected": "inverse"
+    },
+    "CADJPY_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADGBP",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_NZDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "CADJPY \u00d7 NZDCAD = NZDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CADJPY_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADNZD",
+      "correlation_expected": "high_positive"
+    },
+    "CADJPY_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_USDCAD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDJPY",
+      "formula": "CADJPY \u00d7 USDCAD = USDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CADJPY_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CADJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_AUDCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "CHFJPY \u00d7 AUDCHF = AUDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFAUD",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_CADCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "CADJPY",
+      "formula": "CHFJPY \u00d7 CADCHF = CADJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_CHFJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "CHFJPY_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_EURCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "CHFJPY \u00d7 EURCHF = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFEUR",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_GBPCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "CHFJPY \u00d7 GBPCHF = GBPJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFGBP",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_NZDCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "CHFJPY \u00d7 NZDCHF = NZDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFNZD",
+      "correlation_expected": "high_positive"
+    },
+    "CHFJPY_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "CHFJPY_USDCHF": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDJPY",
+      "formula": "CHFJPY \u00d7 USDCHF = USDJPY",
+      "correlation_expected": "inverse"
+    },
+    "CHFJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_AUDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "EURAUD \u00d7 AUDCAD = EURCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURAUD_AUDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "EURAUD \u00d7 AUDCHF = EURCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURAUD_AUDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURAUD \u00d7 AUDJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURAUD_AUDNZD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURNZD",
+      "formula": "EURAUD \u00d7 AUDNZD = EURNZD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURAUD_AUDUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "EURAUD \u00d7 AUDUSD = EURUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURAUD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_EURAUD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURAUD_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_GBPAUD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURAUD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURAUD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_AUDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_CADCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "EURCAD \u00d7 CADCHF = EURCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURCAD_CADJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURCAD \u00d7 CADJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURCAD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_EURCAD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURCAD_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_GBPCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_NZDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_USDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCAD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCAD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_AUDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_CADCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURCHF \u00d7 CHFJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURCHF_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_EURCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURCHF_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_GBPCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_NZDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURCHF_USDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURCHF_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_EURGBP": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURGBP_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURGBP_GBPAUD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURAUD",
+      "formula": "EURGBP \u00d7 GBPAUD = EURAUD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_GBPCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "EURGBP \u00d7 GBPCAD = EURCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_GBPCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "EURGBP \u00d7 GBPCHF = EURCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_GBPJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURGBP \u00d7 GBPJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_GBPNZD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURNZD",
+      "formula": "EURGBP \u00d7 GBPNZD = EURNZD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_GBPUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "EURGBP \u00d7 GBPUSD = EURUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURGBP_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURGBP_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURJPY_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURJPY_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_AUDNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_EURNZD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURNZD_EURUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_GBPNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURNZD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_NZDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "EURNZD \u00d7 NZDCAD = EURCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURNZD_NZDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "EURNZD \u00d7 NZDCHF = EURCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURNZD_NZDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURNZD \u00d7 NZDJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURNZD_NZDUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "EURNZD \u00d7 NZDUSD = EURUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURNZD_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURNZD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_AUDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_EURAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURGBP": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "EUR",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_EURUSD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "EURUSD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_GBPUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURGBP",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "EURUSD_NZDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "EURNZD",
+      "correlation_expected": "high_positive"
+    },
+    "EURUSD_USDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "EURUSD \u00d7 USDCAD = EURCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURUSD_USDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "EURUSD \u00d7 USDCHF = EURCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "EURUSD_USDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "EURUSD \u00d7 USDJPY = EURJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_AUDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "GBPAUD \u00d7 AUDCAD = GBPCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_AUDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "GBPAUD \u00d7 AUDCHF = GBPCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_AUDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "GBPAUD \u00d7 AUDJPY = GBPJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_AUDNZD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPNZD",
+      "formula": "GBPAUD \u00d7 AUDNZD = GBPNZD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_AUDUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPUSD",
+      "formula": "GBPAUD \u00d7 AUDUSD = GBPUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPAUD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_EURAUD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "AUD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURAUD",
+      "formula": "GBPAUD \u00d7 EURGBP = EURAUD",
+      "correlation_expected": "inverse"
+    },
+    "GBPAUD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_GBPAUD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPAUD_GBPCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_GBPCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_GBPJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_GBPNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_GBPUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "AUDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPAUD_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPAUD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_AUDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_CADCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "GBPCAD \u00d7 CADCHF = GBPCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPCAD_CADJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "GBPCAD \u00d7 CADJPY = GBPJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPCAD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_EURCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "GBPCAD \u00d7 EURGBP = EURCAD",
+      "correlation_expected": "inverse"
+    },
+    "GBPCAD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_GBPAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_GBPCAD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPCAD_GBPCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_GBPJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADJPY",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_GBPNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_GBPUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_NZDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_USDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCAD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCAD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_AUDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_CADCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "GBPCHF \u00d7 CHFJPY = GBPJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPCHF_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_EURCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "GBPCHF \u00d7 EURGBP = EURCHF",
+      "correlation_expected": "inverse"
+    },
+    "GBPCHF_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_GBPAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_GBPCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_GBPCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPCHF_GBPJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_GBPNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_GBPUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_NZDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPCHF_USDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPCHF_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "GBPJPY \u00d7 EURGBP = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "GBPJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_GBPAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_GBPCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_GBPCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_GBPJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPJPY_GBPNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_GBPUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPJPY_NZDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_AUDNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURNZD",
+      "formula": "GBPNZD \u00d7 EURGBP = EURNZD",
+      "correlation_expected": "inverse"
+    },
+    "GBPNZD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_EURNZD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_GBPAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_GBPCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_GBPCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_GBPJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_GBPNZD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPNZD_GBPUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPNZD_NZDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "GBPNZD \u00d7 NZDCAD = GBPCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPNZD_NZDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "GBPNZD \u00d7 NZDCHF = GBPCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPNZD_NZDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "GBPNZD \u00d7 NZDJPY = GBPJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPNZD_NZDUSD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPUSD",
+      "formula": "GBPNZD \u00d7 NZDUSD = GBPUSD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPNZD_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPNZD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_AUDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURGBP": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "GBPUSD \u00d7 EURGBP = EURUSD",
+      "correlation_expected": "inverse"
+    },
+    "GBPUSD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_EURUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPEUR",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPAUD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPNZD": {
+      "relationship_type": "base_base",
+      "shared_currency": "GBP",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_GBPUSD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "GBPUSD_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "GBPUSD_NZDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "GBPNZD",
+      "correlation_expected": "high_positive"
+    },
+    "GBPUSD_USDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "GBPUSD \u00d7 USDCAD = GBPCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPUSD_USDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "GBPUSD \u00d7 USDCHF = GBPCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "GBPUSD_USDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "GBPUSD \u00d7 USDJPY = GBPJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDCAD_AUDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_AUDNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCAD",
+      "formula": "NZDCAD \u00d7 AUDNZD = AUDCAD",
+      "correlation_expected": "inverse"
+    },
+    "NZDCAD_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_CADCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCHF",
+      "formula": "NZDCAD \u00d7 CADCHF = NZDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDCAD_CADJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "NZDCAD \u00d7 CADJPY = NZDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDCAD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_EURCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_EURNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "NZDCAD \u00d7 EURNZD = EURCAD",
+      "correlation_expected": "inverse"
+    },
+    "NZDCAD_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_GBPCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_GBPNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "NZDCAD \u00d7 GBPNZD = GBPCAD",
+      "correlation_expected": "inverse"
+    },
+    "NZDCAD_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_NZDCAD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "NZDCAD_NZDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_NZDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADJPY",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_NZDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_USDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCAD_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCAD_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_AUDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_AUDNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "NZDCHF \u00d7 AUDNZD = AUDCHF",
+      "correlation_expected": "inverse"
+    },
+    "NZDCHF_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_CADCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "NZDCHF \u00d7 CHFJPY = NZDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDCHF_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_EURCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_EURNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "NZDCHF \u00d7 EURNZD = EURCHF",
+      "correlation_expected": "inverse"
+    },
+    "NZDCHF_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_GBPCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_GBPNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "NZDCHF \u00d7 GBPNZD = GBPCHF",
+      "correlation_expected": "inverse"
+    },
+    "NZDCHF_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_NZDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_NZDCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "NZDCHF_NZDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_NZDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDCHF_USDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDCHF_USDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_AUDNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "NZDJPY \u00d7 AUDNZD = AUDJPY",
+      "correlation_expected": "inverse"
+    },
+    "NZDJPY_AUDUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_EURNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "NZDJPY \u00d7 EURNZD = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "NZDJPY_EURUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_GBPNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "NZDJPY \u00d7 GBPNZD = GBPJPY",
+      "correlation_expected": "inverse"
+    },
+    "NZDJPY_GBPUSD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_NZDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCAD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_NZDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_NZDJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "NZDJPY_NZDUSD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDJPY_USDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_USDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDJPY_USDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDUSD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_AUDNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDUSD",
+      "formula": "NZDUSD \u00d7 AUDNZD = AUDUSD",
+      "correlation_expected": "inverse"
+    },
+    "NZDUSD_AUDUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_EURNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURUSD",
+      "formula": "NZDUSD \u00d7 EURNZD = EURUSD",
+      "correlation_expected": "inverse"
+    },
+    "NZDUSD_EURUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "NZDUSD_GBPNZD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPUSD",
+      "formula": "NZDUSD \u00d7 GBPNZD = GBPUSD",
+      "correlation_expected": "inverse"
+    },
+    "NZDUSD_GBPUSD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "NZDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_NZDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_NZDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_NZDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "NZD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDJPY",
+      "correlation_expected": "high_positive"
+    },
+    "NZDUSD_NZDUSD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "NZDUSD_USDCAD": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCAD",
+      "formula": "NZDUSD \u00d7 USDCAD = NZDCAD",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDUSD_USDCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCHF",
+      "formula": "NZDUSD \u00d7 USDCHF = NZDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "NZDUSD_USDJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "NZDUSD \u00d7 USDJPY = NZDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "USDCAD_AUDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCAD_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_AUDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCAD",
+      "formula": "USDCAD \u00d7 AUDUSD = AUDCAD",
+      "correlation_expected": "inverse"
+    },
+    "USDCAD_CADCHF": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDCHF",
+      "formula": "USDCAD \u00d7 CADCHF = USDCHF",
+      "correlation_expected": "moderate_positive"
+    },
+    "USDCAD_CADJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDJPY",
+      "formula": "USDCAD \u00d7 CADJPY = USDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "USDCAD_CHFJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "USDCAD_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_EURUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCAD",
+      "formula": "USDCAD \u00d7 EURUSD = EURCAD",
+      "correlation_expected": "inverse"
+    },
+    "USDCAD_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_GBPCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "USDCAD_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_GBPUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCAD",
+      "formula": "USDCAD \u00d7 GBPUSD = GBPCAD",
+      "correlation_expected": "inverse"
+    },
+    "USDCAD_NZDCAD": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CAD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCAD_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCAD_NZDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCAD",
+      "formula": "USDCAD \u00d7 NZDUSD = NZDCAD",
+      "correlation_expected": "inverse"
+    },
+    "USDCAD_USDCAD": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "USDCAD_USDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADCHF",
+      "correlation_expected": "high_positive"
+    },
+    "USDCAD_USDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CADJPY",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_AUDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_AUDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_AUDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDCHF",
+      "formula": "USDCHF \u00d7 AUDUSD = AUDCHF",
+      "correlation_expected": "inverse"
+    },
+    "USDCHF_CADCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_CADJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_CHFJPY": {
+      "relationship_type": "quote_base_cross",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "cross_pair": "USDJPY",
+      "formula": "USDCHF \u00d7 CHFJPY = USDJPY",
+      "correlation_expected": "moderate_positive"
+    },
+    "USDCHF_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_EURCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_EURJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_EURUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURCHF",
+      "formula": "USDCHF \u00d7 EURUSD = EURCHF",
+      "correlation_expected": "inverse"
+    },
+    "USDCHF_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_GBPCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_GBPJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_GBPUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPCHF",
+      "formula": "USDCHF \u00d7 GBPUSD = GBPCHF",
+      "correlation_expected": "inverse"
+    },
+    "USDCHF_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_NZDCHF": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "CHF",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_NZDJPY": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDCHF_NZDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDCHF",
+      "formula": "USDCHF \u00d7 NZDUSD = NZDCHF",
+      "correlation_expected": "inverse"
+    },
+    "USDCHF_USDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFCAD",
+      "correlation_expected": "high_positive"
+    },
+    "USDCHF_USDCHF": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    },
+    "USDCHF_USDJPY": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "CHFJPY",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_AUDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_AUDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_AUDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDAUD",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_AUDNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_AUDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "AUDJPY",
+      "formula": "USDJPY \u00d7 AUDUSD = AUDJPY",
+      "correlation_expected": "inverse"
+    },
+    "USDJPY_CADCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_CADJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCAD",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_CHFJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDCHF",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_EURAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_EURCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_EURCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_EURGBP": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_EURJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDEUR",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_EURNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_EURUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "EURJPY",
+      "formula": "USDJPY \u00d7 EURUSD = EURJPY",
+      "correlation_expected": "inverse"
+    },
+    "USDJPY_GBPAUD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_GBPCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_GBPCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_GBPJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDGBP",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_GBPNZD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_GBPUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "GBPJPY",
+      "formula": "USDJPY \u00d7 GBPUSD = GBPJPY",
+      "correlation_expected": "inverse"
+    },
+    "USDJPY_NZDCAD": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_NZDCHF": {
+      "relationship_type": "independent",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": "low"
+    },
+    "USDJPY_NZDJPY": {
+      "relationship_type": "quote_quote",
+      "shared_currency": "JPY",
+      "can_compute_cross_rate": true,
+      "implied_pair": "USDNZD",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_NZDUSD": {
+      "relationship_type": "base_quote_cross",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "cross_pair": "NZDJPY",
+      "formula": "USDJPY \u00d7 NZDUSD = NZDJPY",
+      "correlation_expected": "inverse"
+    },
+    "USDJPY_USDCAD": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCAD",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_USDCHF": {
+      "relationship_type": "base_base",
+      "shared_currency": "USD",
+      "can_compute_cross_rate": true,
+      "implied_pair": "JPYCHF",
+      "correlation_expected": "high_positive"
+    },
+    "USDJPY_USDJPY": {
+      "relationship_type": "identical",
+      "shared_currency": null,
+      "can_compute_cross_rate": false,
+      "correlation_expected": 1.0
+    }
+  }
+}

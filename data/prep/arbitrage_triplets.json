@@ -1,0 +1,1656 @@
+{
+  "description": "Valid currency triplets for triangular arbitrage detection",
+  "total_triplets": 56,
+  "total_currencies": 8,
+  "total_pairs": 28,
+  "created": "2025-11-13",
+  "purpose": "Preparation for Stage 2.4 (Arbitrage Detection)",
+  "triplet_count_by_currency": {
+    "EUR": 21,
+    "USD": 21,
+    "GBP": 21,
+    "JPY": 21,
+    "AUD": 21,
+    "NZD": 21,
+    "CAD": 21,
+    "CHF": 21
+  },
+  "example": {
+    "triplet": "EUR-USD-GBP",
+    "pairs": [
+      "EURUSD",
+      "GBPUSD",
+      "EURGBP"
+    ],
+    "calculation": {
+      "step_1": "1 EUR \u00d7 EURUSD_rate = X USD",
+      "step_2": "X USD \u00f7 GBPUSD_rate = Y GBP",
+      "step_3": "Y GBP \u00d7 EURGBP_rate = Z EUR",
+      "arbitrage_profit": "(Z - 1) \u00d7 100 = profit %",
+      "example_values": {
+        "EURUSD": 1.1,
+        "GBPUSD": 1.25,
+        "EURGBP": 0.88,
+        "calculation": [
+          "1 EUR \u00d7 1.1000 = 1.1000 USD",
+          "1.1000 USD \u00f7 1.2500 = 0.8800 GBP",
+          "0.8800 GBP \u00d7 0.8800 = 0.7744 EUR",
+          "Arbitrage profit: (0.7744 - 1) \u00d7 100 = -22.56% LOSS (no arbitrage)"
+        ]
+      }
+    }
+  },
+  "arbitrage_detection_algorithm": {
+    "method": "triangular_arbitrage",
+    "description": "Detect arbitrage opportunities by computing round-trip exchange rates",
+    "steps": [
+      "1. For each triplet, fetch current M1 rates for all 3 pairs",
+      "2. Convert 1 unit of base currency through the triplet",
+      "3. Calculate final amount after round trip",
+      "4. Arbitrage exists if final > 1.0 (before transaction costs)",
+      "5. Subtract typical transaction costs (0.1-0.5% per trade)",
+      "6. Flag as arbitrage opportunity if net profit > threshold (e.g., 0.5%)"
+    ],
+    "transaction_cost_model": {
+      "bid_ask_spread": "0.0001 - 0.0005 per trade (1-5 pips)",
+      "typical_cost": "0.3% per round trip (3 trades)",
+      "min_profit_threshold": "0.5% (to justify execution)"
+    },
+    "feature_output": {
+      "arbitrage_profit_pct": "Percentage profit from round-trip",
+      "arbitrage_opportunity": "Boolean flag if profit > threshold",
+      "arbitrage_direction": "Optimal direction (clockwise or counter-clockwise)",
+      "arbitrage_max_profit": "Maximum profit considering both directions"
+    }
+  },
+  "triplets": [
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "GBP"
+      ],
+      "pairs": [
+        "EURUSD",
+        "GBPUSD",
+        "EURGBP"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00f7 GBPUSD_rate = Y GBP",
+        "Y GBP \u00f7 EURGBP_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-GBP"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "JPY"
+      ],
+      "pairs": [
+        "EURUSD",
+        "USDJPY",
+        "EURJPY"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00d7 USDJPY_rate = Y JPY",
+        "Y JPY \u00f7 EURJPY_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-JPY"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "AUD"
+      ],
+      "pairs": [
+        "EURUSD",
+        "AUDUSD",
+        "EURAUD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00f7 AUDUSD_rate = Y AUD",
+        "Y AUD \u00f7 EURAUD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-AUD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "NZD"
+      ],
+      "pairs": [
+        "EURUSD",
+        "NZDUSD",
+        "EURNZD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00f7 NZDUSD_rate = Y NZD",
+        "Y NZD \u00f7 EURNZD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-NZD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "CAD"
+      ],
+      "pairs": [
+        "EURUSD",
+        "USDCAD",
+        "EURCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00d7 USDCAD_rate = Y CAD",
+        "Y CAD \u00f7 EURCAD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-CAD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "USD",
+        "CHF"
+      ],
+      "pairs": [
+        "EURUSD",
+        "USDCHF",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURUSD_rate = X USD",
+        "X USD \u00d7 USDCHF_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-USD-CHF"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "GBP",
+        "JPY"
+      ],
+      "pairs": [
+        "EURGBP",
+        "GBPJPY",
+        "EURJPY"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURGBP_rate = X GBP",
+        "X GBP \u00d7 GBPJPY_rate = Y JPY",
+        "Y JPY \u00f7 EURJPY_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-GBP-JPY"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "GBP",
+        "AUD"
+      ],
+      "pairs": [
+        "EURGBP",
+        "GBPAUD",
+        "EURAUD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURGBP_rate = X GBP",
+        "X GBP \u00d7 GBPAUD_rate = Y AUD",
+        "Y AUD \u00f7 EURAUD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-GBP-AUD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "GBP",
+        "NZD"
+      ],
+      "pairs": [
+        "EURGBP",
+        "GBPNZD",
+        "EURNZD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURGBP_rate = X GBP",
+        "X GBP \u00d7 GBPNZD_rate = Y NZD",
+        "Y NZD \u00f7 EURNZD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-GBP-NZD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "GBP",
+        "CAD"
+      ],
+      "pairs": [
+        "EURGBP",
+        "GBPCAD",
+        "EURCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURGBP_rate = X GBP",
+        "X GBP \u00d7 GBPCAD_rate = Y CAD",
+        "Y CAD \u00f7 EURCAD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-GBP-CAD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "GBP",
+        "CHF"
+      ],
+      "pairs": [
+        "EURGBP",
+        "GBPCHF",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURGBP_rate = X GBP",
+        "X GBP \u00d7 GBPCHF_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-GBP-CHF"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "JPY",
+        "AUD"
+      ],
+      "pairs": [
+        "EURJPY",
+        "AUDJPY",
+        "EURAUD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURJPY_rate = X JPY",
+        "X JPY \u00f7 AUDJPY_rate = Y AUD",
+        "Y AUD \u00f7 EURAUD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-JPY-AUD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "JPY",
+        "NZD"
+      ],
+      "pairs": [
+        "EURJPY",
+        "NZDJPY",
+        "EURNZD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURJPY_rate = X JPY",
+        "X JPY \u00f7 NZDJPY_rate = Y NZD",
+        "Y NZD \u00f7 EURNZD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-JPY-NZD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "JPY",
+        "CAD"
+      ],
+      "pairs": [
+        "EURJPY",
+        "CADJPY",
+        "EURCAD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURJPY_rate = X JPY",
+        "X JPY \u00f7 CADJPY_rate = Y CAD",
+        "Y CAD \u00f7 EURCAD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-JPY-CAD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "JPY",
+        "CHF"
+      ],
+      "pairs": [
+        "EURJPY",
+        "CHFJPY",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURJPY_rate = X JPY",
+        "X JPY \u00f7 CHFJPY_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-JPY-CHF"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "AUD",
+        "NZD"
+      ],
+      "pairs": [
+        "EURAUD",
+        "AUDNZD",
+        "EURNZD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURAUD_rate = X AUD",
+        "X AUD \u00d7 AUDNZD_rate = Y NZD",
+        "Y NZD \u00f7 EURNZD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-AUD-NZD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "AUD",
+        "CAD"
+      ],
+      "pairs": [
+        "EURAUD",
+        "AUDCAD",
+        "EURCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURAUD_rate = X AUD",
+        "X AUD \u00d7 AUDCAD_rate = Y CAD",
+        "Y CAD \u00f7 EURCAD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-AUD-CAD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "AUD",
+        "CHF"
+      ],
+      "pairs": [
+        "EURAUD",
+        "AUDCHF",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURAUD_rate = X AUD",
+        "X AUD \u00d7 AUDCHF_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-AUD-CHF"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "NZD",
+        "CAD"
+      ],
+      "pairs": [
+        "EURNZD",
+        "NZDCAD",
+        "EURCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCAD_rate = Y CAD",
+        "Y CAD \u00f7 EURCAD_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-NZD-CAD"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "NZD",
+        "CHF"
+      ],
+      "pairs": [
+        "EURNZD",
+        "NZDCHF",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCHF_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-NZD-CHF"
+    },
+    {
+      "currencies": [
+        "EUR",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "EURCAD",
+        "CADCHF",
+        "EURCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 EUR \u00d7 EURCAD_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00f7 EURCHF_rate = Z EUR"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "EUR-CAD-CHF"
+    },
+    {
+      "currencies": [
+        "USD",
+        "GBP",
+        "JPY"
+      ],
+      "pairs": [
+        "GBPUSD",
+        "GBPJPY",
+        "USDJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 GBPUSD_rate = X GBP",
+        "X GBP \u00d7 GBPJPY_rate = Y JPY",
+        "Y JPY \u00f7 USDJPY_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-GBP-JPY"
+    },
+    {
+      "currencies": [
+        "USD",
+        "GBP",
+        "AUD"
+      ],
+      "pairs": [
+        "GBPUSD",
+        "GBPAUD",
+        "AUDUSD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 USD \u00f7 GBPUSD_rate = X GBP",
+        "X GBP \u00d7 GBPAUD_rate = Y AUD",
+        "Y AUD \u00d7 AUDUSD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-GBP-AUD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "GBP",
+        "NZD"
+      ],
+      "pairs": [
+        "GBPUSD",
+        "GBPNZD",
+        "NZDUSD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 USD \u00f7 GBPUSD_rate = X GBP",
+        "X GBP \u00d7 GBPNZD_rate = Y NZD",
+        "Y NZD \u00d7 NZDUSD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-GBP-NZD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "GBP",
+        "CAD"
+      ],
+      "pairs": [
+        "GBPUSD",
+        "GBPCAD",
+        "USDCAD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 GBPUSD_rate = X GBP",
+        "X GBP \u00d7 GBPCAD_rate = Y CAD",
+        "Y CAD \u00f7 USDCAD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-GBP-CAD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "GBP",
+        "CHF"
+      ],
+      "pairs": [
+        "GBPUSD",
+        "GBPCHF",
+        "USDCHF"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 GBPUSD_rate = X GBP",
+        "X GBP \u00d7 GBPCHF_rate = Y CHF",
+        "Y CHF \u00f7 USDCHF_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-GBP-CHF"
+    },
+    {
+      "currencies": [
+        "USD",
+        "JPY",
+        "AUD"
+      ],
+      "pairs": [
+        "USDJPY",
+        "AUDJPY",
+        "AUDUSD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "direct"
+      ],
+      "formula": [
+        "1 USD \u00d7 USDJPY_rate = X JPY",
+        "X JPY \u00f7 AUDJPY_rate = Y AUD",
+        "Y AUD \u00d7 AUDUSD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-JPY-AUD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "JPY",
+        "NZD"
+      ],
+      "pairs": [
+        "USDJPY",
+        "NZDJPY",
+        "NZDUSD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "direct"
+      ],
+      "formula": [
+        "1 USD \u00d7 USDJPY_rate = X JPY",
+        "X JPY \u00f7 NZDJPY_rate = Y NZD",
+        "Y NZD \u00d7 NZDUSD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-JPY-NZD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "JPY",
+        "CAD"
+      ],
+      "pairs": [
+        "USDJPY",
+        "CADJPY",
+        "USDCAD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00d7 USDJPY_rate = X JPY",
+        "X JPY \u00f7 CADJPY_rate = Y CAD",
+        "Y CAD \u00f7 USDCAD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-JPY-CAD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "JPY",
+        "CHF"
+      ],
+      "pairs": [
+        "USDJPY",
+        "CHFJPY",
+        "USDCHF"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00d7 USDJPY_rate = X JPY",
+        "X JPY \u00f7 CHFJPY_rate = Y CHF",
+        "Y CHF \u00f7 USDCHF_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-JPY-CHF"
+    },
+    {
+      "currencies": [
+        "USD",
+        "AUD",
+        "NZD"
+      ],
+      "pairs": [
+        "AUDUSD",
+        "AUDNZD",
+        "NZDUSD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 USD \u00f7 AUDUSD_rate = X AUD",
+        "X AUD \u00d7 AUDNZD_rate = Y NZD",
+        "Y NZD \u00d7 NZDUSD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-AUD-NZD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "AUD",
+        "CAD"
+      ],
+      "pairs": [
+        "AUDUSD",
+        "AUDCAD",
+        "USDCAD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 AUDUSD_rate = X AUD",
+        "X AUD \u00d7 AUDCAD_rate = Y CAD",
+        "Y CAD \u00f7 USDCAD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-AUD-CAD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "AUD",
+        "CHF"
+      ],
+      "pairs": [
+        "AUDUSD",
+        "AUDCHF",
+        "USDCHF"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 AUDUSD_rate = X AUD",
+        "X AUD \u00d7 AUDCHF_rate = Y CHF",
+        "Y CHF \u00f7 USDCHF_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-AUD-CHF"
+    },
+    {
+      "currencies": [
+        "USD",
+        "NZD",
+        "CAD"
+      ],
+      "pairs": [
+        "NZDUSD",
+        "NZDCAD",
+        "USDCAD"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 NZDUSD_rate = X NZD",
+        "X NZD \u00d7 NZDCAD_rate = Y CAD",
+        "Y CAD \u00f7 USDCAD_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-NZD-CAD"
+    },
+    {
+      "currencies": [
+        "USD",
+        "NZD",
+        "CHF"
+      ],
+      "pairs": [
+        "NZDUSD",
+        "NZDCHF",
+        "USDCHF"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00f7 NZDUSD_rate = X NZD",
+        "X NZD \u00d7 NZDCHF_rate = Y CHF",
+        "Y CHF \u00f7 USDCHF_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-NZD-CHF"
+    },
+    {
+      "currencies": [
+        "USD",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "USDCAD",
+        "CADCHF",
+        "USDCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 USD \u00d7 USDCAD_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00f7 USDCHF_rate = Z USD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "USD-CAD-CHF"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "JPY",
+        "AUD"
+      ],
+      "pairs": [
+        "GBPJPY",
+        "AUDJPY",
+        "GBPAUD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPJPY_rate = X JPY",
+        "X JPY \u00f7 AUDJPY_rate = Y AUD",
+        "Y AUD \u00f7 GBPAUD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-JPY-AUD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "JPY",
+        "NZD"
+      ],
+      "pairs": [
+        "GBPJPY",
+        "NZDJPY",
+        "GBPNZD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPJPY_rate = X JPY",
+        "X JPY \u00f7 NZDJPY_rate = Y NZD",
+        "Y NZD \u00f7 GBPNZD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-JPY-NZD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "JPY",
+        "CAD"
+      ],
+      "pairs": [
+        "GBPJPY",
+        "CADJPY",
+        "GBPCAD"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPJPY_rate = X JPY",
+        "X JPY \u00f7 CADJPY_rate = Y CAD",
+        "Y CAD \u00f7 GBPCAD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-JPY-CAD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "JPY",
+        "CHF"
+      ],
+      "pairs": [
+        "GBPJPY",
+        "CHFJPY",
+        "GBPCHF"
+      ],
+      "directions": [
+        "direct",
+        "inverse",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPJPY_rate = X JPY",
+        "X JPY \u00f7 CHFJPY_rate = Y CHF",
+        "Y CHF \u00f7 GBPCHF_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-JPY-CHF"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "AUD",
+        "NZD"
+      ],
+      "pairs": [
+        "GBPAUD",
+        "AUDNZD",
+        "GBPNZD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPAUD_rate = X AUD",
+        "X AUD \u00d7 AUDNZD_rate = Y NZD",
+        "Y NZD \u00f7 GBPNZD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-AUD-NZD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "AUD",
+        "CAD"
+      ],
+      "pairs": [
+        "GBPAUD",
+        "AUDCAD",
+        "GBPCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPAUD_rate = X AUD",
+        "X AUD \u00d7 AUDCAD_rate = Y CAD",
+        "Y CAD \u00f7 GBPCAD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-AUD-CAD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "AUD",
+        "CHF"
+      ],
+      "pairs": [
+        "GBPAUD",
+        "AUDCHF",
+        "GBPCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPAUD_rate = X AUD",
+        "X AUD \u00d7 AUDCHF_rate = Y CHF",
+        "Y CHF \u00f7 GBPCHF_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-AUD-CHF"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "NZD",
+        "CAD"
+      ],
+      "pairs": [
+        "GBPNZD",
+        "NZDCAD",
+        "GBPCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCAD_rate = Y CAD",
+        "Y CAD \u00f7 GBPCAD_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-NZD-CAD"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "NZD",
+        "CHF"
+      ],
+      "pairs": [
+        "GBPNZD",
+        "NZDCHF",
+        "GBPCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCHF_rate = Y CHF",
+        "Y CHF \u00f7 GBPCHF_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-NZD-CHF"
+    },
+    {
+      "currencies": [
+        "GBP",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "GBPCAD",
+        "CADCHF",
+        "GBPCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 GBP \u00d7 GBPCAD_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00f7 GBPCHF_rate = Z GBP"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "GBP-CAD-CHF"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "AUD",
+        "NZD"
+      ],
+      "pairs": [
+        "AUDJPY",
+        "AUDNZD",
+        "NZDJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 AUDJPY_rate = X AUD",
+        "X AUD \u00d7 AUDNZD_rate = Y NZD",
+        "Y NZD \u00d7 NZDJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-AUD-NZD"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "AUD",
+        "CAD"
+      ],
+      "pairs": [
+        "AUDJPY",
+        "AUDCAD",
+        "CADJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 AUDJPY_rate = X AUD",
+        "X AUD \u00d7 AUDCAD_rate = Y CAD",
+        "Y CAD \u00d7 CADJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-AUD-CAD"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "AUD",
+        "CHF"
+      ],
+      "pairs": [
+        "AUDJPY",
+        "AUDCHF",
+        "CHFJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 AUDJPY_rate = X AUD",
+        "X AUD \u00d7 AUDCHF_rate = Y CHF",
+        "Y CHF \u00d7 CHFJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-AUD-CHF"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "NZD",
+        "CAD"
+      ],
+      "pairs": [
+        "NZDJPY",
+        "NZDCAD",
+        "CADJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 NZDJPY_rate = X NZD",
+        "X NZD \u00d7 NZDCAD_rate = Y CAD",
+        "Y CAD \u00d7 CADJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-NZD-CAD"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "NZD",
+        "CHF"
+      ],
+      "pairs": [
+        "NZDJPY",
+        "NZDCHF",
+        "CHFJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 NZDJPY_rate = X NZD",
+        "X NZD \u00d7 NZDCHF_rate = Y CHF",
+        "Y CHF \u00d7 CHFJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-NZD-CHF"
+    },
+    {
+      "currencies": [
+        "JPY",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "CADJPY",
+        "CADCHF",
+        "CHFJPY"
+      ],
+      "directions": [
+        "inverse",
+        "direct",
+        "direct"
+      ],
+      "formula": [
+        "1 JPY \u00f7 CADJPY_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00d7 CHFJPY_rate = Z JPY"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "JPY-CAD-CHF"
+    },
+    {
+      "currencies": [
+        "AUD",
+        "NZD",
+        "CAD"
+      ],
+      "pairs": [
+        "AUDNZD",
+        "NZDCAD",
+        "AUDCAD"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 AUD \u00d7 AUDNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCAD_rate = Y CAD",
+        "Y CAD \u00f7 AUDCAD_rate = Z AUD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "AUD-NZD-CAD"
+    },
+    {
+      "currencies": [
+        "AUD",
+        "NZD",
+        "CHF"
+      ],
+      "pairs": [
+        "AUDNZD",
+        "NZDCHF",
+        "AUDCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 AUD \u00d7 AUDNZD_rate = X NZD",
+        "X NZD \u00d7 NZDCHF_rate = Y CHF",
+        "Y CHF \u00f7 AUDCHF_rate = Z AUD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "AUD-NZD-CHF"
+    },
+    {
+      "currencies": [
+        "AUD",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "AUDCAD",
+        "CADCHF",
+        "AUDCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 AUD \u00d7 AUDCAD_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00f7 AUDCHF_rate = Z AUD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "AUD-CAD-CHF"
+    },
+    {
+      "currencies": [
+        "NZD",
+        "CAD",
+        "CHF"
+      ],
+      "pairs": [
+        "NZDCAD",
+        "CADCHF",
+        "NZDCHF"
+      ],
+      "directions": [
+        "direct",
+        "direct",
+        "inverse"
+      ],
+      "formula": [
+        "1 NZD \u00d7 NZDCAD_rate = X CAD",
+        "X CAD \u00d7 CADCHF_rate = Y CHF",
+        "Y CHF \u00f7 NZDCHF_rate = Z NZD"
+      ],
+      "arbitrage_condition": "Z > 1.0 (after transaction costs)",
+      "triplet_name": "NZD-CAD-CHF"
+    }
+  ],
+  "triplets_by_currency": {
+    "EUR": [
+      "EUR-USD-GBP",
+      "EUR-USD-JPY",
+      "EUR-USD-AUD",
+      "EUR-USD-NZD",
+      "EUR-USD-CAD",
+      "EUR-USD-CHF",
+      "EUR-GBP-JPY",
+      "EUR-GBP-AUD",
+      "EUR-GBP-NZD",
+      "EUR-GBP-CAD",
+      "EUR-GBP-CHF",
+      "EUR-JPY-AUD",
+      "EUR-JPY-NZD",
+      "EUR-JPY-CAD",
+      "EUR-JPY-CHF",
+      "EUR-AUD-NZD",
+      "EUR-AUD-CAD",
+      "EUR-AUD-CHF",
+      "EUR-NZD-CAD",
+      "EUR-NZD-CHF",
+      "EUR-CAD-CHF"
+    ],
+    "USD": [
+      "EUR-USD-GBP",
+      "EUR-USD-JPY",
+      "EUR-USD-AUD",
+      "EUR-USD-NZD",
+      "EUR-USD-CAD",
+      "EUR-USD-CHF",
+      "USD-GBP-JPY",
+      "USD-GBP-AUD",
+      "USD-GBP-NZD",
+      "USD-GBP-CAD",
+      "USD-GBP-CHF",
+      "USD-JPY-AUD",
+      "USD-JPY-NZD",
+      "USD-JPY-CAD",
+      "USD-JPY-CHF",
+      "USD-AUD-NZD",
+      "USD-AUD-CAD",
+      "USD-AUD-CHF",
+      "USD-NZD-CAD",
+      "USD-NZD-CHF",
+      "USD-CAD-CHF"
+    ],
+    "GBP": [
+      "EUR-USD-GBP",
+      "EUR-GBP-JPY",
+      "EUR-GBP-AUD",
+      "EUR-GBP-NZD",
+      "EUR-GBP-CAD",
+      "EUR-GBP-CHF",
+      "USD-GBP-JPY",
+      "USD-GBP-AUD",
+      "USD-GBP-NZD",
+      "USD-GBP-CAD",
+      "USD-GBP-CHF",
+      "GBP-JPY-AUD",
+      "GBP-JPY-NZD",
+      "GBP-JPY-CAD",
+      "GBP-JPY-CHF",
+      "GBP-AUD-NZD",
+      "GBP-AUD-CAD",
+      "GBP-AUD-CHF",
+      "GBP-NZD-CAD",
+      "GBP-NZD-CHF",
+      "GBP-CAD-CHF"
+    ],
+    "JPY": [
+      "EUR-USD-JPY",
+      "EUR-GBP-JPY",
+      "EUR-JPY-AUD",
+      "EUR-JPY-NZD",
+      "EUR-JPY-CAD",
+      "EUR-JPY-CHF",
+      "USD-GBP-JPY",
+      "USD-JPY-AUD",
+      "USD-JPY-NZD",
+      "USD-JPY-CAD",
+      "USD-JPY-CHF",
+      "GBP-JPY-AUD",
+      "GBP-JPY-NZD",
+      "GBP-JPY-CAD",
+      "GBP-JPY-CHF",
+      "JPY-AUD-NZD",
+      "JPY-AUD-CAD",
+      "JPY-AUD-CHF",
+      "JPY-NZD-CAD",
+      "JPY-NZD-CHF",
+      "JPY-CAD-CHF"
+    ],
+    "AUD": [
+      "EUR-USD-AUD",
+      "EUR-GBP-AUD",
+      "EUR-JPY-AUD",
+      "EUR-AUD-NZD",
+      "EUR-AUD-CAD",
+      "EUR-AUD-CHF",
+      "USD-GBP-AUD",
+      "USD-JPY-AUD",
+      "USD-AUD-NZD",
+      "USD-AUD-CAD",
+      "USD-AUD-CHF",
+      "GBP-JPY-AUD",
+      "GBP-AUD-NZD",
+      "GBP-AUD-CAD",
+      "GBP-AUD-CHF",
+      "JPY-AUD-NZD",
+      "JPY-AUD-CAD",
+      "JPY-AUD-CHF",
+      "AUD-NZD-CAD",
+      "AUD-NZD-CHF",
+      "AUD-CAD-CHF"
+    ],
+    "NZD": [
+      "EUR-USD-NZD",
+      "EUR-GBP-NZD",
+      "EUR-JPY-NZD",
+      "EUR-AUD-NZD",
+      "EUR-NZD-CAD",
+      "EUR-NZD-CHF",
+      "USD-GBP-NZD",
+      "USD-JPY-NZD",
+      "USD-AUD-NZD",
+      "USD-NZD-CAD",
+      "USD-NZD-CHF",
+      "GBP-JPY-NZD",
+      "GBP-AUD-NZD",
+      "GBP-NZD-CAD",
+      "GBP-NZD-CHF",
+      "JPY-AUD-NZD",
+      "JPY-NZD-CAD",
+      "JPY-NZD-CHF",
+      "AUD-NZD-CAD",
+      "AUD-NZD-CHF",
+      "NZD-CAD-CHF"
+    ],
+    "CAD": [
+      "EUR-USD-CAD",
+      "EUR-GBP-CAD",
+      "EUR-JPY-CAD",
+      "EUR-AUD-CAD",
+      "EUR-NZD-CAD",
+      "EUR-CAD-CHF",
+      "USD-GBP-CAD",
+      "USD-JPY-CAD",
+      "USD-AUD-CAD",
+      "USD-NZD-CAD",
+      "USD-CAD-CHF",
+      "GBP-JPY-CAD",
+      "GBP-AUD-CAD",
+      "GBP-NZD-CAD",
+      "GBP-CAD-CHF",
+      "JPY-AUD-CAD",
+      "JPY-NZD-CAD",
+      "JPY-CAD-CHF",
+      "AUD-NZD-CAD",
+      "AUD-CAD-CHF",
+      "NZD-CAD-CHF"
+    ],
+    "CHF": [
+      "EUR-USD-CHF",
+      "EUR-GBP-CHF",
+      "EUR-JPY-CHF",
+      "EUR-AUD-CHF",
+      "EUR-NZD-CHF",
+      "EUR-CAD-CHF",
+      "USD-GBP-CHF",
+      "USD-JPY-CHF",
+      "USD-AUD-CHF",
+      "USD-NZD-CHF",
+      "USD-CAD-CHF",
+      "GBP-JPY-CHF",
+      "GBP-AUD-CHF",
+      "GBP-NZD-CHF",
+      "GBP-CAD-CHF",
+      "JPY-AUD-CHF",
+      "JPY-NZD-CHF",
+      "JPY-CAD-CHF",
+      "AUD-NZD-CHF",
+      "AUD-CAD-CHF",
+      "NZD-CAD-CHF"
+    ]
+  },
+  "triplet_index": {
+    "EUR-USD-GBP": 0,
+    "EUR-USD-JPY": 1,
+    "EUR-USD-AUD": 2,
+    "EUR-USD-NZD": 3,
+    "EUR-USD-CAD": 4,
+    "EUR-USD-CHF": 5,
+    "EUR-GBP-JPY": 6,
+    "EUR-GBP-AUD": 7,
+    "EUR-GBP-NZD": 8,
+    "EUR-GBP-CAD": 9,
+    "EUR-GBP-CHF": 10,
+    "EUR-JPY-AUD": 11,
+    "EUR-JPY-NZD": 12,
+    "EUR-JPY-CAD": 13,
+    "EUR-JPY-CHF": 14,
+    "EUR-AUD-NZD": 15,
+    "EUR-AUD-CAD": 16,
+    "EUR-AUD-CHF": 17,
+    "EUR-NZD-CAD": 18,
+    "EUR-NZD-CHF": 19,
+    "EUR-CAD-CHF": 20,
+    "USD-GBP-JPY": 21,
+    "USD-GBP-AUD": 22,
+    "USD-GBP-NZD": 23,
+    "USD-GBP-CAD": 24,
+    "USD-GBP-CHF": 25,
+    "USD-JPY-AUD": 26,
+    "USD-JPY-NZD": 27,
+    "USD-JPY-CAD": 28,
+    "USD-JPY-CHF": 29,
+    "USD-AUD-NZD": 30,
+    "USD-AUD-CAD": 31,
+    "USD-AUD-CHF": 32,
+    "USD-NZD-CAD": 33,
+    "USD-NZD-CHF": 34,
+    "USD-CAD-CHF": 35,
+    "GBP-JPY-AUD": 36,
+    "GBP-JPY-NZD": 37,
+    "GBP-JPY-CAD": 38,
+    "GBP-JPY-CHF": 39,
+    "GBP-AUD-NZD": 40,
+    "GBP-AUD-CAD": 41,
+    "GBP-AUD-CHF": 42,
+    "GBP-NZD-CAD": 43,
+    "GBP-NZD-CHF": 44,
+    "GBP-CAD-CHF": 45,
+    "JPY-AUD-NZD": 46,
+    "JPY-AUD-CAD": 47,
+    "JPY-AUD-CHF": 48,
+    "JPY-NZD-CAD": 49,
+    "JPY-NZD-CHF": 50,
+    "JPY-CAD-CHF": 51,
+    "AUD-NZD-CAD": 52,
+    "AUD-NZD-CHF": 53,
+    "AUD-CAD-CHF": 54,
+    "NZD-CAD-CHF": 55
+  }
+}

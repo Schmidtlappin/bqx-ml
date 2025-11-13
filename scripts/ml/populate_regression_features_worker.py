@@ -266,6 +266,11 @@ def populate_regression_for_pair(pair, year_month):
         if len(results) < initial_count:
             logger.warning(f"{pair.upper()} {year_month}: Removed {initial_count - len(results)} rows with NaT timestamps")
 
+        # Replace all remaining NaT/NaN values with None (PostgreSQL NULL)
+        # This prevents pd.NaT from being serialized as string 'NaT' in INSERT statements
+        # CRITICAL: Must convert to object dtype first, otherwise .where() doesn't replace NaT in datetime64 columns
+        results = results.astype(object).where(pd.notnull(results), None)
+
         if results.empty:
             logger.warning(f"{pair.upper()} {year_month}: No valid data after filtering NaT")
             conn.close()
@@ -280,7 +285,9 @@ def populate_regression_for_pair(pair, year_month):
         # (simplified - in production would use COPY for speed)
         cursor.execute(f"DELETE FROM bqx.{partition_name}")
 
-        for _, row in reg_rate_data.iterrows():
+        # CRITICAL: Use .values instead of .iterrows() to preserve None values
+        # .iterrows() returns Series that re-infer dtypes, converting None to NaT
+        for row in reg_rate_data.values:
             placeholders = ','.join(['%s'] * len(reg_rate_cols))
             cursor.execute(
                 f"INSERT INTO bqx.{partition_name} ({','.join(reg_rate_cols)}) VALUES ({placeholders})",
@@ -296,7 +303,9 @@ def populate_regression_for_pair(pair, year_month):
         partition_name = f"reg_bqx_{pair}_{year_month}"
         cursor.execute(f"DELETE FROM bqx.{partition_name}")
 
-        for _, row in reg_bqx_data.iterrows():
+        # CRITICAL: Use .values instead of .iterrows() to preserve None values
+        # .iterrows() returns Series that re-infer dtypes, converting None to NaT
+        for row in reg_bqx_data.values:
             placeholders = ','.join(['%s'] * len(reg_bqx_cols))
             cursor.execute(
                 f"INSERT INTO bqx.{partition_name} ({','.join(reg_bqx_cols)}) VALUES ({placeholders})",
@@ -344,8 +353,9 @@ def main():
     logger.info(f"Total tasks: {len(tasks)} (pair × month combinations)")
     logger.info("")
 
-    # Process tasks in parallel (4 workers for compute-intensive work)
-    max_workers = 4
+    # Process tasks in parallel (8 workers to maximize CPU utilization)
+    # System has 8 cores, 30GB RAM, and Aurora has 2000 connection capacity
+    max_workers = 8
     logger.info(f"Processing with {max_workers} parallel workers...")
     logger.info("")
 
