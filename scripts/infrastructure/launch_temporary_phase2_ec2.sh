@@ -30,11 +30,11 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-# Configuration (UPDATE THESE)
-AMI_ID="ami-0c02fb55b34e6fc3e"  # Ubuntu 22.04 LTS (us-east-1)
-KEY_NAME="trillium-key"
-SECURITY_GROUP="sg-0123456789abcdef0"  # UPDATE THIS
-SUBNET_ID="subnet-0123456789abcdef0"     # UPDATE THIS
+# Configuration
+AMI_ID="ami-0161740617dac346b"  # Same AMI as trillium-master
+KEY_NAME="trillium-master-key"
+SECURITY_GROUP="sg-0513e6cd4874f8c6b"  # Same as trillium-master
+SUBNET_ID="subnet-0aa48fbf275ef3e2f"   # Same as trillium-master (us-east-1a)
 INSTANCE_TYPE="c7i.8xlarge"
 MAX_SPOT_PRICE="1.00"  # $1.00/hour (vs ~$0.45 spot price)
 
