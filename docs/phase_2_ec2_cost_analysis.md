@@ -1,8 +1,40 @@
-# Phase 2 EC2 Upgrade Cost Analysis
+# Phase 2 EC2 Cost Analysis
 
-**Date:** 2025-11-14
+**Date:** 2025-11-14 (Updated)
 **Region:** US East (N. Virginia) - us-east-1
-**Pricing:** On-Demand instances (not Reserved or Spot)
+**Architecture:** ✅ **Temporary EC2 Approach (APPROVED)**
+
+---
+
+## ✅ APPROVED ARCHITECTURE: Temporary EC2 (NOT In-Place Upgrade)
+
+**Decision Date:** 2025-11-14
+
+### Architecture Overview
+
+**OLD APPROACH (Rejected):**
+- Upgrade trillium-master in-place: t3.2xlarge → c7i.8xlarge → t3.xlarge
+- 10 minutes downtime (2 stop/start cycles)
+- Ongoing cost: $121/month (t3.xlarge)
+
+**NEW APPROACH (Approved):**
+- **trillium-master:** Keep running (optional downgrade to t3.small)
+- **NEW: trillium-phase2-worker:** Spin up c7i.8xlarge Spot (TEMPORARY)
+- **Post-Phase 2:** TERMINATE temporary worker
+- Zero downtime, isolated failure domain
+- Ongoing cost: $15/month (t3.small)
+
+**Rationale:** See [docs/architecture_decision_temporary_ec2.md](architecture_decision_temporary_ec2.md)
+
+### Cost Comparison
+
+| Approach | Phase 2 Cost | Ongoing (Annual) | Total (1 Year) | Annual Savings |
+|----------|--------------|------------------|----------------|----------------|
+| **Current (t3.2xlarge)** | $60.86 | $2,916.00 | $2,976.86 | - |
+| **In-Place Upgrade** | $19.13 | $1,454.40 | $1,473.53 | $1,503.33 |
+| **Temporary EC2** | $19.13 | $181.80 | $200.93 | **$2,775.93** |
+
+**Winner:** ✅ Temporary EC2 saves **$1,272.60/year MORE** than in-place upgrade!
 
 ---
 

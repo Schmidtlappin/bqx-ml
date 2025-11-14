@@ -30,23 +30,40 @@ def create_stage_2_10():
             'Stage ID': '2.10 - Infrastructure Management',
             'Stage Code': 'BQX-2.10',
             'Status': 'In Progress',
-            'Description': 'EC2 upgrade for Phase 2 acceleration, followed by downgrade to cost-effective instance for ongoing operations',
-            'Duration': '1.3 days (Phase 2 accelerated)',
-            'Estimated Cost': 27.25,
-            'Notes': '''🚀 **EC2 UPGRADE APPROVED: 2025-11-14**
+            'Description': 'Temporary EC2 (c7i.8xlarge) for Phase 2 acceleration, then terminate. Optional downgrade of trillium-master to t3.small for cost optimization.',
+            'Duration': '1.8 days (Phase 2 accelerated)',
+            'Estimated Cost': 19.13,
+            'Notes': '''🚀 **TEMPORARY EC2 APPROVED: 2025-11-14**
 
-## Decision: Option 2 (c7i.8xlarge with Spot Pricing)
+## Decision: Temporary EC2 (c7i.8xlarge Spot) - NOT In-Place Upgrade
 
-**Upgrade Strategy:**
-- **Current:** t3.2xlarge (8 vCPUs, 32GB RAM, $0.33/hour)
-- **Phase 2 Upgrade:** c7i.8xlarge (32 vCPUs, 64GB RAM, ~$0.45/hour Spot)
-- **Post-Phase 2 Downgrade:** t3.xlarge (4 vCPUs, 16GB RAM, $0.17/hour)
+**Architecture:**
+- **trillium-master:** Keep running (optional downgrade to t3.small)
+- **NEW: trillium-phase2-worker:** c7i.8xlarge Spot (TEMPORARY)
+- **Post-Phase 2:** TERMINATE trillium-phase2-worker
 
-**Implementation Method:** IN-PLACE UPGRADE
-- Stop trillium-master instance
-- Change instance type to c7i.8xlarge
-- Start instance (5-minute downtime)
-- Track 2 workers resume automatically
+**Rationale:** See docs/architecture_decision_temporary_ec2.md
+- Zero downtime on trillium-master
+- Lower risk (isolated failure domain)
+- 87% lower ongoing costs (t3.small vs t3.xlarge)
+- Cleaner separation of concerns
+
+---
+
+## Infrastructure Plan
+
+**trillium-master (Permanent):**
+- **Current:** t3.2xlarge (8 vCPUs, 32GB RAM, $0.33/hr)
+- **Recommended:** t3.small (2 vCPUs, 2GB RAM, $0.0208/hr)
+- **Role:** Monitoring, maintenance, ad-hoc queries
+- **Lifecycle:** Always-on
+- **Monthly Cost:** $15.15 (vs $121 for t3.xlarge = 87% savings)
+
+**trillium-phase2-worker (Temporary):**
+- **Type:** c7i.8xlarge Spot (32 vCPUs, 64GB RAM, ~$0.45/hr)
+- **Role:** Phase 2 parallel processing ONLY
+- **Lifecycle:** 1.8 days, then TERMINATE
+- **Total Cost:** $19.13 (Spot pricing)
 
 ---
 
@@ -56,113 +73,119 @@ def create_stage_2_10():
 - Total Duration: 130 hours (5.4 days)
 - Total Cost: $60.86
 
-**Upgraded (c7i.8xlarge Spot):**
-- Total Duration: 31 hours (1.3 days)
-- Total Cost: $27.25
-- **Savings: $33.61 (55%) + 99 hours (76% faster)**
+**Temporary EC2 (c7i.8xlarge Spot):**
+- Total Duration: 42.5 hours (1.8 days)
+- Total Cost: $19.13
+- **Savings: $41.73 (69%) + 87.5 hours (67% faster)**
 
 **Stage-by-Stage Impact:**
-- Track 2 (2.1.2): 2.8 hours (vs 11 hours baseline)
 - Stage 2.2: 3.8 hours (vs 15 hours)
-- Stage 2.9: 12 hours (vs 48 hours) - BIGGEST IMPACT
+- Stage 2.3: 4 hours (vs 48 hours)
+- Stage 2.4: 12 hours (vs 48 hours)
 - Stage 2.6: 6 hours (vs 24 hours)
 - Stage 2.7: 6 hours (vs 24 hours)
-
----
-
-## Post-Phase 2 Downgrade Plan
-
-**IMPORTANT: EC2 NOT TERMINATED**
-
-After Stage 2.7 (S3 Export) completes:
-1. Stop c7i.8xlarge instance
-2. Change instance type to **t3.xlarge** (4 vCPUs, 16GB RAM)
-3. Start instance
-4. Instance remains active for:
-   - Phase 3 monitoring and maintenance
-   - Other projects: Robkei-Ring, OmniDrive, box
-   - Ad-hoc database queries
-   - Emergency troubleshooting
-
-**Monthly Cost Reduction:**
-- Phase 2 (c7i.8xlarge Spot): ~$330/month (if kept running - NOT RECOMMENDED)
-- Post-Downgrade (t3.xlarge): $121/month
-- **Savings vs Current:** $121/month (50% reduction from $243/month)
+- Stage 2.8: 6 hours (vs 24 hours)
+- Stage 2.9: 12 hours (vs 48 hours) - BIGGEST IMPACT
 
 ---
 
 ## Cost Analysis
 
-| Phase | Instance | Duration | Cost |
-|-------|----------|----------|------|
-| **Phase 2** | c7i.8xlarge Spot | 31 hours | $27.25 |
-| **Post-Phase 2** | t3.xlarge | Ongoing | $121/month |
+| Instance | Role | Duration | Cost |
+|----------|------|----------|------|
+| **trillium-master** | Monitoring (permanent) | Ongoing | $15/month |
+| **trillium-phase2-worker** | Phase 2 compute (temp) | 42.5 hours | $19.13 |
+| **Total Phase 2** | - | 1.8 days | **$19.13** |
 
-**Phase 2 Breakdown:**
-- EC2 (Spot): ~$14/month
-- Aurora (2.5 ACU avg): $9.30
-- S3 + Transfer Accel: $4
-- **Total: $27.25** (vs $60.86 baseline = 55% savings)
+**Annual Cost Comparison:**
 
-**Annual Savings (Post-Downgrade):**
-- Current t3.2xlarge: $243/month × 12 = $2,916/year
-- Downgraded t3.xlarge: $121/month × 12 = $1,452/year
-- **Annual Savings: $1,464/year**
+| Approach | Phase 2 Cost | Ongoing (Annual) | Total (1 Year) |
+|----------|--------------|------------------|----------------|
+| **In-Place Upgrade (OLD)** | $19.13 | $1,454.40 | $1,473.53 |
+| **Temporary EC2 (NEW)** | $19.13 | $181.80 | $200.93 |
+| **Savings** | $0.00 | **$1,272.60** | **$1,272.60** |
+
+**Cost Breakdown:**
+- trillium-master (t3.small): $15.15/month × 12 = $181.80/year
+- trillium-phase2-worker: $19.13 one-time
+- **Total 1-year cost:** $200.93 (vs $1,473.53 = 86% savings)
 
 ---
 
 ## Implementation Checklist
 
-**Pre-Upgrade:**
-- [x] EC2 upgrade Option 2 approved by user (2025-11-14)
-- [ ] Track 2 current progress verified (97.3% complete)
-- [ ] Create AMI snapshot (backup)
-- [ ] Document running processes
-- [ ] Gracefully stop Track 2 workers
+**Step 1: Downgrade trillium-master (Optional)**
+- [ ] Create pre-downgrade snapshot
+- [ ] Stop trillium-master
+- [ ] Change type: t3.2xlarge → t3.small
+- [ ] Start trillium-master
+- [ ] Verify: 2 vCPUs, 2GB RAM
+- **Duration:** 30 min (5 min downtime)
+- **Savings:** $106/month
 
-**Upgrade Execution:**
-- [ ] Stop trillium-master instance
-- [ ] Change instance type to c7i.8xlarge
-- [ ] Request Spot pricing (~$0.45/hour)
-- [ ] Start instance
-- [ ] Verify 32 vCPUs, 64GB RAM available
+**Step 2: Spin Up Temporary Worker**
+- [ ] Launch c7i.8xlarge Spot instance
+- [ ] Tag: Name=trillium-phase2-worker, Lifecycle=temporary
+- [ ] Configure security groups, key pair
+- [ ] Clone bqx-ml repository
+- [ ] Install dependencies
+- [ ] Configure Aurora credentials
+- **Duration:** 15 min
+- **Cost:** $0.11
 
-**Post-Upgrade Validation:**
-- [ ] Test Aurora database connectivity
-- [ ] Verify Python environment intact
-- [ ] Restart Track 2 with 32 workers
-- [ ] Monitor worker parallelization
-- [ ] Verify 4x speedup achieved
+**Step 3: Run Phase 2 Stages**
+- [ ] Execute launch_phase_2_post_track2.sh
+- [ ] Monitor progress (Stages 2.2-2.9)
+- [ ] Verify all partitions populated
+- [ ] Validate S3 export (40-50 GB)
+- **Duration:** 42.5 hours
+- **Cost:** $19.13
 
-**Post-Phase 2 Downgrade:**
-- [ ] Validate Stage 2.7 (S3 Export) complete
-- [ ] Verify all 1,080 features in Aurora
-- [ ] Verify Parquet files in S3 (40-50 GB)
-- [ ] Stop c7i.8xlarge instance
-- [ ] Change instance type to t3.xlarge
-- [ ] Start instance
-- [ ] Verify other projects operational
-- [ ] Update monthly cost tracking
+**Step 4: Terminate Temporary Worker**
+- [ ] Verify Phase 2 100% complete
+- [ ] Create final snapshot (optional)
+- [ ] TERMINATE trillium-phase2-worker
+- [ ] Verify termination (not stopped)
+- [ ] Update cost tracking
+- **Duration:** 5 min
+- **Ongoing Cost:** $0.00
 
 ---
 
 ## Risk Assessment
 
 **Technical Risk:** LOW
-- ✅ In-place upgrade is AWS standard procedure
-- ✅ All data on EBS volumes (preserved)
-- ✅ Track 2 workers are stateless (resume automatically)
-- ✅ 5-minute downtime acceptable (development workload)
+- ✅ trillium-master: Zero downtime (stays running)
+- ✅ Temporary EC2: Isolated failure domain
+- ✅ All data in Aurora (stateless workers)
+- ✅ Easy rollback (just terminate temp EC2)
 
-**Cost Risk:** LOW
-- ✅ Phase 2 duration limited to 1.3 days
-- ✅ Immediate downgrade after completion
-- ✅ Total cost $27.25 (cheaper than baseline!)
+**Cost Risk:** VERY LOW
+- ✅ Phase 2 limited to 1.8 days
+- ✅ Immediate termination after completion
+- ✅ Ongoing cost: $15/month (vs $121/month)
+- ✅ Total cost $19.13 (cheaper than baseline!)
 
-**Operational Risk:** LOW
-- ✅ trillium-master hosts other projects (will briefly stop)
-- ✅ Other projects auto-restart after downtime
-- ✅ No production traffic dependencies
+**Operational Risk:** VERY LOW
+- ✅ trillium-master unaffected by Phase 2
+- ✅ Can run both instances simultaneously
+- ✅ No production dependencies
+- ✅ Clear cost attribution (separate instances)
+
+---
+
+## Comparison: In-Place vs Temporary EC2
+
+| Criteria | In-Place Upgrade | Temporary EC2 | Winner |
+|----------|------------------|---------------|--------|
+| **Phase 2 Cost** | $19.13 | $19.13 | TIE |
+| **Ongoing Cost** | $121/mo | $15/mo | ✅ **Temp EC2** (-87%) |
+| **Annual Savings** | $1,464 | $2,737 | ✅ **Temp EC2** (+87%) |
+| **trillium-master Downtime** | 10 min | 0 min | ✅ **Temp EC2** |
+| **Production Risk** | Medium | Low | ✅ **Temp EC2** |
+| **Rollback** | Hard | Easy | ✅ **Temp EC2** |
+
+**Winner:** ✅ Temporary EC2 (5 wins, 0 losses, 1 tie)
 
 ---
 
@@ -170,34 +193,35 @@ After Stage 2.7 (S3 Export) completes:
 
 **EC2 Role in Phase 3:**
 - Phase 3 uses SageMaker (serverless architecture)
-- EC2 NOT required for Phase 3 operations
-- EC2 kept active (downgraded) for:
-  - Monitoring and troubleshooting
+- trillium-master (t3.small) provides:
+  - SageMaker experiment monitoring
   - Ad-hoc database queries
-  - Support for other projects
+  - Script development/testing
   - Emergency maintenance access
 
-**Phase 3 Costs (No EC2 Dependency):**
+**Phase 3 Costs:**
 - SageMaker Training: $9.46/month
 - SageMaker Inference: $391.86/month
 - Storage & Monitoring: $111.06/month
-- EC2 (t3.xlarge, optional): $121/month
-- **Total: ~$633/month** (Phase 3 + downgraded EC2)
+- EC2 (t3.small): $15.15/month
+- **Total: ~$527/month** (vs $633 with t3.xlarge = $106/month savings)
 
 ---
 
 ## Timeline
 
 **Estimated Dates:**
-- Upgrade Execution: 2025-11-14 (pending Track 2 completion)
-- Phase 2 Completion: 2025-11-15 (~1.3 days after upgrade)
-- Downgrade Execution: 2025-11-15 (immediately after Phase 2)
+- trillium-master Downgrade: 2025-11-14 (optional, 30 min)
+- Spin Up temp EC2: 2025-11-14 (15 min)
+- Phase 2 Execution: 2025-11-14 to 2025-11-16 (1.8 days)
+- Terminate temp EC2: 2025-11-16 (5 min)
 - Phase 3 Start: 2025-11-16
 
 ---
 
-**Status:** ⏳ APPROVED - Awaiting Track 2 completion for upgrade execution
-**Next Action:** Execute upgrade when Track 2 reaches 100% (currently 97.3%)
+**Status:** ✅ APPROVED - Ready for implementation
+**Next Action:** Downgrade trillium-master (optional), then spin up temporary EC2
+**Architecture:** Temporary EC2 approach (NOT in-place upgrade)
 **Owner:** Infrastructure Team
 **Updated:** 2025-11-14
 '''
@@ -214,14 +238,16 @@ After Stage 2.7 (S3 Export) completes:
             print()
             print("✅ Stage ID: 2.10 - Infrastructure Management")
             print("✅ Status: In Progress")
-            print("✅ Duration: 1.3 days")
-            print("✅ Cost: $27.25")
+            print("✅ Duration: 1.8 days")
+            print("✅ Cost: $19.13")
             print()
             print("Key Details:")
-            print("  - Upgrade: t3.2xlarge → c7i.8xlarge (Phase 2)")
-            print("  - Downgrade: c7i.8xlarge → t3.xlarge (Post-Phase 2)")
-            print("  - EC2 remains active (not terminated)")
-            print("  - Annual savings: $1,464/year")
+            print("  - Architecture: Temporary EC2 (NOT in-place upgrade)")
+            print("  - trillium-master: Optional downgrade to t3.small")
+            print("  - trillium-phase2-worker: c7i.8xlarge Spot (TEMPORARY)")
+            print("  - Post-Phase 2: TERMINATE temporary worker")
+            print("  - Annual savings: $1,272.60/year (vs in-place upgrade)")
+            print("  - Annual savings: $2,736.60/year (vs current t3.2xlarge)")
             print()
             return response.json()
         else:
