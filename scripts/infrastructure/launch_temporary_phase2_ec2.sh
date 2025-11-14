@@ -2,9 +2,9 @@
 # ============================================================================
 # LAUNCH TEMPORARY EC2 FOR PHASE 2
 # ============================================================================
-# Purpose: Spin up temporary c7i.8xlarge Spot instance for Phase 2 processing
+# Purpose: Spin up temporary c7i.8xlarge On-Demand instance for Phase 2 processing
 # Duration: 1.8 days, then terminate
-# Cost: $19.13 total (Spot pricing)
+# Cost: $57.80 total (On-Demand pricing - guaranteed capacity)
 # ============================================================================
 
 set -e
@@ -14,14 +14,14 @@ echo "LAUNCH TEMPORARY PHASE 2 EC2 WORKER"
 echo "================================================================================"
 echo ""
 echo "This script will:"
-echo "  1. Launch c7i.8xlarge Spot instance (32 vCPUs, 64 GB RAM)"
+echo "  1. Launch c7i.8xlarge On-Demand instance (32 vCPUs, 64 GB RAM)"
 echo "  2. Tag as temporary infrastructure (trillium-phase2-worker)"
 echo "  3. Configure security groups and networking"
 echo "  4. Wait for instance to be running"
 echo ""
-echo "Cost: ~$0.45/hour Spot (~$1.36/hour On-Demand)"
+echo "Cost: $1.36/hour On-Demand (guaranteed capacity)"
 echo "Duration: 1.8 days (42.5 hours)"
-echo "Total Cost: $19.13"
+echo "Total Cost: $57.80"
 echo ""
 read -p "Continue? (y/N): " -n 1 -r
 echo
@@ -34,15 +34,15 @@ fi
 AMI_ID="ami-0161740617dac346b"  # Same AMI as trillium-master
 KEY_NAME="trillium-master-key"
 SECURITY_GROUP="sg-0513e6cd4874f8c6b"  # Same as trillium-master
-SUBNET_ID="subnet-0aa48fbf275ef3e2f"   # Same as trillium-master (us-east-1a)
+SUBNET_ID="subnet-0e817a06bcb878c7f"   # us-east-1a (for SSH access)
 INSTANCE_TYPE="c7i.8xlarge"
-MAX_SPOT_PRICE="1.00"  # $1.00/hour (vs ~$0.45 spot price)
+PRICING_MODEL="on-demand"  # On-Demand for guaranteed capacity
 
 echo ""
 echo "Configuration:"
 echo "  Instance Type: $INSTANCE_TYPE"
 echo "  AMI: $AMI_ID"
-echo "  Max Spot Price: \$$MAX_SPOT_PRICE/hour"
+echo "  Pricing: On-Demand (guaranteed capacity)"
 echo "  Key Pair: $KEY_NAME"
 echo ""
 
@@ -98,22 +98,15 @@ BASHRC
 touch /tmp/phase2-worker-init-complete
 EOF
 
-# Launch Spot instance
+# Launch On-Demand instance
 echo ""
-echo "Launching Spot instance..."
+echo "Launching On-Demand instance..."
 LAUNCH_RESPONSE=$(aws ec2 run-instances \
   --image-id "$AMI_ID" \
   --instance-type "$INSTANCE_TYPE" \
   --key-name "$KEY_NAME" \
   --security-group-ids "$SECURITY_GROUP" \
   --subnet-id "$SUBNET_ID" \
-  --instance-market-options "{
-    \"MarketType\": \"spot\",
-    \"SpotOptions\": {
-      \"SpotInstanceType\": \"one-time\",
-      \"MaxPrice\": \"$MAX_SPOT_PRICE\"
-    }
-  }" \
   --tag-specifications "ResourceType=instance,Tags=[
     {Key=Name,Value=trillium-phase2-worker},
     {Key=Phase,Value=2},
@@ -125,7 +118,7 @@ LAUNCH_RESPONSE=$(aws ec2 run-instances \
     {
       \"DeviceName\": \"/dev/sda1\",
       \"Ebs\": {
-        \"VolumeSize\": 100,
+        \"VolumeSize\": 250,
         \"VolumeType\": \"gp3\",
         \"DeleteOnTermination\": true
       }
