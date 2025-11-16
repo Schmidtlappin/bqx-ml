@@ -103,6 +103,8 @@ def export_pair_month_to_s3(pair, year_month):
         year, month = year_month.split('_')
 
         # Build comprehensive feature query joining all tables
+        # NOTE: Updated to new term-based schema (quadratic_term, linear_term, constant_term, residual)
+        # as of Stage 2.11 (reg_rate) and Stage 2.12 (reg_bqx)
         query = f"""
         WITH base AS (
             SELECT
@@ -114,49 +116,204 @@ def export_pair_month_to_s3(pair, year_month):
               AND EXTRACT(MONTH FROM time) = {month}
         ),
         reg_rate AS (
+            -- Regression features from rate_index domain (term-based)
             SELECT
                 ts_utc,
-                w60_a_term AS reg_rate_w60_quad,
-                w60_b_term AS reg_rate_w60_lin,
+                -- 60-minute window
+                w60_quadratic_term AS reg_rate_w60_quad,
+                w60_linear_term AS reg_rate_w60_lin,
+                w60_constant_term AS reg_rate_w60_const,
+                w60_residual AS reg_rate_w60_resid,
+                w60_prediction AS reg_rate_w60_pred,
                 w60_r2 AS reg_rate_w60_r2,
                 w60_rmse AS reg_rate_w60_rmse,
-                w60_resid_end AS reg_rate_w60_resid,
-                w90_a_term AS reg_rate_w90_quad,
-                w90_b_term AS reg_rate_w90_lin,
+                -- 90-minute window
+                w90_quadratic_term AS reg_rate_w90_quad,
+                w90_linear_term AS reg_rate_w90_lin,
+                w90_constant_term AS reg_rate_w90_const,
+                w90_residual AS reg_rate_w90_resid,
+                w90_prediction AS reg_rate_w90_pred,
                 w90_r2 AS reg_rate_w90_r2,
                 w90_rmse AS reg_rate_w90_rmse,
-                w150_a_term AS reg_rate_w150_quad,
-                w150_b_term AS reg_rate_w150_lin,
+                -- 150-minute window
+                w150_quadratic_term AS reg_rate_w150_quad,
+                w150_linear_term AS reg_rate_w150_lin,
+                w150_constant_term AS reg_rate_w150_const,
+                w150_residual AS reg_rate_w150_resid,
+                w150_prediction AS reg_rate_w150_pred,
                 w150_r2 AS reg_rate_w150_r2,
-                w240_a_term AS reg_rate_w240_quad,
-                w240_b_term AS reg_rate_w240_lin,
-                w390_a_term AS reg_rate_w390_quad,
-                w630_a_term AS reg_rate_w630_quad
+                w150_rmse AS reg_rate_w150_rmse,
+                -- 240-minute window
+                w240_quadratic_term AS reg_rate_w240_quad,
+                w240_linear_term AS reg_rate_w240_lin,
+                w240_constant_term AS reg_rate_w240_const,
+                w240_residual AS reg_rate_w240_resid,
+                w240_prediction AS reg_rate_w240_pred,
+                w240_r2 AS reg_rate_w240_r2,
+                w240_rmse AS reg_rate_w240_rmse,
+                -- 390-minute window
+                w390_quadratic_term AS reg_rate_w390_quad,
+                w390_linear_term AS reg_rate_w390_lin,
+                w390_constant_term AS reg_rate_w390_const,
+                w390_residual AS reg_rate_w390_resid,
+                w390_prediction AS reg_rate_w390_pred,
+                w390_r2 AS reg_rate_w390_r2,
+                w390_rmse AS reg_rate_w390_rmse,
+                -- 630-minute window
+                w630_quadratic_term AS reg_rate_w630_quad,
+                w630_linear_term AS reg_rate_w630_lin,
+                w630_constant_term AS reg_rate_w630_const,
+                w630_residual AS reg_rate_w630_resid,
+                w630_prediction AS reg_rate_w630_pred,
+                w630_r2 AS reg_rate_w630_r2,
+                w630_rmse AS reg_rate_w630_rmse
             FROM bqx.reg_{pair}_{year_month}
         ),
         reg_bqx AS (
+            -- Regression features from BQX domain (term-based)
             SELECT
                 ts_utc,
-                w60_a_term AS reg_bqx_w60_quad,
-                w60_b_term AS reg_bqx_w60_lin,
+                -- 60-minute window
+                w60_quadratic_term AS reg_bqx_w60_quad,
+                w60_linear_term AS reg_bqx_w60_lin,
+                w60_constant_term AS reg_bqx_w60_const,
+                w60_residual AS reg_bqx_w60_resid,
+                w60_prediction AS reg_bqx_w60_pred,
                 w60_r2 AS reg_bqx_w60_r2,
                 w60_rmse AS reg_bqx_w60_rmse,
-                w60_resid_end AS reg_bqx_w60_resid,
-                w90_a_term AS reg_bqx_w90_quad,
-                w90_b_term AS reg_bqx_w90_lin,
-                w150_a_term AS reg_bqx_w150_quad,
-                w240_a_term AS reg_bqx_w240_quad
+                -- 90-minute window
+                w90_quadratic_term AS reg_bqx_w90_quad,
+                w90_linear_term AS reg_bqx_w90_lin,
+                w90_constant_term AS reg_bqx_w90_const,
+                w90_residual AS reg_bqx_w90_resid,
+                w90_prediction AS reg_bqx_w90_pred,
+                w90_r2 AS reg_bqx_w90_r2,
+                w90_rmse AS reg_bqx_w90_rmse,
+                -- 150-minute window
+                w150_quadratic_term AS reg_bqx_w150_quad,
+                w150_linear_term AS reg_bqx_w150_lin,
+                w150_constant_term AS reg_bqx_w150_const,
+                w150_residual AS reg_bqx_w150_resid,
+                w150_prediction AS reg_bqx_w150_pred,
+                w150_r2 AS reg_bqx_w150_r2,
+                w150_rmse AS reg_bqx_w150_rmse,
+                -- 240-minute window
+                w240_quadratic_term AS reg_bqx_w240_quad,
+                w240_linear_term AS reg_bqx_w240_lin,
+                w240_constant_term AS reg_bqx_w240_const,
+                w240_residual AS reg_bqx_w240_resid,
+                w240_prediction AS reg_bqx_w240_pred,
+                w240_r2 AS reg_bqx_w240_r2,
+                w240_rmse AS reg_bqx_w240_rmse,
+                -- 390-minute window
+                w390_quadratic_term AS reg_bqx_w390_quad,
+                w390_linear_term AS reg_bqx_w390_lin,
+                w390_constant_term AS reg_bqx_w390_const,
+                w390_residual AS reg_bqx_w390_resid,
+                w390_prediction AS reg_bqx_w390_pred,
+                w390_r2 AS reg_bqx_w390_r2,
+                w390_rmse AS reg_bqx_w390_rmse,
+                -- 630-minute window
+                w630_quadratic_term AS reg_bqx_w630_quad,
+                w630_linear_term AS reg_bqx_w630_lin,
+                w630_constant_term AS reg_bqx_w630_const,
+                w630_residual AS reg_bqx_w630_resid,
+                w630_prediction AS reg_bqx_w630_pred,
+                w630_r2 AS reg_bqx_w630_r2,
+                w630_rmse AS reg_bqx_w630_rmse
             FROM bqx.reg_bqx_{pair}_{year_month}
+        ),
+        tech_indicators AS (
+            -- Technical indicators (RSI, MACD, Stochastic, etc.)
+            -- Select all columns with 'ti_' prefix for namespacing
+            SELECT
+                ts_utc,
+                rsi_14 AS ti_rsi_14,
+                macd_line AS ti_macd_line,
+                macd_signal AS ti_macd_signal,
+                macd_histogram AS ti_macd_histogram,
+                stoch_k AS ti_stoch_k,
+                stoch_d AS ti_stoch_d,
+                bb_upper AS ti_bb_upper,
+                bb_middle AS ti_bb_middle,
+                bb_lower AS ti_bb_lower,
+                atr_14 AS ti_atr_14
+            FROM bqx.technical_indicators_{pair}_{year_month}
+        ),
+        currency_idx AS (
+            -- Currency strength indices
+            SELECT
+                ts_utc,
+                base_currency_strength AS ci_base_strength,
+                quote_currency_strength AS ci_quote_strength,
+                strength_divergence AS ci_strength_div
+            FROM bqx.currency_index_{pair}_{year_month}
+        ),
+        arbitrage AS (
+            -- Triangular arbitrage opportunities
+            SELECT
+                ts_utc,
+                arbitrage_opportunity AS arb_opportunity,
+                arbitrage_profit_bps AS arb_profit_bps,
+                arbitrage_path AS arb_path
+            FROM bqx.arbitrage_{pair}_{year_month}
+        ),
+        correlation AS (
+            -- Cross-pair correlations + term covariances (added in Stage 2.14)
+            SELECT
+                ts_utc,
+                correlation_score AS corr_score,
+                correlation_rank AS corr_rank,
+                -- Term covariances (added in Stage 2.14)
+                cov_quad_lin_bqx_60min AS corr_cov_quad_lin,
+                cov_resid_quad_bqx_60min AS corr_cov_resid_quad,
+                cov_resid_lin_bqx_60min AS corr_cov_resid_lin,
+                corr_quad_lin_bqx_60min AS corr_corr_quad_lin,
+                corr_resid_quad_bqx_60min AS corr_corr_resid_quad,
+                corr_resid_lin_bqx_60min AS corr_corr_resid_lin
+            FROM bqx.correlation_bqx_{pair}_{year_month}
+        ),
+        enhanced_rmse AS (
+            -- Enhanced regression metrics
+            SELECT
+                ts_utc,
+                enhanced_rmse_score AS rmse_enhanced_score,
+                rmse_trend AS rmse_trend,
+                rmse_volatility AS rmse_volatility
+            FROM bqx.enhanced_rmse_{pair}_{year_month}
+        ),
+        regime AS (
+            -- Market regime classification
+            SELECT
+                ts_utc,
+                regime_type AS regime_type,
+                regime_confidence AS regime_confidence,
+                regime_duration_minutes AS regime_duration
+            FROM bqx.regime_{pair}_{year_month}
         )
         SELECT
             base.ts_utc,
             base.open, base.high, base.low, base.close, base.volume,
             base.rate_index, base.bqx,
-            reg_rate.*,
-            reg_bqx.*
+            -- Regression features (both domains)
+            reg_rate.* EXCEPT (ts_utc),
+            reg_bqx.* EXCEPT (ts_utc),
+            -- Additional feature families
+            tech_indicators.* EXCEPT (ts_utc),
+            currency_idx.* EXCEPT (ts_utc),
+            arbitrage.* EXCEPT (ts_utc),
+            correlation.* EXCEPT (ts_utc),
+            enhanced_rmse.* EXCEPT (ts_utc),
+            regime.* EXCEPT (ts_utc)
         FROM base
         LEFT JOIN reg_rate USING (ts_utc)
         LEFT JOIN reg_bqx USING (ts_utc)
+        LEFT JOIN tech_indicators USING (ts_utc)
+        LEFT JOIN currency_idx USING (ts_utc)
+        LEFT JOIN arbitrage USING (ts_utc)
+        LEFT JOIN correlation USING (ts_utc)
+        LEFT JOIN enhanced_rmse USING (ts_utc)
+        LEFT JOIN regime USING (ts_utc)
         ORDER BY base.ts_utc;
         """
 
