@@ -20,6 +20,8 @@ import os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
+from sqlalchemy import create_engine
+from urllib.parse import quote_plus
 
 # Database configuration
 DB_CONFIG = {
@@ -28,6 +30,10 @@ DB_CONFIG = {
     'user': 'postgres',
     'password': os.environ.get('DB_PASSWORD', 'BQX_Aurora_2025_Secure')
 }
+
+# Create SQLAlchemy engine for pandas (eliminates UserWarning)
+DB_URL = f"postgresql://{DB_CONFIG['user']}:{quote_plus(DB_CONFIG['password'])}@{DB_CONFIG['host']}/{DB_CONFIG['database']}"
+ENGINE = create_engine(DB_URL, pool_pre_ping=True)
 
 # All 28 currency pairs
 PAIRS = [
@@ -244,7 +250,8 @@ def populate_reg_bqx_partition(pair, year_month):
         ORDER BY ts_utc
         """
 
-        df = pd.read_sql(query, conn)
+        # Use SQLAlchemy engine for pandas (eliminates UserWarning)
+        df = pd.read_sql(query, ENGINE)
 
         if len(df) == 0:
             logger.warning(f"{pair.upper()} {year_month}: No data found, skipping")
