@@ -53,9 +53,9 @@ except Exception as e:
         print("❌ Error: AIRTABLE_API_KEY environment variable not set")
         sys.exit(1)
 
-# AirTable configuration - BQX ML Phase 2 Stages
-BASE_ID = 'app6VBiQlnq6yv0D7'
-TABLE_NAME = 'Phase 2 Stages'
+# AirTable configuration - BQX ML Stages (CORRECTED BASE ID)
+BASE_ID = 'appR3PPnrNkVo48mO'  # BQX-ML base (verified via API)
+TABLE_NAME = 'Stages'  # Stages table (not "Phase 2 Stages")
 AIRTABLE_API_URL = f'https://api.airtable.com/v0/{BASE_ID}/{TABLE_NAME}'
 
 HEADERS = {
@@ -84,10 +84,10 @@ def create_stage(stage_data):
 
     if response.status_code == 200:
         record = response.json()
-        print(f"✅ Created: {stage_data['Stage']} - {stage_data['Name']}")
+        print(f"✅ Created: {stage_data['Stage Code']} - {stage_data.get('Description', '')[:50]}...")
         return record
     else:
-        print(f"❌ Failed to create {stage_data['Stage']}: {response.status_code} - {response.text}")
+        print(f"❌ Failed to create {stage_data['Stage Code']}: {response.status_code} - {response.text}")
         return None
 
 
@@ -104,8 +104,8 @@ def main():
     stages = [
         # ===== TIER 1: CRITICAL ENHANCEMENTS =====
         {
-            'Stage': '2.3',
-            'Name': 'Implement Currency Indices (POPULATE DATA)',
+            'Stage Code': 'BQX-2.3',
+            'Description': 'Implement Currency Indices (POPULATE DATA)',
             'Status': 'Todo',
             'Priority': 'Critical',
             'Duration (hours)': 20,
