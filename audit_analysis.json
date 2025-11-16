@@ -1,0 +1,122 @@
+{
+  "audit_date": "2025-11-16T22:35:11.952991",
+  "summary": {
+    "total_stages": 108,
+    "done": 29,
+    "in_progress": 9,
+    "todo": 70,
+    "completion_rate": "26.9%",
+    "health_score": "20.5/100"
+  },
+  "database_status": {
+    "currency_index_tables": 0,
+    "arbitrage_tables": 0,
+    "reg_rate_tables": 364,
+    "reg_bqx_tables": 424,
+    "reg_rate_has_constant_term": false,
+    "reg_bqx_has_constant_term": true,
+    "reg_bqx_windows": [
+      "60",
+      "90",
+      "150",
+      "240",
+      "390",
+      "630"
+    ],
+    "total_tables": 28229
+  },
+  "critical_findings": [
+    {
+      "severity": "CRITICAL",
+      "stage": "BQX-2.3 (Currency Indices)",
+      "finding": "Stage marked as Todo in AirTable, but NO currency_index_* tables exist in database",
+      "impact": "Missing 224 currency-related features",
+      "airtable_status": "Todo",
+      "db_evidence": "0 tables found"
+    },
+    {
+      "severity": "CRITICAL",
+      "stage": "BQX-2.4 (Triangular Arbitrage)",
+      "finding": "Stage marked as Todo in AirTable, but NO arbitrage_* tables exist in database",
+      "impact": "Missing 112 arbitrage features",
+      "airtable_status": "Todo",
+      "db_evidence": "0 tables found"
+    },
+    {
+      "severity": "HIGH",
+      "stage": "BQX-2.11 (reg_rate Schema Alignment)",
+      "finding": "Stage marked as Done/In Progress, but reg_rate_* tables are missing constant_term columns",
+      "impact": "reg_rate tables still use old window structure (15,30,45,60,75) instead of aligned (60,90,150,240,390,630)",
+      "airtable_status": "Done, In Progress",
+      "db_evidence": "No constant_term columns found in reg_rate_eurusd_2024_07"
+    },
+    {
+      "severity": "MEDIUM",
+      "stage": "BQX-2.12 (reg_bqx Rebuild)",
+      "finding": "Stage marked as In Progress/Todo. reg_bqx tables exist with correct window structure",
+      "impact": "reg_bqx tables appear correctly rebuilt with windows (60,90,150,240,390,630) and term-based architecture",
+      "airtable_status": "Todo, In Progress",
+      "db_evidence": "424 tables with constant_term columns"
+    }
+  ],
+  "enhancement_stages": {
+    "found": [
+      {
+        "code": "BQX-2.3",
+        "status": "Todo",
+        "description": "Implement 8 currency strength indices (EUR, USD, GBP, JPY, AUD, NZD, CAD, CHF) by averaging BQX feat..."
+      },
+      {
+        "code": "BQX-2.4",
+        "status": "Todo",
+        "description": "Implement triangulation arbitrage detection across currency triplets (e.g., EURUSD vs EURGBP \u00d7 GBPUS..."
+      },
+      {
+        "code": "BQX-2.16B",
+        "status": "Todo",
+        "description": "TIER 1 (Critical): Expand Cross-Pair Interactions - Currency Blocs\n\nExpand from sister pairs to curr..."
+      },
+      {
+        "code": "BQX-2.17",
+        "status": "Todo",
+        "description": "TIER 2 (Very High Priority): Multi-Regime Autoencoders (REPLACES Single Autoencoder)\n\nFOUR regime-sp..."
+      },
+      {
+        "code": "BQX-2.17B",
+        "status": "Todo",
+        "description": "TIER 2 (Very High Priority): Graph Neural Network for Currency Network\n\nGNN with 28 pairs as nodes, ..."
+      },
+      {
+        "code": "BQX-2.16C",
+        "status": "Todo",
+        "description": "TIER 2 (High Priority): Dynamic Correlation Features\n\nRegime-dependent and time-of-day correlations ..."
+      },
+      {
+        "code": "BQX-2.17C",
+        "status": "Todo",
+        "description": "TIER 3 (Medium Priority): Hierarchical Autoencoders (Multi-Scale)\n\n3-level hierarchy: pair-level, cu..."
+      },
+      {
+        "code": "BQX-2.18B",
+        "status": "Todo",
+        "description": "TIER 3 (Medium Priority): Meta-Learning Transfer (High \u2192 Low Liquidity)\n\nTransfer learning from high..."
+      },
+      {
+        "code": "BQX-2.17D",
+        "status": "Todo",
+        "description": "TIER 3 (Medium Priority): Semi-Universal Currency Encoders\n\n8 currency-specific autoencoders (USD, E..."
+      },
+      {
+        "code": "BQX-2.17E",
+        "status": "Todo",
+        "description": "TIER 3 (Medium Priority): Universal Ensemble (VAE + Contrastive + Transformer)\n\nEnsemble 3 architect..."
+      },
+      {
+        "code": "BQX-2.20",
+        "status": "Todo",
+        "description": "TIER 3 (Medium Priority): Cross-Scope Hybrid Features\n\nCombine pair-exclusive, currency-related, and..."
+      }
+    ],
+    "missing": []
+  }
+}

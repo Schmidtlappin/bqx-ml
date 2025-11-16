@@ -1,0 +1,1621 @@
+[
+  {
+    "id": "rec0Nzt4ToLjmiawt",
+    "createdTime": "2025-11-09T03:50:06.000Z",
+    "fields": {
+      "Stage ID": "7.2 - Lambda Prediction API",
+      "Stage Code": "BQX-7.2",
+      "Description": "Deploy Lambda function for prediction API. Set up API Gateway with authentication. Integrate with SageMaker endpoint. Configure CloudWatch logging.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "INFRA-001",
+      "Charge": "Create Lambda function (inference/predict_lambda.py). Set up API Gateway with API key auth. Configure CloudWatch logs. Test end-to-end prediction flow.",
+      "Outcome": "Lambda API operational with <200ms p95 latency",
+      "Estimated Cost": 30,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recCBNGsoQmxb6zf2"
+    }
+  },
+  {
+    "id": "rec0xePvpCSKFZlSN",
+    "createdTime": "2025-11-12T19:52:35.000Z",
+    "fields": {
+      "Stage ID": "1.6.13 - Bollinger BQX Build",
+      "Stage Code": "BQX-1.6.13",
+      "Description": "COMPREHENSIVE DUAL ARCHITECTURE (Option B):\n\n**Part A - Expand bollinger_rate (IDX):**\n- Current: 5 features (bb_upper_20, bb_lower_20, bb_middle_20, bb_width_20, bb_percent_b)\n- Target: 20 features\n- Action: ALTER TABLE ADD 15 new columns\n- Tables: 336 existing partitions (10.3M rows preserved)\n- New features: Upper/Middle/Lower bands (3 more windows each), Bandwidth (3 more), %B (1 more), Band Slope (2)\n\n**Part B - Create bollinger_bqx:**\n- Schema: 20 features (identical to expanded bollinger_rate)\n- Tables: 672 new partitions\n- Computed from: BQX momentum rolling windows\n\n**TOTAL: 40 features (20 IDX expanded + 20 BQX created)**\n**Dual Architecture Parity: \u2705 IDX and BQX have identical feature sets**",
+      "Status": "Done",
+      "Duration": "6 hours",
+      "Notes": "Option B Comprehensive: 40 total features (20 IDX EXPAND (5\u219220), 20 BQX CREATE). Tables: 336 IDX, 672 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "rec1QqvkHpVQtUa8X",
+    "createdTime": "2025-11-09T03:50:05.000Z",
+    "fields": {
+      "Stage ID": "7.1 - Multi-Model Endpoint Deployment",
+      "Stage Code": "BQX-7.1",
+      "Description": "Deploy all 28 models to SageMaker multi-model endpoint. Configure ml.m5.xlarge instance. Set up autoscaling and monitoring.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "INFRA-001",
+      "Charge": "Create SageMaker multi-model endpoint. Upload all models to S3. Configure instance type and autoscaling. Test inference latency < 200ms.",
+      "Outcome": "Multi-model endpoint serving all 28 pairs with <200ms latency",
+      "Estimated Cost": 30,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recCBNGsoQmxb6zf2"
+    }
+  },
+  {
+    "id": "rec2xegEjNS2VsgOW",
+    "createdTime": "2025-11-09T03:50:02.000Z",
+    "fields": {
+      "Stage ID": "4.2 - TFT Training Script",
+      "Stage Code": "BQX-4.2",
+      "Description": "Implement Temporal Fusion Transformer training script using pytorch-forecasting library. Configure for SageMaker training jobs with GPU (ml.p3.2xlarge).",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement training/train_tft_sagemaker.py. Use pytorch-forecasting TemporalFusionTransformer. Configure hyperparameter tuning. Test on EURUSD first.",
+      "Outcome": "TFT training script validated on EURUSD with SageMaker integration",
+      "Estimated Cost": 50,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHWl0bSThq2wyOm"
+    }
+  },
+  {
+    "id": "rec3oVYsAifPm5D2h",
+    "createdTime": "2025-11-12T19:52:39.000Z",
+    "fields": {
+      "Stage ID": "1.6.19 - Realized Volatility Family",
+      "Stage Code": "BQX-1.6.19",
+      "Description": "\ud83c\udfaf HIGH ROI - Parkinson, Garman-Klass, Rogers-Satchell, Yang-Zhang. 15-25% improvement. 672 partitions.",
+      "Status": "Done",
+      "Duration": "10 hours"
+    }
+  },
+  {
+    "id": "rec401ZOWUc5byNRF",
+    "createdTime": "2025-11-09T03:50:01.000Z",
+    "fields": {
+      "Stage ID": "3.3 - Performance Analysis",
+      "Stage Code": "BQX-3.3",
+      "Description": "Analyze baseline model performance: calculate MAE, RMSE, R\u00b2, directional accuracy for all 28 pairs. Identify best/worst performers. Determine if advanced models needed.",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Generate performance report with metrics table. Create visualizations (R\u00b2 distribution, MAE by pair). Write recommendation: proceed to TFT or stick with RF.",
+      "Outcome": "Baseline performance report with decision on advanced models",
+      "Estimated Cost": 3,
+      "Notes": "\n\n**INFRASTRUCTURE TRANSITION:**\n\nPhase 3 uses fully serverless SageMaker architecture.\n**EC2 downgraded (not terminated)** after Phase 2 completion.\n\n**Infrastructure Components:**\n- \u2705 **SageMaker Training Jobs:** ml.m5.2xlarge (on-demand compute)\n- \u2705 **SageMaker Endpoints:** ml.m5.2xlarge (auto-scaling 1-4 instances)\n- \u2705 **Lambda Functions:** Feature extraction + inference API\n- \u2705 **API Gateway:** REST API for predictions\n- \u2705 **Aurora Serverless v2:** Feature data (0.5-32 ACU)\n- \u2139\ufe0f  **EC2 (t3.xlarge):** Downgraded for monitoring/maintenance (optional)\n\n**NO HIGH-PERFORMANCE EC2 REQUIRED**\n\nThe c7i.8xlarge instance used during Phase 2 is downgraded to t3.xlarge\nafter Phase 2 completes. Phase 3 workloads run on SageMaker infrastructure.\n\n**EC2 Role in Phase 3:**\n- Monitoring and troubleshooting\n- Ad-hoc database queries\n- Support for other projects (Robkei-Ring, OmniDrive, box)\n- Emergency maintenance access\n\n**Cost Structure:**\n- SageMaker Training: $9.46/month\n- SageMaker Inference: $391.86/month\n- Storage & Monitoring: $111.06/month\n- EC2 (t3.xlarge, optional): $121/month\n- **Total: ~$633/month** (vs $840/month if c7i.8xlarge kept)\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recRkPPEyCcGNV0kn"
+    }
+  },
+  {
+    "id": "rec4PvTPjlsl2B4Yn",
+    "createdTime": "2025-11-10T18:45:11.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.7: Unified Model Implementation",
+      "Description": "Implement unified multi-pair model architecture with pair embeddings",
+      "Status": "Todo",
+      "Duration": "1 hour",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "rec4W8LOlwf9RL6Vo",
+    "createdTime": "2025-11-13T16:29:10.000Z",
+    "fields": {
+      "Stage ID": "2.1.2 - Track 2: Regression Features",
+      "Stage Code": "BQX-2.1.2",
+      "Description": "\ud83d\udd04 TRACK 2 IN PROGRESS (8.3%)\n\n**Progress:** 28/336 partitions complete\n- reg_idx features: 2,520/30,240 (8.3%)\n- reg_bqx features: 2,520/30,240 (8.3%)\n- Total: 5,040/60,480 regression features\n\n**Features per Partition:** 180 total\n- 90 reg_idx (rate_index domain) - PRIMARY for pair-to-pair comparability\n- 90 reg_bqx (BQX momentum domain) - SECONDARY for momentum analysis\n- 6 windows: w15, w30, w45, w60, w75, agg\n- 15 metrics per window: a2, a1, b, r\u00b2, RMSE, residuals, prediction intervals, curvature, etc.\n\n**Performance:**\n- 8 parallel workers at 90-95% CPU\n- 0 failures since .values fix\n- Avg: 9.6 min per partition\n- ETA: ~5.5 hours (completion ~02:45 AM)\n\n**Output:** reg_rate_{pair}_{year_month}, reg_bqx_{pair}_{year_month}\n**Critical Fixes:** NaT serialization bug resolved (.iterrows \u2192 .values)\n**Started:** 2025-11-13\n",
+      "Status": "In Progress",
+      "Duration": "2.8 hours remaining (c7i.8xlarge)",
+      "Notes": "\ud83d\udd04 TRACK 2 IN PROGRESS\n\n**Status:** 92/336 partitions complete (27.4%)\n- Started: 2025-11-13 20:20\n- 180 features: 90 rate_index domain + 90 BQX domain\n- 6 windows \u00d7 15 metrics per domain\n- 8 parallel workers at 90-95% CPU (optimized from 4)\n\n**Issues Fixed:**\n1. Critical NaT serialization bug: Switched from .iterrows() to .values\n2. Worker optimization: 4 \u2192 8 workers for 2x throughput\n3. CPU utilization: 50% \u2192 87% (optimal)\n\n**Performance:**\n- 0 failures since fix applied\n- ETA: ~3 hours remaining (completion ~02:00 AM Nov 14)\n- Memory: 5.7 GiB / 30 GiB (19%)\n- CPU Load: 8.92 / 8.0 cores\n\n**Tables:** reg_rate_{pair}_{year_month}, reg_bqx_{pair}_{year_month}\n\n\n**EC2 UPGRADE IMPACT (c7i.8xlarge):**\n- Baseline: 11 hours total (8 workers on t3.2xlarge)\n- Upgraded: 2.8 hours remaining (32 workers on c7i.8xlarge)\n- Speedup: 3.9x faster\n- Cost Impact: Included in $27.25 Phase 2 total\n"
+    }
+  },
+  {
+    "id": "rec5C6aUMdLSeY1Za",
+    "createdTime": "2025-11-09T03:49:55.000Z",
+    "fields": {
+      "Stage ID": "1.1 - Create BQX Table Structure",
+      "Stage Code": "BQX-1.1",
+      "Description": "Create 28 parent BQX tables with monthly partitioning schema (2024-07 through 2025-06). Each table partitioned by month for efficient querying.",
+      "Status": "Done",
+      "Duration": "2 hours",
+      "Assigned To": "DATA-001",
+      "Charge": "Create PostgreSQL tables for 28 pairs with monthly partitioning. Use CREATE TABLE PARTITION BY RANGE for efficient data organization.",
+      "Outcome": "28 BQX parent tables with 336 monthly partitions created successfully",
+      "Estimated Cost": 5,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "rec23B8cy6p2UvoEW"
+    }
+  },
+  {
+    "id": "rec5I5uyv3nfFhPtw",
+    "createdTime": "2025-11-09T04:45:30.000Z",
+    "fields": {
+      "Stage ID": "10.3 - Adaptive Ensemble Weights",
+      "Stage Code": "BQX-10.3",
+      "Description": "Recalculate ensemble weights weekly based on recent performance. Per-pair optimization. Time-decay: recent 2 weeks weighted 2x vs older data.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Create adaptive_ensemble.py. Each Sunday: (1) Evaluate each model on past 2 weeks (weighted 2x) + past 2 months (weighted 1x), (2) Optimize ensemble weights per pair using validation performance, (3) Save new weights to S3, (4) Update inference Lambda to use new weights. Track weight evolution over time.",
+      "Outcome": "Adaptive ensemble weights operational with weekly updates",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "rec5XqUcXp3pVeSFd",
+    "createdTime": "2025-11-09T04:45:30.000Z",
+    "fields": {
+      "Stage ID": "10.4 - A/B Testing Framework",
+      "Stage Code": "BQX-10.4",
+      "Description": "Deploy champion/challenger A/B testing. New models serve 10% traffic (challenger). If challenger R\u00b2 > champion + 0.01 for 48 hours, promote to champion (100% traffic).",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Modify Lambda API: route 90% traffic to champion endpoint, 10% to challenger. Log predictions + actuals for both. Calculate rolling 48-hour R\u00b2 for each. If challenger wins (R\u00b2 > champion + 0.01 for 48h), swap endpoints (promote challenger to champion). Send SNS notification on promotion.",
+      "Outcome": "A/B testing framework operational with automatic promotion",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "rec5hlTHDiEQGBu6o",
+    "createdTime": "2025-11-16T22:27:26.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.17B",
+      "Description": "TIER 2 (Very High Priority): Graph Neural Network for Currency Network\n\nGNN with 28 pairs as nodes, 56 edges via shared currencies.\n\nArchitecture: 3-Layer GCN, 128-dim graph-aware embeddings\nExpected Impact: Universal scope 6/10 \u2192 8/10, R\u00b2 0.87 \u2192 0.88 (+1.1%), Sharpe 1.95 \u2192 2.05 (+5.1%)\nDependencies: BQX-2.17",
+      "Status": "Todo",
+      "Duration": "40 hours",
+      "Estimated Cost": 50
+    }
+  },
+  {
+    "id": "rec5r3JLLUwIQqKYy",
+    "createdTime": "2025-11-09T03:49:57.000Z",
+    "fields": {
+      "Stage ID": "2.1 - Raw Feature Extraction",
+      "Stage Code": "BQX-2.1",
+      "Description": "Extract 109 raw features per pair: 37 BQX features (5 windows \u00d7 6 metrics + 7 aggregates) + 72 REG features (6 windows \u00d7 12 metrics). Implement in data/features.py.",
+      "Status": "Done",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement extract_bqx_features() and extract_reg_features() in data/features.py. Query Aurora BQX and REG tables. Return pandas DataFrame.",
+      "Outcome": "109 raw features per pair extracted successfully, features.py module operational",
+      "Estimated Cost": 5,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "rec5wrtBQykikIAs5",
+    "createdTime": "2025-11-09T03:49:57.000Z",
+    "fields": {
+      "Stage ID": "2.2 - Lagged Feature Creation",
+      "Stage Code": "BQX-2.2",
+      "Description": "Create 148 lagged features from 37 BQX features at 4 lag intervals (60, 120, 180, 240 minutes). Implement temporal causality (61-min lag rule) to prevent data leakage.",
+      "Status": "Done",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement create_lagged_features() in data/features.py. Use pandas shift() with proper timestamp alignment. Validate no future data leakage.",
+      "Outcome": "148 lagged features created with temporal causality validated",
+      "Estimated Cost": 5,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "rec75IfKI3MFLG2IF",
+    "createdTime": "2025-11-09T03:50:01.000Z",
+    "fields": {
+      "Stage ID": "3.4 - Feature Importance Analysis",
+      "Stage Code": "BQX-3.4",
+      "Description": "Extract feature importance from Random Forest models. Identify top 20 features per pair. Analyze common important features across pairs.",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Extract feature_importances_ from trained models. Create visualization (heatmap of top features by pair). Document insights.",
+      "Outcome": "Feature importance report with top 20 features per pair documented",
+      "Estimated Cost": 2,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recRkPPEyCcGNV0kn"
+    }
+  },
+  {
+    "id": "rec80lkJ73iNuODdY",
+    "createdTime": "2025-11-11T18:46:17.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.6: Validation & Production Readiness",
+      "Description": "Comprehensive testing, backtesting, paper trading, and production readiness certification.\n\n**TASKS (8 tasks, 24 hours):**\n\u2022 TSK-3.6.1: Implement walk-forward backtesting framework (6h)\n\u2022 TSK-3.6.2: Conduct paper trading validation (4h)\n\u2022 TSK-3.6.3: Production readiness checklist (3.5h)\n\u2022 TSK-3.6.4: Performance benchmarking (3h)\n\u2022 TSK-3.6.5: Create rollout plan (2.5h)\n\u2022 TSK-3.6.6: Enhanced backtesting framework (12h) [NEW - Gap 6]\n\u2022 TSK-3.6.7: Feature importance validation (2h)\n\u2022 TSK-3.6.8: End-to-end integration test (3h)\n\n**DELIVERABLES:**\n\u2022 Backtest results: 12-month walk-forward validation (R\u00b2 > 0.85 consistently)\n\u2022 Paper trading: 1 week live validation (no real capital, performance within \u00b110% of backtest)\n\u2022 Readiness checklist: All 28 models tested, latency < 200ms, monitoring operational\n\u2022 Load test report: 100 req/sec sustained, P99 < 200ms\n\u2022 Rollout plan: Phased (3 pairs \u2192 10 pairs \u2192 28 pairs)\n\u2022 Enhanced backtest: Trading strategy, P&L, Sharpe > 1.5, vs buy-and-hold\n\n**TECHNICAL:**\n\u2022 Walk-forward: Train on 6 months, test on 1 month (12 windows)\n\u2022 Trading strategy: Entry thresholds (+/-0.0005), position sizing (Kelly), stop-loss (0.5%), take-profit (1%)\n\u2022 Performance metrics: Sharpe ratio, max drawdown, win rate, profit factor, Calmar ratio\n\u2022 Load testing: 100 req/sec for 10 minutes, verify auto-scaling 1\u21922 instances",
+      "Status": "Todo",
+      "Duration": "24 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "rec8OmU3nP17YLEmA",
+    "createdTime": "2025-11-09T03:49:56.000Z",
+    "fields": {
+      "Stage ID": "1.3 - Data Quality Validation",
+      "Stage Code": "BQX-1.3",
+      "Description": "Validate backfill quality: check NULL distribution (should only be first 75 minutes), verify storage size (expected 4.3 GB \u00b1 10%), validate edge effects at partition boundaries.",
+      "Status": "Todo",
+      "Duration": "2 hours",
+      "Assigned To": "QA-001",
+      "Charge": "Query each partition for NULL counts, storage size, row counts. Verify BQX calculation correctness on sample data. Document any anomalies.",
+      "Outcome": "Data quality report confirming all 336 partitions meet quality standards",
+      "Estimated Cost": 3,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "rec23B8cy6p2UvoEW"
+    }
+  },
+  {
+    "id": "rec8t40F57aPQfL3u",
+    "createdTime": "2025-11-12T19:52:41.000Z",
+    "fields": {
+      "Stage ID": "1.7.1 - Database Schema Expansion",
+      "Stage Code": "BQX-1.7.1",
+      "Description": "Expand Aurora RDB for 1,080 features. Add 3,036 new tables. Current 61GB \u2192 97GB projected.",
+      "Status": "Todo",
+      "Duration": "4 hours"
+    }
+  },
+  {
+    "id": "rec9L3xRrDTT8Pqnb",
+    "createdTime": "2025-11-14T21:52:31.000Z",
+    "fields": {
+      "Stage ID": "2.11 - Cost Documentation Update",
+      "Stage Code": "BQX-2.11",
+      "Description": "Update all documentation and AirTable to reflect On-Demand pricing ($57.80) instead of Spot ($19.13)",
+      "Status": "In Progress",
+      "Duration": "30 minutes",
+      "Estimated Cost": 0,
+      "Notes": "## Issue: Cost Documentation Mismatch\n\n**Problem:** All docs reference Spot pricing ($19.13), but deployment uses On-Demand ($57.80).\n\n**Impact:** Budget tracking, stakeholder expectations\n\n**Remediation:**\n1. Update AirTable Stage 2.10 cost: 19.13 \u2192 57.80\n2. Update 6 documentation files\n3. Recalculate annual cost comparisons\n4. Add \"Cost Change Notice\" to key docs\n\n**Updated Costs:**\n- Phase 2: $19.13 \u2192 $57.80\n- 1-year total: $200.93 \u2192 $239.60\n- Annual savings vs current: $2,775.93 \u2192 $2,737.26\n- Annual savings vs in-place: $1,272.60 \u2192 $1,233.93\n\n**Files to Update:**\n- docs/REFACTORED_PLAN_SUMMARY.md\n- docs/architecture_decision_temporary_ec2.md\n- docs/temporary_ec2_implementation_guide.md\n- docs/phase_2_ec2_cost_analysis.md\n- scripts/airtable/add_phase_2_infrastructure_stage.py\n- scripts/infrastructure/launch_temporary_phase2_ec2.sh\n\n**Priority:** HIGH\n**Risk:** LOW (documentation only)\n**Owner:** Infrastructure Team\n"
+    }
+  },
+  {
+    "id": "recAN9j9pNUwUdCFh",
+    "createdTime": "2025-11-11T18:46:14.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.2: Hyperparameter Optimization & Model Registry",
+      "Description": "Automated hyperparameter tuning and model versioning with approval workflow.\n\n**TASKS (3 tasks, 14 hours):**\n\u2022 TSK-3.2.1: Configure SageMaker HPO (5h)\n\u2022 TSK-3.2.2: Implement model registry integration (5h)\n\u2022 TSK-3.2.3: Create automated retraining pipeline (6h)\n\n**DELIVERABLES:**\n\u2022 HPO configuration: 50 trials, Bayesian optimization (3 priority pairs)\n\u2022 Model registry: bqx-ml-models with approval workflow\n\u2022 Retraining Lambda: Monthly + on-demand (drift/performance triggers)\n\n**TECHNICAL:**\n\u2022 HPO scope: EURUSD, GBPUSD, USDJPY (3 pairs)\n\u2022 Search space: n_estimators (50-200), max_depth (5-20), min_samples_split (10-50)\n\u2022 Objective: Maximize R\u00b2 on validation set\n\u2022 Registry metadata: pair, R\u00b2, MAE, directional_accuracy, feature_count (70), training_date\n\u2022 Approval: Automated (R\u00b2 > 0.85) or manual",
+      "Status": "Todo",
+      "Duration": "14 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "recAXjq4UeDDEWru5",
+    "createdTime": "2025-11-10T20:28:27.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.8: ML Correlation Recalculation",
+      "Description": "Recreate ml_corr* tables with correlations calculated against NEW target: w60_bqx_return at t+60.\n\nREASON FOR RECALCULATION:\n- Old ml_corr data used pre-BQX target metric  \n- Target changed to w60_bqx_return at t+60\n- corr(Feature, OldTarget) \u2260 corr(Feature, NewTarget)\n- Must recalculate ALL feature-to-target correlations\n\nDELIVERABLES:\n- ml_corr_triangulation_partitioned table created\n- 85 monthly partitions (2020-01 through 2026-12)\n- Feature-to-target correlations: 28 pairs \u00d7 ~40 BQX features \u00d7 3 windows (60, 240, 390 min)\n- Indexes on (source_mv, ts_utc), (correlation_window), (source_mv)\n- Verification: correlations in [-1, 1], target = w60_bqx_return at t+60\n- Expected size: ~2.4 TB",
+      "Status": "Todo",
+      "Duration": "6 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recBAW7LrsMpswIMo",
+    "createdTime": "2025-11-12T19:52:34.000Z",
+    "fields": {
+      "Stage ID": "1.6.10 - Technical IDX Build",
+      "Stage Code": "BQX-1.6.10",
+      "Description": "Build technical indicators on rate_index: RSI, MACD, Stochastic, CCI, Williams %R, ROC, ATR, ADX. 336 partitions.",
+      "Status": "Done",
+      "Duration": "8 hours"
+    }
+  },
+  {
+    "id": "recBTG58VgXFkufmB",
+    "createdTime": "2025-11-12T19:52:36.000Z",
+    "fields": {
+      "Stage ID": "1.6.14 - Fibonacci BQX Build",
+      "Stage Code": "BQX-1.6.14",
+      "Description": "COMPREHENSIVE DUAL ARCHITECTURE (Option B):\n\n**Part A - Expand fibonacci_rate (IDX):**\n- Current: 12 features (fib retracement/extension levels, fan, arc)\n- Target: 20 features\n- Action: ALTER TABLE ADD 8 new columns\n- Tables: 336 existing partitions (10.2M rows preserved)\n- New features: Extension (1 more), Pivot points (3), Distance to levels (4)\n\n**Part B - Create fibonacci_bqx:**\n- Schema: 20 features (standardized Fibonacci schema)\n- Tables: 672 new partitions\n- Computed from: BQX momentum swing highs/lows\n\n**TOTAL: 40 features (20 IDX expanded + 20 BQX created)**\n**Dual Architecture Parity: \u2705 IDX and BQX have identical feature sets**",
+      "Status": "Done",
+      "Duration": "6 hours",
+      "Notes": "Option B Comprehensive: 40 total features (20 IDX EXPAND (12\u219220), 20 BQX CREATE). Tables: 336 IDX, 672 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "recBTrbglqJVGDYUP",
+    "createdTime": "2025-11-09T04:45:18.000Z",
+    "fields": {
+      "Stage ID": "2.8 - R\u00b2/RMSE Enhanced Features",
+      "Stage Code": "BQX-2.8",
+      "Description": "Implement 10 predictability features per pair: R\u00b2 values from regression windows, confidence intervals, RMSE normalization, R\u00b2 decay rates",
+      "Status": "Todo",
+      "Duration": "6 hours (c7i.8xlarge)",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Extract R\u00b2 from w60, w90 regression fits. Calculate confidence intervals (\u00b11.96 * SE). Compute RMSE normalization (w60_rmse / w60_avg). Calculate R\u00b2 decay rate ((w60_r2 - w90_r2) / 30). Add to features table.",
+      "Outcome": "10 predictability features added per pair",
+      "Estimated Cost": 5,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT:**\n- Baseline: 24 hours (4 workers)\n- Upgraded: 6 hours (16 workers)\n- Speedup: 4.0x faster\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recBgeOf52vjXDQSQ",
+    "createdTime": "2025-11-11T18:46:15.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.3: Model Deployment Infrastructure",
+      "Description": "Multi-model endpoint with auto-scaling, blue/green deployment, and A/B testing.\n\n**TASKS (5 tasks, 16 hours):**\n\u2022 TSK-3.3.1: Create SageMaker inference container (5.5h)\n\u2022 TSK-3.3.2: Deploy multi-model endpoint (4.5h)\n\u2022 TSK-3.3.3: Configure auto-scaling policies (3.75h)\n\u2022 TSK-3.3.4: Implement blue/green deployment (5h)\n\u2022 TSK-3.3.5: Create A/B testing framework (4.5h)\n\n**DELIVERABLES:**\n\u2022 Multi-model endpoint: bqx-ml-multi-model-production\n\u2022 Auto-scaling: 1-4 instances (target 400 invocations/min)\n\u2022 Blue/green deployment scripts: Gradual traffic shift (10% \u2192 50% \u2192 100%)\n\u2022 A/B testing: Traffic splitting Lambda + analysis notebook\n\n**TECHNICAL:**\n\u2022 Instance: ml.m5.xlarge (4 vCPU, 16 GB RAM)\n\u2022 Model loading: On-demand with LRU cache (10 most recent)\n\u2022 Latency: ~10ms inference (after model loaded), ~500ms cold start\n\u2022 Memory: 28 models \u00d7 50 MB = 1.4 GB (fits in 16 GB)\n\u2022 Throughput: 7 req/sec per instance sustained",
+      "Status": "Todo",
+      "Duration": "16 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "recD9snWVRPnWkJ3s",
+    "createdTime": "2025-11-09T05:01:26.000Z",
+    "fields": {
+      "Stage ID": "10.5 - Repository & Documentation Sync",
+      "Stage Code": "BQX-10.5",
+      "Description": "Weekly sync of bqx-ml repository with latest artifacts, documentation, learnings, and code updates. Keep GitHub repo aligned with Airtable plan.",
+      "Status": "Todo",
+      "Duration": "Ongoing (2 hours/week)",
+      "Assigned To": "COORD-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Weekly (every Monday 9am UTC):\n1. Export latest artifacts from Airtable to bqx-ml/docs/artifacts/\n2. Update README.md with current phase/stage status\n3. Sync training/inference code with latest model versions\n4. Update CHANGELOG.md with weekly progress\n5. Commit and push to GitHub (with meaningful commit messages)\n6. Tag releases at major milestones (Phase completions)\n\nAutomation: GitHub Actions workflow triggered on Airtable webhook",
+      "Outcome": "bqx-ml repository always reflects latest plan state and artifacts",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "recDAFaHZnUBepi8B",
+    "createdTime": "2025-11-13T16:29:10.000Z",
+    "fields": {
+      "Stage ID": "2.1.1 - Track 1: Wave 1 Feature Population",
+      "Stage Code": "BQX-2.1.1",
+      "Description": "\u2705 TRACK 1 COMPLETE (100%)\n\n**Status:** 336/336 partitions populated (100%)\n- All expected partitions for Jul 2024 - Jun 2025\n- 21 features per partition\n- 4 Bollinger windows: 20, 30, 60, 120\n- 2 slope indicators\n\n**Features Computed:**\n- bb_upper, bb_middle, bb_lower, bb_width, bb_percent_b (per window)\n- bb_slope_20, bb_slope_60\n\n**Output:** bollinger_bqx_{pair}_{year_month} tables\n**Duration:** ~4 hours\n**Completion Date:** 2025-11-13\n",
+      "Status": "Done",
+      "Duration": "9 days",
+      "Notes": "\u2705 TRACK 1 COMPLETE\n\n**Status:** 426/672 partitions populated (63.4%)\n- Remaining 246 are expected \"No BQX data\" (future months)\n- 21 features per partition (4 windows: 20, 30, 60, 120 + 2 slopes)\n- Duration: ~4 hours\n\n**Issues Fixed:**\n1. Table mismatch: Changed from m1_ to bqx_ table\n2. Column names: Updated to match bollinger_bqx schema\n3. Feature expansion: 10 \u2192 21 features (4 windows instead of 2)\n\n**Output:** 426 monthly partitions populated across 28 currency pairs\n**Tables:** bollinger_bqx_{pair}_{year_month}\n"
+    }
+  },
+  {
+    "id": "recDFqhH8leN378R6",
+    "createdTime": "2025-11-14T04:32:04.000Z",
+    "fields": {
+      "Stage ID": "2.10 - Infrastructure Management",
+      "Stage Code": "BQX-2.10",
+      "Description": "EC2 upgrade for Phase 2 acceleration, followed by downgrade to cost-effective instance for ongoing operations",
+      "Status": "In Progress",
+      "Duration": "1.3 days (Phase 2 accelerated)",
+      "Estimated Cost": 27.25,
+      "Notes": "\ud83d\ude80 **EC2 UPGRADE APPROVED: 2025-11-14**\n\n## Decision: Option 2 (c7i.8xlarge with Spot Pricing)\n\n**Upgrade Strategy:**\n- **Current:** t3.2xlarge (8 vCPUs, 32GB RAM, $0.33/hour)\n- **Phase 2 Upgrade:** c7i.8xlarge (32 vCPUs, 64GB RAM, ~$0.45/hour Spot)\n- **Post-Phase 2 Downgrade:** t3.xlarge (4 vCPUs, 16GB RAM, $0.17/hour)\n\n**Implementation Method:** IN-PLACE UPGRADE\n- Stop trillium-master instance\n- Change instance type to c7i.8xlarge\n- Start instance (5-minute downtime)\n- Track 2 workers resume automatically\n\n---\n\n## Phase 2 Timeline Impact\n\n**Baseline (t3.2xlarge):**\n- Total Duration: 130 hours (5.4 days)\n- Total Cost: $60.86\n\n**Upgraded (c7i.8xlarge Spot):**\n- Total Duration: 31 hours (1.3 days)\n- Total Cost: $27.25\n- **Savings: $33.61 (55%) + 99 hours (76% faster)**\n\n**Stage-by-Stage Impact:**\n- Track 2 (2.1.2): 2.8 hours (vs 11 hours baseline)\n- Stage 2.2: 3.8 hours (vs 15 hours)\n- Stage 2.9: 12 hours (vs 48 hours) - BIGGEST IMPACT\n- Stage 2.6: 6 hours (vs 24 hours)\n- Stage 2.7: 6 hours (vs 24 hours)\n\n---\n\n## Post-Phase 2 Downgrade Plan\n\n**IMPORTANT: EC2 NOT TERMINATED**\n\nAfter Stage 2.7 (S3 Export) completes:\n1. Stop c7i.8xlarge instance\n2. Change instance type to **t3.xlarge** (4 vCPUs, 16GB RAM)\n3. Start instance\n4. Instance remains active for:\n   - Phase 3 monitoring and maintenance\n   - Other projects: Robkei-Ring, OmniDrive, box\n   - Ad-hoc database queries\n   - Emergency troubleshooting\n\n**Monthly Cost Reduction:**\n- Phase 2 (c7i.8xlarge Spot): ~$330/month (if kept running - NOT RECOMMENDED)\n- Post-Downgrade (t3.xlarge): $121/month\n- **Savings vs Current:** $121/month (50% reduction from $243/month)\n\n---\n\n## Cost Analysis\n\n| Phase | Instance | Duration | Cost |\n|-------|----------|----------|------|\n| **Phase 2** | c7i.8xlarge Spot | 31 hours | $27.25 |\n| **Post-Phase 2** | t3.xlarge | Ongoing | $121/month |\n\n**Phase 2 Breakdown:**\n- EC2 (Spot): ~$14/month\n- Aurora (2.5 ACU avg): $9.30\n- S3 + Transfer Accel: $4\n- **Total: $27.25** (vs $60.86 baseline = 55% savings)\n\n**Annual Savings (Post-Downgrade):**\n- Current t3.2xlarge: $243/month \u00d7 12 = $2,916/year\n- Downgraded t3.xlarge: $121/month \u00d7 12 = $1,452/year\n- **Annual Savings: $1,464/year**\n\n---\n\n## Implementation Checklist\n\n**Pre-Upgrade:**\n- [x] EC2 upgrade Option 2 approved by user (2025-11-14)\n- [ ] Track 2 current progress verified (97.3% complete)\n- [ ] Create AMI snapshot (backup)\n- [ ] Document running processes\n- [ ] Gracefully stop Track 2 workers\n\n**Upgrade Execution:**\n- [ ] Stop trillium-master instance\n- [ ] Change instance type to c7i.8xlarge\n- [ ] Request Spot pricing (~$0.45/hour)\n- [ ] Start instance\n- [ ] Verify 32 vCPUs, 64GB RAM available\n\n**Post-Upgrade Validation:**\n- [ ] Test Aurora database connectivity\n- [ ] Verify Python environment intact\n- [ ] Restart Track 2 with 32 workers\n- [ ] Monitor worker parallelization\n- [ ] Verify 4x speedup achieved\n\n**Post-Phase 2 Downgrade:**\n- [ ] Validate Stage 2.7 (S3 Export) complete\n- [ ] Verify all 1,080 features in Aurora\n- [ ] Verify Parquet files in S3 (40-50 GB)\n- [ ] Stop c7i.8xlarge instance\n- [ ] Change instance type to t3.xlarge\n- [ ] Start instance\n- [ ] Verify other projects operational\n- [ ] Update monthly cost tracking\n\n---\n\n## Risk Assessment\n\n**Technical Risk:** LOW\n- \u2705 In-place upgrade is AWS standard procedure\n- \u2705 All data on EBS volumes (preserved)\n- \u2705 Track 2 workers are stateless (resume automatically)\n- \u2705 5-minute downtime acceptable (development workload)\n\n**Cost Risk:** LOW\n- \u2705 Phase 2 duration limited to 1.3 days\n- \u2705 Immediate downgrade after completion\n- \u2705 Total cost $27.25 (cheaper than baseline!)\n\n**Operational Risk:** LOW\n- \u2705 trillium-master hosts other projects (will briefly stop)\n- \u2705 Other projects auto-restart after downtime\n- \u2705 No production traffic dependencies\n\n---\n\n## Phase 3 Considerations\n\n**EC2 Role in Phase 3:**\n- Phase 3 uses SageMaker (serverless architecture)\n- EC2 NOT required for Phase 3 operations\n- EC2 kept active (downgraded) for:\n  - Monitoring and troubleshooting\n  - Ad-hoc database queries\n  - Support for other projects\n  - Emergency maintenance access\n\n**Phase 3 Costs (No EC2 Dependency):**\n- SageMaker Training: $9.46/month\n- SageMaker Inference: $391.86/month\n- Storage & Monitoring: $111.06/month\n- EC2 (t3.xlarge, optional): $121/month\n- **Total: ~$633/month** (Phase 3 + downgraded EC2)\n\n---\n\n## Timeline\n\n**Estimated Dates:**\n- Upgrade Execution: 2025-11-14 (pending Track 2 completion)\n- Phase 2 Completion: 2025-11-15 (~1.3 days after upgrade)\n- Downgrade Execution: 2025-11-15 (immediately after Phase 2)\n- Phase 3 Start: 2025-11-16\n\n---\n\n**Status:** \u23f3 APPROVED - Awaiting Track 2 completion for upgrade execution\n**Next Action:** Execute upgrade when Track 2 reaches 100% (currently 97.3%)\n**Owner:** Infrastructure Team\n**Updated:** 2025-11-14\n"
+    }
+  },
+  {
+    "id": "recDLWZ6PynFR1ClD",
+    "createdTime": "2025-11-16T02:53:24.000Z",
+    "fields": {
+      "Stage ID": "2.15 - Alignment Validation",
+      "Stage Code": "BQX-2.15",
+      "Description": "Comprehensive validation of 100% schema alignment and documentation updates",
+      "Status": "Todo",
+      "Duration": "1 hour",
+      "Estimated Cost": 0.33,
+      "Notes": "\u2705 **NO RISK** - Read-only validation\n\n## Objective\nComprehensive validation of 100% alignment between reg_rate and reg_bqx\n\n## Validation Queries\n\n### 1. Schema Alignment\n```sql\nSELECT\n    (SELECT COUNT(*) FROM information_schema.columns\n     WHERE table_name = 'reg_eurusd_2024_07' AND column_name ~ '^w60_') AS rate_cols,\n    (SELECT COUNT(*) FROM information_schema.columns\n     WHERE table_name = 'reg_bqx_eurusd_2024_07' AND column_name ~ '^w60_') AS bqx_cols;\n-- Expected: Same count (7 columns each)\n```\n\n### 2. Window Alignment\n```sql\nWITH rate_windows AS (\n    SELECT DISTINCT regexp_replace(column_name, '_.*', '') AS window\n    FROM information_schema.columns\n    WHERE table_name = 'reg_eurusd_2024_07' AND column_name ~ '^w[0-9]+'\n),\nbqx_windows AS (\n    SELECT DISTINCT regexp_replace(column_name, '_.*', '') AS window\n    FROM information_schema.columns\n    WHERE table_name = 'reg_bqx_eurusd_2024_07' AND column_name ~ '^w[0-9]+'\n)\nSELECT r.window, b.window,\n       CASE WHEN r.window = b.window THEN '\u2705 Aligned' ELSE '\u274c Misaligned' END\nFROM rate_windows r\nFULL OUTER JOIN bqx_windows b ON r.window = b.window;\n-- Expected: All \u2705 Aligned\n```\n\n### 3. Data Integrity\n```sql\nSELECT ts_utc,\n       w60_quadratic_term, w60_linear_term, w60_constant_term,\n       w60_prediction,\n       ABS(w60_prediction - (w60_quadratic_term + w60_linear_term + w60_constant_term)) AS pred_error\nFROM bqx.reg_eurusd_2024_07\nWHERE w60_prediction IS NOT NULL\nLIMIT 100;\n-- Expected: pred_error < 0.001\n```\n\n### 4. Covariance Coverage\n```sql\nSELECT COUNT(*) AS total,\n       COUNT(cov_quad_lin_bqx_60min) AS cov_count,\n       ROUND(100.0 * COUNT(cov_quad_lin_bqx_60min) / COUNT(*), 2) AS coverage\nFROM bqx.correlation_bqx_eurusd_2024_07;\n-- Expected: coverage > 99%\n```\n\n### 5. Cross-Domain Comparability\n```sql\nSELECT r.ts_utc,\n       r.w60_r2 AS rate_r2,\n       b.w60_r2 AS bqx_r2,\n       CASE WHEN r.w60_r2 IS NOT NULL AND b.w60_r2 IS NOT NULL\n            THEN '\u2705 Comparable' ELSE '\u274c Missing' END AS status\nFROM bqx.reg_eurusd_2024_07 r\nJOIN bqx.reg_bqx_eurusd_2024_07 b ON r.ts_utc = b.ts_utc\nLIMIT 100;\n-- Expected: All \u2705 Comparable\n```\n\n## Documentation Updates\n- Add table comments (reg_rate, reg_bqx, correlation_bqx)\n- Update README with 100% alignment confirmation\n- Create validation report\n\n## Success Criteria\n- [ ] \u2705 Windows Aligned (both have {60, 90, 150, 240, 390, 630})\n- [ ] \u2705 Schema Aligned (both have 7 features per window)\n- [ ] \u2705 Term-Based (both have quadratic_term, linear_term, constant_term, residual)\n- [ ] \u2705 Covariance Features (all 6 calculated and stored)\n- [ ] \u2705 Data Integrity (prediction = sum of terms)\n- [ ] \u2705 Cross-Domain Comparable (can JOIN at same timestamps)\n- [ ] \u2705 No Data Loss (row counts match original)\n\n**Duration:** 1 hour\n**Cost:** $0.33\n**Validation Queries:** 5\n**Risk:** NONE"
+    }
+  },
+  {
+    "id": "recDV1KdrrPb9ssE1",
+    "createdTime": "2025-11-16T02:53:24.000Z",
+    "fields": {
+      "Stage ID": "2.12 - reg_bqx Complete Rebuild",
+      "Stage Code": "BQX-2.12",
+      "Description": "Rebuild all reg_bqx_* tables with aligned windows (60,90,150,240,390,630) and term-based architecture",
+      "Status": "Todo",
+      "Duration": "3-4 hours",
+      "Estimated Cost": 1.2,
+      "Notes": "\u26a0\ufe0f **MEDIUM RISK** - Requires re-computation, backup recommended\n\n## Objective\nRebuild all 336 reg_bqx_* partitions with:\n- Aligned windows: {60, 90, 150, 240, 390, 630} (matching reg_rate)\n- Term-based schema: quadratic_term, linear_term, constant_term, residual\n- Remove coefficient-only approach\n\n## Current Issues\n\u274c Wrong windows: {15, 30, 45, 60, 75, agg}\n\u274c Stores coefficients: {a2, a1, b}\n\u274c Missing terms: {quadratic_term, linear_term, constant_term}\n\u274c Missing residual column\n\n## Target Schema (per window)\n```sql\nw60_quadratic_term DOUBLE PRECISION,   -- a\u2082 \u00b7 x_end\u00b2\nw60_linear_term DOUBLE PRECISION,      -- a\u2081 \u00b7 x_end\nw60_constant_term DOUBLE PRECISION,    -- a\u2080\nw60_residual DOUBLE PRECISION,         -- y_actual - \u0177\nw60_r2 DOUBLE PRECISION,\nw60_rmse DOUBLE PRECISION,\nw60_prediction DOUBLE PRECISION        -- \u0177 = quad + lin + const\n```\n\n## Migration Steps\n1. **Backup:** Create bqx_backup_2025_11_15 schema\n2. **Drop:** Drop existing reg_bqx_* tables\n3. **Create:** New schema with aligned windows\n4. **Populate:** Re-run worker script (8 parallel workers)\n5. **Validate:** Check window alignment, term calculations\n\n## Worker Update\n```python\nWINDOWS_BQX = [60, 90, 150, 240, 390, 630]  # Aligned!\n\ndef fit_parabola_with_terms_bqx(x, y):\n    # DO NOT normalize x\n    coeffs = np.polyfit(x, y, deg=2)\n    a2, a1, a0 = coeffs\n    x_end = x[-1]\n\n    quadratic_term = a2 * (x_end ** 2)\n    linear_term = a1 * x_end\n    constant_term = a0\n\n    prediction = quadratic_term + linear_term + constant_term\n    residual = y[-1] - prediction\n\n    return {\n        'quadratic_term': float(quadratic_term),\n        'linear_term': float(linear_term),\n        'constant_term': float(constant_term),\n        'residual': float(residual),\n        'r2': calculate_r2(y, coeffs),\n        'rmse': calculate_rmse(y, coeffs),\n        'prediction': float(prediction)\n    }\n```\n\n## Validation\n```sql\n-- Check window alignment\nSELECT COUNT(DISTINCT column_name)\nFROM information_schema.columns\nWHERE table_name = 'reg_bqx_eurusd_2024_07'\nAND column_name ~ '^w(60|90|150|240|390|630)_';\n-- Expected: 42 (7 features \u00d7 6 windows)\n\n-- Verify term calculations\nSELECT COUNT(*) FROM bqx.reg_bqx_eurusd_2024_07\nWHERE ABS(w60_prediction - (w60_quadratic_term + w60_linear_term + w60_constant_term)) > 0.000001;\n-- Expected: 0\n```\n\n## Rollback\n```sql\nCREATE TABLE bqx.reg_bqx_eurusd_2024_07 AS\nSELECT * FROM bqx_backup_2025_11_15.reg_bqx_eurusd_2024_07;\n```\n\n**Duration:** 3-4 hours (8 parallel workers)\n**Cost:** $1.20\n**Features Added:** 42 (7 features \u00d7 6 windows)\n**Partitions:** 336\n**Risk:** MEDIUM (requires re-computation)"
+    }
+  },
+  {
+    "id": "recDiDHQH1fil1ehu",
+    "createdTime": "2025-11-12T19:52:50.000Z",
+    "fields": {
+      "Stage ID": "1.8.3 - Spectral Features",
+      "Stage Code": "BQX-1.8.3",
+      "Description": "FFT band energies (2-4m, 5-15m, 20-60m). Wavelet decomposition. SSA components.",
+      "Status": "Done",
+      "Duration": "8 hours"
+    }
+  },
+  {
+    "id": "recEgK5qH6RIOqVHO",
+    "createdTime": "2025-11-12T19:52:43.000Z",
+    "fields": {
+      "Stage ID": "1.8.2 - Multi-Scale Features",
+      "Stage Code": "BQX-1.8.2",
+      "Description": "Add 30m and 60m timeframe features for 60-75 min horizons. Cascade alignment metrics.",
+      "Status": "Done",
+      "Duration": "5 hours"
+    }
+  },
+  {
+    "id": "recEqlyK6STDvNQGd",
+    "createdTime": "2025-11-14T21:52:32.000Z",
+    "fields": {
+      "Stage ID": "2.12 - Phase 2 Worker Scripts Development",
+      "Stage Code": "BQX-2.12",
+      "Description": "Develop 6 missing worker scripts for Phase 2 parallel execution (Stages 2.2, 2.3, 2.4, 2.6, 2.8, 2.9)",
+      "Status": "In Progress",
+      "Duration": "2-3 days",
+      "Estimated Cost": 0,
+      "Notes": "## Issue: Missing Phase 2 Worker Scripts\n\n**Problem:** Orchestration script references 6 workers that don't exist yet.\n\n**Impact:** Blocks Phase 2 execution after quota approval\n\n**Missing Workers:**\n1. \u2705 Stage 2.2 - Technical Indicators (15 hrs, 8 cores) - PRIORITY 1\n2. \u23f3 Stage 2.4 - Arbitrage Detection (2 days, 2 cores)\n3. \u23f3 Stage 2.8 - Enhanced R\u00b2/RMSE (1 day, 2 cores)\n4. \u23f3 Stage 2.3 - Cross-Pair Indices (2 days)\n5. \u23f3 Stage 2.6 - Temporal Causality (1 day)\n6. \u23f3 Stage 2.9 - Regime Detection (2 days)\n\n**Development Plan:**\n\n**Phase 1 (Critical Path):**\n- Stage 2.2: Technical Indicators\n  - RSI, MACD, Bollinger Bands, ATR, Stochastic\n  - Template: Track 2 parallel worker\n  - Complexity: MEDIUM\n  - Duration: 1 day development\n\n**Phase 2 (Parallel Tracks):**\n- Stage 2.4: Arbitrage Detection (HIGH complexity)\n- Stage 2.8: Enhanced R\u00b2/RMSE (LOW complexity)\n- Duration: 1 day each\n\n**Phase 3 (Sequential):**\n- Stage 2.3: Cross-Pair Currency Indices (MEDIUM)\n- Stage 2.6: Temporal Causality (MEDIUM)\n- Stage 2.9: Regime Detection (HIGH)\n- Duration: 1 day each\n\n**Pattern (from Track 2):**\n- Parallel execution with multiprocessing\n- Partition-based (336 partitions)\n- Progress logging\n- Error handling and retry\n- Connection pooling\n\n**Action Items:**\n- [ ] Create worker template\n- [ ] Implement Stage 2.2 (Priority 1)\n- [ ] Implement Stages 2.4, 2.8 (Priority 2)\n- [ ] Implement Stages 2.3, 2.6, 2.9 (Priority 3)\n- [ ] Create unit tests\n- [ ] Update orchestration script\n\n**Priority:** HIGH\n**Risk:** MEDIUM (well-defined, proven pattern)\n**Owner:** ML Engineering Team\n"
+    }
+  },
+  {
+    "id": "recF5MUPPZ8i6vRqx",
+    "createdTime": "2025-11-12T19:52:37.000Z",
+    "fields": {
+      "Stage ID": "1.6.15 - Volume BQX Build",
+      "Stage Code": "BQX-1.6.15",
+      "Description": "COMPREHENSIVE DUAL ARCHITECTURE (Option B):\n\n**Part A - Create volume_rate (IDX):**\n- Schema: 35 volume-rate_idx interaction features\n- Tables: 672 new partitions\n- Features: Volume-weighted rate (5), Rate-vol correlation (3), Momentum divergence (4), Up/down-tick ratios (8), Vol\u00d7Volatility (3), Vol trend (3), Spike detection (3), Cumulative delta (3), Imbalance (3)\n\n**Part B - Create volume_bqx:**\n- Schema: 35 volume-BQX interaction features (identical structure)\n- Tables: 672 new partitions\n- Features: Same structure as volume_rate but for BQX domain\n\n**TOTAL: 70 features (35 IDX created + 35 BQX created)**\n**Dual Architecture Parity: \u2705 IDX and BQX have identical feature sets**\n**Note: Both tables are NEW (no existing volume tables)**",
+      "Status": "Done",
+      "Duration": "4 hours",
+      "Notes": "Option B Comprehensive: 70 total features (35 IDX CREATE (NEW), 35 BQX CREATE (NEW)). Tables: 672 IDX, 672 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "recIASbk8rQC69GKm",
+    "createdTime": "2025-11-09T03:50:06.000Z",
+    "fields": {
+      "Stage ID": "8.1 - Monitoring Dashboards & Alerts",
+      "Stage Code": "BQX-8.1",
+      "Description": "Create CloudWatch dashboards showing R\u00b2, latency, error rate, cost. Set up SNS alerts for drift > 20%, latency > 500ms, errors > 1%. Implement Model Monitor.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "INFRA-001",
+      "Charge": "Create CloudWatch dashboards. Configure SNS topics and alerts. Set up SageMaker Model Monitor for drift detection. Test alerting.",
+      "Outcome": "Comprehensive monitoring with automated alerts operational",
+      "Estimated Cost": 20,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recIiSfLpzbRIh8yH"
+    }
+  },
+  {
+    "id": "recIM4Iz1GGBK75YH",
+    "createdTime": "2025-11-13T15:56:58.000Z",
+    "fields": {
+      "Stage ID": "1.9.5 - Liquidity Metrics",
+      "Stage Code": "BQX-1.9.5",
+      "Description": "Market liquidity and execution quality assessment.\n\n**Features (22):**\n- Liquidity Indicators: Bid-ask spread, market depth, volume-weighted score (11 features)\n- Execution Quality: Slippage, market impact, fill rate predictions (11 features)\n\n**Tables:** 1,008 (28 pairs \u00d7 2 domains \u00d7 18 partitions)\n**Execution:** 10 seconds\n**Impact:** 10-15% improvement in execution-sensitive strategies",
+      "Status": "Done",
+      "Duration": "10-15 seconds",
+      "Notes": "Completed 2025-11-13. Features: 22, Tables: 1008"
+    }
+  },
+  {
+    "id": "recIWvPsZKE1LKEtr",
+    "createdTime": "2025-11-13T15:56:57.000Z",
+    "fields": {
+      "Stage ID": "1.9.4 - Market Regime",
+      "Stage Code": "BQX-1.9.4",
+      "Description": "Comprehensive market state identification and regime transitions.\n\n**Features (20):**\n- Regime Classification: Bull/bear/neutral, high/low vol, trending/ranging (10 features)\n- Regime Transitions: Change probability, time in regime, stability score (10 features)\n\n**Tables:** 1,008 (28 pairs \u00d7 2 domains \u00d7 18 partitions)\n**Execution:** 10 seconds\n**Impact:** 20-25% improvement in regime-dependent models",
+      "Status": "Done",
+      "Duration": "10-15 seconds",
+      "Notes": "Completed 2025-11-13. Features: 20, Tables: 1008"
+    }
+  },
+  {
+    "id": "recJ9fDbLkbthEz5P",
+    "createdTime": "2025-11-16T02:53:24.000Z",
+    "fields": {
+      "Stage ID": "2.14 - Term Covariance Features",
+      "Stage Code": "BQX-2.14",
+      "Description": "Add 6 term covariance features to all correlation_bqx_* tables for trend exhaustion, breakout, and regime change detection",
+      "Status": "Todo",
+      "Duration": "2-3 hours",
+      "Estimated Cost": 0.8,
+      "Notes": "\u2705 **LOW RISK** - New features, non-destructive\n\n## Objective\nAdd 6 term covariance features to all 336 correlation_bqx_* tables:\n1. cov_quad_lin_bqx_60min (trend exhaustion detector)\n2. cov_resid_quad_bqx_60min (regime change detector)\n3. cov_resid_lin_bqx_60min (breakout detector)\n4. corr_quad_lin_bqx_60min (normalized [-1,1])\n5. corr_resid_quad_bqx_60min (normalized [-1,1])\n6. corr_resid_lin_bqx_60min (normalized [-1,1])\n\n## Schema Update\n```sql\nALTER TABLE bqx.correlation_bqx_{pair}_{year_month}\nADD COLUMN IF NOT EXISTS cov_quad_lin_bqx_60min DOUBLE PRECISION,\nADD COLUMN IF NOT EXISTS cov_resid_quad_bqx_60min DOUBLE PRECISION,\nADD COLUMN IF NOT EXISTS cov_resid_lin_bqx_60min DOUBLE PRECISION,\nADD COLUMN IF NOT EXISTS corr_quad_lin_bqx_60min DOUBLE PRECISION,\nADD COLUMN IF NOT EXISTS corr_resid_quad_bqx_60min DOUBLE PRECISION,\nADD COLUMN IF NOT EXISTS corr_resid_lin_bqx_60min DOUBLE PRECISION;\n```\n\n## Worker Update\n```python\ndef calculate_term_covariances(df_reg_bqx, window_size=60):\n    if len(df_reg_bqx) < window_size:\n        return {k: None for k in [...]}\n\n    window_df = df_reg_bqx.tail(window_size)\n\n    cov_quad_lin = window_df['w60_quadratic_term'].cov(\n        window_df['w60_linear_term']\n    )\n    # ... calculate all 6 covariances\n\n    return {\n        'cov_quad_lin_bqx_60min': float(cov_quad_lin),\n        # ... all 6 features\n    }\n```\n\n## ML Value\n**cov_quad_lin < -0.7:** Trend exhaustion (trend opposed by curvature \u2192 reversal)\n**cov_resid_lin > 0.8:** Breakout (model underestimates trend \u2192 continuation)\n**cov_resid_quad > 0.8:** Regime change (parabolic model breaking down)\n\n## Validation\n```sql\n-- Check coverage\nSELECT COUNT(*) AS total,\n       COUNT(cov_quad_lin_bqx_60min) AS populated,\n       ROUND(100.0 * COUNT(cov_quad_lin_bqx_60min) / COUNT(*), 2) AS coverage_pct\nFROM bqx.correlation_bqx_eurusd_2024_07;\n-- Expected: coverage_pct > 99%\n\n-- Check correlation range\nSELECT MIN(corr_quad_lin_bqx_60min), MAX(corr_quad_lin_bqx_60min)\nFROM bqx.correlation_bqx_eurusd_2024_07;\n-- Expected: -1 to 1\n```\n\n**Duration:** 2-3 hours (8 parallel workers)\n**Cost:** $0.80\n**Features Added:** 6\n**Partitions:** 336\n**Risk:** LOW"
+    }
+  },
+  {
+    "id": "recJA3VyhEW8aAUpl",
+    "createdTime": "2025-11-11T18:46:14.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.1: Training Pipeline Development",
+      "Description": "Convert local training to SageMaker with distributed execution for 28 pairs and feature selection pipeline.\n\n**TASKS (6 tasks, 22 hours):**\n\u2022 TSK-3.1.1: Create SageMaker training container (3.5h)\n\u2022 TSK-3.1.2: Create Processing Job for feature engineering (6.5h)\n\u2022 TSK-3.1.3: Adapt training script for SageMaker (5h)\n\u2022 TSK-3.1.4: Implement parallel training for 28 pairs (5h)\n\u2022 TSK-3.1.5: Set up experiment tracking (3.5h)\n\u2022 TSK-3.1.6: Implement feature selection pipeline (4h) [NEW - Gap 2]\n\n**DELIVERABLES:**\n\u2022 Docker images: bqx-ml-training, bqx-ml-processing (ECR)\n\u2022 Training orchestration: train_all_pairs.py (28 parallel jobs)\n\u2022 Feature datasets: S3 Parquet (809 features \u2192 70 selected)\n\u2022 Experiment tracking: SageMaker Experiments dashboard\n\n**TECHNICAL:**\n\u2022 Processing: ml.m5.2xlarge (70 min, 4 batches of 7 pairs)\n\u2022 Training: ml.m5.xlarge per pair (5 min, 28 parallel)\n\u2022 Feature selection: Random Forest importance \u2192 top 70 (95% cumulative)\n\u2022 Total wall time: ~10-15 minutes for all 28 pairs",
+      "Status": "Todo",
+      "Duration": "22 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "recJTeiNMGgOODWbM",
+    "createdTime": "2025-11-09T03:49:58.000Z",
+    "fields": {
+      "Stage ID": "2.3 - Cross-Pair Currency Indices",
+      "Stage Code": "BQX-2.3",
+      "Description": "Implement 8 currency strength indices (EUR, USD, GBP, JPY, AUD, NZD, CAD, CHF) by averaging BQX features across all pairs containing each currency. Calculate pair divergence features.",
+      "Status": "Todo",
+      "Duration": "4 hours (c7i.8xlarge)",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement currency_strength_index() in data/features.py. Load all 28 pairs simultaneously. Calculate EUR_strength = AVG(eurusd, euraud, eurgbp, ...). Create divergence features.",
+      "Outcome": "8 currency indices + 28 pair divergence features operational",
+      "Estimated Cost": 8,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT:**\n- Baseline: 48 hours (4 workers)\n- Upgraded: 12 hours (16 workers)\n- Speedup: 4.0x faster\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recKpSbAbOJbiFj7S",
+    "createdTime": "2025-11-09T03:49:59.000Z",
+    "fields": {
+      "Stage ID": "2.5 - Derived Features",
+      "Stage Code": "BQX-2.5",
+      "Description": "Create 3 derived features: momentum_alignment (short vs long-term BQX), volatility_regime (RMSE classification), trend_strength (R\u00b2 based).",
+      "Status": "Done",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement create_derived_features() in data/features.py. Calculate momentum alignment, classify volatility regimes, compute trend strength.",
+      "Outcome": "3 derived features operational and validated",
+      "Estimated Cost": 3,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recKxwnLeNuvbq6L5",
+    "createdTime": "2025-11-09T05:01:29.000Z",
+    "fields": {
+      "Stage ID": "10.6 - Airtable Plan Updates",
+      "Stage Code": "BQX-10.6",
+      "Description": "Weekly updates to BQX-ML plan in Airtable reflecting actual progress, budget, learnings, and adjustments. Maintain single source of truth.",
+      "Status": "Todo",
+      "Duration": "Ongoing (1 hour/week)",
+      "Assigned To": "COORD-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Weekly (every Friday 4pm UTC):\n1. Update stage statuses (Todo \u2192 In Progress \u2192 Done)\n2. Record Realized Cost vs Estimated Cost for completed stages\n3. Update phase descriptions with learnings and blockers\n4. Add notes on what worked / what didn't\n5. Adjust future stage estimates based on actual performance\n6. Update master plan Success Criteria with latest R\u00b2 results\n7. Log key decisions and pivots in Notes fields\n\nDashboard: Create Airtable dashboard showing:\n- Phases: 11 total, X complete, Y in progress\n- Budget: $650 estimated vs $X realized\n- Timeline: 71-85 days estimated vs X actual\n- R\u00b2 progression: Current vs targets",
+      "Outcome": "Airtable plan always current, accurate, and actionable",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "recLTBZK9jiEdoY0k",
+    "createdTime": "2025-11-09T04:45:15.000Z",
+    "fields": {
+      "Stage ID": "0.3 - Secrets & Access Management",
+      "Stage Code": "BQX-0.3",
+      "Description": "Set up AWS Secrets Manager for credential storage and create IAM roles with least-privilege permissions",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Store Airtable API key in Secrets Manager (bqx-ml/airtable-token). Store Aurora credentials. Create IAM role for SageMaker (SageMakerFullAccess, S3FullAccess, SecretsManagerReadWrite). Create IAM role for Lambda execution.",
+      "Outcome": "All credentials securely stored with IAM roles configured",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recS9TOwA1teOS8SH"
+    }
+  },
+  {
+    "id": "recLmsxO8Edn894jT",
+    "createdTime": "2025-11-09T04:45:19.000Z",
+    "fields": {
+      "Stage ID": "2.9 - Regime Detection Features",
+      "Stage Code": "BQX-2.9",
+      "Description": "Implement 18 regime detection features: trend classification (5 classes), regime detection (4 types), breakout signals, support/resistance distances",
+      "Status": "Todo",
+      "Duration": "12 hours (c7i.8xlarge)",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Classify trends: strong_up (w60_lin_norm > 0.002), weak_up (0-0.002), ranging (-0.0005-0), weak_down (-0.002-0), strong_down (< -0.002). Detect regimes: trending (R\u00b2 > 0.7), mean_reverting (resid_norm > 0.5), volatile (rmse > avg_rmse), quiet. Calculate breakout = (rate - w60_avg) / w60_stdev.",
+      "Outcome": "18 regime features operational per pair",
+      "Estimated Cost": 5,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT (BIGGEST IMPROVEMENT):**\n- Baseline: 48 hours (longest stage)\n- Upgraded: 12 hours (32 workers)\n- Speedup: 4.0x faster\n- Time Saved: 36 hours (1.5 days)\n\nStage 2.9 was the primary bottleneck in Phase 2 critical path.\nc7i.8xlarge upgrade provides maximum benefit here.\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recNgnlnftjARzQYX",
+    "createdTime": "2025-11-13T15:56:57.000Z",
+    "fields": {
+      "Stage ID": "1.9.2 - Lagged Cross-Window",
+      "Stage Code": "BQX-1.9.2",
+      "Description": "Temporal dependencies across different window lengths.\n\n**Features (50):**\n- Cross-Window Momentum: w15\u2192w60, w30\u2192w75, w45\u2192w90 persistence (25 features)\n- Volatility Cascade: Short\u2192long transmission, spillover effects (25 features)\n\n**Tables:** 1,008 (28 pairs \u00d7 2 domains \u00d7 18 partitions)\n**Execution:** 15 seconds\n**Impact:** 10-15% improvement in multi-horizon predictions",
+      "Status": "Done",
+      "Duration": "10-15 seconds",
+      "Notes": "Completed 2025-11-13. Features: 50, Tables: 1008"
+    }
+  },
+  {
+    "id": "recO7zos9HKndzocP",
+    "createdTime": "2025-11-12T19:52:35.000Z",
+    "fields": {
+      "Stage ID": "1.6.12 - Statistics BQX Build",
+      "Stage Code": "BQX-1.6.12",
+      "Description": "COMPREHENSIVE DUAL ARCHITECTURE (Option B):\n\n**Part A - Expand statistics_rate (IDX):**\n- Current: 5 features (skewness_60min, kurtosis_60min, MAD_60min, entropy_60min, autocorr_lag1)\n- Target: 48 features\n- Action: ALTER TABLE ADD 43 new columns\n- Tables: 336 existing partitions (10.3M rows preserved)\n- New features: Mean (5 windows), Std (5), Skewness (4 more), Kurtosis (4 more), Percentiles (10), Range (3), IQR (3), MAD (2 more), CV (3), Entropy (2 more), Autocorr (2 more), Jarque-Bera (2)\n\n**Part B - Create statistics_bqx:**\n- Schema: 48 features (identical to expanded statistics_rate)\n- Tables: 672 new partitions (28 pairs \u00d7 24 months)\n- Computed from: BQX momentum (w15_bqx_return, w30_bqx_return, etc.)\n\n**TOTAL: 96 features (48 IDX expanded + 48 BQX created)**\n**Dual Architecture Parity: \u2705 IDX and BQX have identical feature sets**",
+      "Status": "Done",
+      "Duration": "6 hours",
+      "Notes": "Option B Comprehensive: 96 total features (48 IDX EXPAND (5\u219248), 48 BQX CREATE). Tables: 336 IDX, 672 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "recP9sZC0SXWKnoM2",
+    "createdTime": "2025-11-10T18:45:10.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.6: Unified MV Creation",
+      "Description": "Create single unified materialized view combining all 28 pairs",
+      "Status": "Todo",
+      "Duration": "1 hour",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recQXLASdPJP2O4Ki",
+    "createdTime": "2025-11-10T21:15:24.000Z",
+    "fields": {
+      "Stage ID": "Stage 2.3: Advanced Features",
+      "Description": "Add 25 advanced features for cross-pair analysis, regime detection, and distribution modeling:\n\nCROSS-PAIR FEATURES (15):\n- Rolling correlations: corr_base_pairs_60min, corr_quote_pairs_60min\n- Relative strength: relative_strength_vs_base_pairs (z-score vs peers)\n- Divergence indicators: pair_divergence, triangular_arb_divergence\n- Data source: MV with 13 related pairs (currency-filtered)\n- Normalization: Correlation coefficients (-1 to +1, inherently normalized)\n\nENHANCED REGIME DETECTION (5):\n- Trend regime: strong_up/weak_up/ranging/weak_down/strong_down (using ADX + DI)\n- Regime stability: Time since last regime change\n- Consolidation breakout: Low ATR \u2192 high ATR transition\n- Data source: Computed from technical indicators (Stage 2.2)\n- Dependencies: Requires ADX from Stage 2.2\n\nHIGHER-ORDER STATISTICS (5):\n- Skewness, kurtosis of returns (distribution shape beyond mean/stdev)\n- Median absolute deviation (robust volatility)\n- Data source: Computed from percentage returns\n- Normalization: Computed on normalized returns (already dimensionless)\n\nDELIVERABLES:\n- cross_pair_features.py module\n- regime_detection.py module (ADX-based trend classification)\n- Higher-order statistics in feature engineering pipeline\n- 25 new features per pair\n- Documentation: advanced_features_specification.md\n\nSTORAGE IMPACT: +3 GB\n\nDEPENDENCIES: Stage 2.2 complete (needs ADX for regime detection)",
+      "Status": "Todo",
+      "Duration": "7 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recF53DORbHGdIQ34"
+    }
+  },
+  {
+    "id": "recR4caPHWU7Flqdy",
+    "createdTime": "2025-11-16T22:27:27.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.17D",
+      "Description": "TIER 3 (Medium Priority): Semi-Universal Currency Encoders\n\n8 currency-specific autoencoders (USD, EUR, GBP, JPY, AUD, CAD, CHF, NZD).\n\nTotal: 448 semi-universal embeddings (112 per pair: base + quote currency)\nExpected Impact: Universal scope 9/10 \u2192 9.5/10, R\u00b2 +0.5-1.0%, Sharpe +2-3%\nDependencies: BQX-2.17C",
+      "Status": "Todo",
+      "Duration": "20 hours",
+      "Estimated Cost": 40
+    }
+  },
+  {
+    "id": "recRL6VyYuzgmHsUQ",
+    "createdTime": "2025-11-09T03:49:56.000Z",
+    "fields": {
+      "Stage ID": "1.2 - BQX Data Backfill (Multi-threaded)",
+      "Stage Code": "BQX-1.2",
+      "Description": "Backfill all 336 partitions (28 pairs \u00d7 12 months) using 6-thread parallel worker. Calculate backward cumulative returns for 5 windows (15, 30, 45, 60, 75 min). Expected: 10.3M rows, 4.3 GB.",
+      "Status": "In Progress",
+      "Duration": "4-6 hours",
+      "Assigned To": "DATA-001",
+      "Charge": "Run backward_worker_threaded.py with 6 threads. Monitor progress, handle errors, verify data quality. Calculate w15-w75 BQX features from M1 data.",
+      "Outcome": "10.3M rows populated across 28 pairs, all 336 partitions backfilled successfully",
+      "Estimated Cost": 5,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "rec23B8cy6p2UvoEW"
+    }
+  },
+  {
+    "id": "recRiOY6J4fwjUijl",
+    "createdTime": "2025-11-09T03:50:02.000Z",
+    "fields": {
+      "Stage ID": "4.1 - SageMaker IAM & S3 Setup",
+      "Stage Code": "BQX-4.1",
+      "Description": "Create SageMaker execution role with required permissions (S3, SageMaker, CloudWatch). Set up S3 bucket structure: training data, models, logs.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "INFRA-001",
+      "Charge": "Create IAM role with SageMakerFullAccess, S3FullAccess, CloudWatchLogsFullAccess. Create S3 buckets: bqx-ml-training-data, bqx-ml-models. Export training data to Parquet.",
+      "Outcome": "SageMaker infrastructure operational with S3 data ready",
+      "Estimated Cost": 50,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHWl0bSThq2wyOm"
+    }
+  },
+  {
+    "id": "recS4sYaFyRzkwtQ9",
+    "createdTime": "2025-11-16T22:27:27.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.17E",
+      "Description": "TIER 3 (Medium Priority): Universal Ensemble (VAE + Contrastive + Transformer)\n\nEnsemble 3 architectures: VAE (128 dims), Contrastive (64), Transformer (64).\n\nTotal: 256 ensemble embeddings per pair\nExpected Impact: Universal scope 9.5/10 \u2192 10/10, R\u00b2 +0.5-1.0%, Sharpe +2-4%\nDependencies: BQX-2.17D",
+      "Status": "Todo",
+      "Duration": "40 hours",
+      "Estimated Cost": 60
+    }
+  },
+  {
+    "id": "recSBlCnQ3xuGj3Lp",
+    "createdTime": "2025-11-09T03:50:03.000Z",
+    "fields": {
+      "Stage ID": "5.2 - Cross-Window Variance Features",
+      "Stage Code": "BQX-5.2",
+      "Description": "Implement 21 cross-window variance features: momentum decay, horizon consistency, R\u00b2 decay, volatility escalation, noise analysis, multi-scale regime detection.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement cross_window_variance() in data/features.py. Calculate momentum_decay = w60_lin_norm - w630_lin_norm. Implement regime classifier. Validate features.",
+      "Outcome": "21 cross-window variance features operational and validated",
+      "Estimated Cost": 15,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz5xrNe8aN9XL7J"
+    }
+  },
+  {
+    "id": "recScRojqgA6XANH8",
+    "createdTime": "2025-11-13T15:56:57.000Z",
+    "fields": {
+      "Stage ID": "1.9.3 - Volatility Surface",
+      "Stage Code": "BQX-1.9.3",
+      "Description": "Complete volatility term structure analysis.\n\n**Features (30):**\n- Term Structure: ATM volatility, smile/skew metrics, surface curvature (15 features)\n- GARCH: Volatility forecasts, persistence, mean reversion (15 features)\n\n**Tables:** 1,008 (28 pairs \u00d7 2 domains \u00d7 18 partitions)\n**Execution:** 10 seconds\n**Impact:** 15-20% improvement in volatility-based strategies",
+      "Status": "Done",
+      "Duration": "10-15 seconds",
+      "Notes": "Completed 2025-11-13. Features: 30, Tables: 1008"
+    }
+  },
+  {
+    "id": "recTbD3o79hOi2s4w",
+    "createdTime": "2025-11-10T21:15:20.000Z",
+    "fields": {
+      "Stage ID": "Stage 2.1: Quick Win Features",
+      "Description": "Add 41 high-impact features from existing M1 data (NO external APIs):\n\nFEATURES:\n1. Volume Features (10): volume_ratio, volume_spike, volume_trend_slope, cumulative_volume, volume_weighted_return\n   - Data source: M1 volume field (currently unused!)\n   - Normalization: Ratios (dimensionless, comparable across pairs)\n\n2. Time Features (8): hour_sin/cos, day_of_week_sin/cos, session_overlap, is_weekend_approach\n   - Data source: Timestamp (existing)\n   - Normalization: Cyclical encoding (sin/cos), binary indicators\n\n3. Currency Indices (3): base_currency_index, quote_currency_index, currency_index_differential\n   - Data source: Weighted average of existing pairs (synthetic DXY-like, no Bloomberg API)\n   - Normalization: Computed from rate_index (all ~100 scale)\n\n4. Spread/Microstructure (20): spread_mean, spread_volatility, spread_pct_of_rate, bid_ask_imbalance\n   - Data source: M1 bid/ask/spread fields (confirmed available in schema)\n   - Normalization: Percentage of rate\n\nDELIVERABLES:\n- 41 new features per pair (total 1,148 features across 28 pairs)\n- Volume extraction module\n- Currency index calculation module\n- Spread analysis module\n- Updated BQX table schema\n- Documentation: feature_engineering_phase2_1.md\n\nSTORAGE IMPACT: +8 GB",
+      "Status": "Todo",
+      "Duration": "13 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recF53DORbHGdIQ34"
+    }
+  },
+  {
+    "id": "recUQX3yQxnl31Ove",
+    "createdTime": "2025-11-16T22:27:27.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.20",
+      "Description": "TIER 3 (Medium Priority): Cross-Scope Hybrid Features\n\nCombine pair-exclusive, currency-related, and universal scopes.\n\nTotal Impact: +60 hybrid features\nExpected Impact: Feature quality +5-10%, Sharpe +2-3%\nDependencies: BQX-2.17E",
+      "Status": "Todo",
+      "Duration": "15 hours",
+      "Estimated Cost": 5
+    }
+  },
+  {
+    "id": "recUyZH8bzKPgneuF",
+    "createdTime": "2025-11-14T21:52:33.000Z",
+    "fields": {
+      "Stage ID": "2.15 - Documentation Cleanup",
+      "Stage Code": "BQX-2.15",
+      "Description": "Archive outdated documentation and create index for active docs",
+      "Status": "In Progress",
+      "Duration": "1 hour",
+      "Estimated Cost": 0,
+      "Notes": "## Issue: Workspace Documentation Clutter\n\n**Problem:** 80+ markdown files with overlapping content and outdated references.\n\n**Impact:** Developer productivity, documentation clarity\n\n**Cleanup Plan:**\n\n**Archive Criteria:**\n- Pre-Phase 1 planning docs (historical reference)\n- Superseded plans (old Phase 2 strategies)\n- Interim reports (already consolidated)\n- Dated gap analyses (issues resolved)\n\n**Files to Archive (~40 files):**\n- Old feature development plans (pre-consolidation)\n- Interim gap assessments (superseded)\n- Historical phase completion reports\n- Deprecated architecture docs\n\n**Keep Active (~30 files):**\n- Current architecture decisions\n- Phase 2/3 execution plans\n- Infrastructure guides (temporary EC2, etc.)\n- SageMaker deployment plans\n- Active issue tracking\n- Cost analysis (current)\n\n**Action Items:**\n- [ ] Create docs/archive_2025_11_14 directory\n- [ ] Move 40+ outdated docs to archive\n- [ ] Create docs/README.md with active doc index\n- [ ] Update cross-references to archived docs\n- [ ] Add archive policy to README\n\n**Priority:** LOW\n**Risk:** VERY LOW (archival only, no deletion)\n**Owner:** Documentation Team\n"
+    }
+  },
+  {
+    "id": "recW3gFAU6qQC0Oyy",
+    "createdTime": "2025-11-12T19:52:42.000Z",
+    "fields": {
+      "Stage ID": "1.7.3 - Data Quality Validation",
+      "Stage Code": "BQX-1.7.3",
+      "Description": "Validate all feature tables. Check completeness. Verify dual architecture consistency.",
+      "Status": "Todo",
+      "Duration": "2 hours"
+    }
+  },
+  {
+    "id": "recWLgnMv6V1FHYNE",
+    "createdTime": "2025-11-09T03:50:00.000Z",
+    "fields": {
+      "Stage ID": "3.2 - Train All 28 Pairs",
+      "Stage Code": "BQX-3.2",
+      "Description": "Train Random Forest models on all 28 pairs. Use 80/20 train/test split chronologically. Target: test R\u00b2 > 0.84 average across pairs.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Run training/train.py --mode all_pairs. Monitor training progress. Save all 28 models to models/trained/. Log metrics to MLflow or local CSV.",
+      "Outcome": "28 trained Random Forest models saved with performance metrics logged",
+      "Estimated Cost": 6,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recRkPPEyCcGNV0kn"
+    }
+  },
+  {
+    "id": "recWQbmXO4148WJ3k",
+    "createdTime": "2025-11-09T04:45:13.000Z",
+    "fields": {
+      "Stage ID": "0.1 - GitHub Repository & Documentation",
+      "Stage Code": "BQX-0.1",
+      "Description": "Create bqx-ml GitHub repository with complete structure, documentation, and CI/CD pipeline",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Create GitHub repo under robkei-control/bqx-ml. Set up directory structure (data/, models/, scripts/, training/, inference/). Add README, CONTRIBUTING.md, LICENSE. Configure GitHub Actions for CI/CD.",
+      "Outcome": "GitHub repository operational with complete structure and documentation",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recS9TOwA1teOS8SH"
+    }
+  },
+  {
+    "id": "recWbXYZz6Jaq78dY",
+    "createdTime": "2025-11-12T19:52:40.000Z",
+    "fields": {
+      "Stage ID": "1.6.20 - HMM Regime Detection",
+      "Stage Code": "BQX-1.6.20",
+      "Description": "\ud83c\udfaf HIGH ROI - Hidden Markov Models (calm/trend/shock). 20-30% regime boundary improvement. 672 partitions.",
+      "Status": "Done",
+      "Duration": "10 hours"
+    }
+  },
+  {
+    "id": "recX01V0HqiUGGAgO",
+    "createdTime": "2025-11-16T22:27:25.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.17",
+      "Description": "TIER 2 (Very High Priority): Multi-Regime Autoencoders (REPLACES Single Autoencoder)\n\nFOUR regime-specific autoencoders (Trending/Ranging \u00d7 Low/High Vol).\n\nTotal Output: 4 \u00d7 64 = 256 regime-optimized embeddings per pair\nExpected Impact: Universal scope 3/10 \u2192 6/10, R\u00b2 0.85 \u2192 0.87 (+2.4%), Sharpe 1.75 \u2192 1.95 (+11.4%)\nDependencies: BQX-2.16B",
+      "Status": "Todo",
+      "Duration": "30 hours",
+      "Estimated Cost": 50
+    }
+  },
+  {
+    "id": "recXIkvzrVcyKVcjd",
+    "createdTime": "2025-11-16T22:27:24.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.3",
+      "Description": "TIER 1 (Critical): Implement Currency Indices (POPULATE DATA)\n\nCRITICAL: Schema exists but ZERO data populated.\n\nImplementation: Calculate currency strength indices for 8 major currencies and populate 8 features per pair.\n\nTotal Impact: +224 currency-related features\nExpected Impact: Currency-related scope 4/10 \u2192 6/10, R\u00b2 +1-2%\nDependencies: BQX-2.11, BQX-2.12",
+      "Status": "Todo",
+      "Duration": "20 hours",
+      "Estimated Cost": 8
+    }
+  },
+  {
+    "id": "recXVoiFLlkJheZ7P",
+    "createdTime": "2025-11-09T04:45:29.000Z",
+    "fields": {
+      "Stage ID": "10.2 - Drift Detection & Monitoring",
+      "Stage Code": "BQX-10.2",
+      "Description": "Implement rolling 7-day R\u00b2 tracking per pair. Alert if R\u00b2 drops > 0.03 from baseline. Monitor feature distribution drift. Detect concept drift (regime changes).",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Create CloudWatch metric: rolling_7d_r2 per pair. Create SNS alert: if r2_drop > 0.03, send to ops-alerts topic. Create Lambda to calculate feature drift (KL divergence on feature distributions). Trigger immediate retrain if drift detected.",
+      "Outcome": "Drift detection operational with automated alerting",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "recXj9JyzCwi6XDhJ",
+    "createdTime": "2025-11-10T18:45:08.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.4: BQX Table Recalculation",
+      "Description": "Drop existing BQX tables and recalculate using index-based formulas",
+      "Status": "Todo",
+      "Duration": "8 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recYL4nMZ17npwzTE",
+    "createdTime": "2025-11-12T19:52:30.000Z",
+    "fields": {
+      "Stage ID": "1.6.9 - Table Renaming & Migration",
+      "Stage Code": "BQX-1.6.9",
+      "Description": "\u26a0\ufe0f CRITICAL FIRST STEP - Rename 2,628 rate tables to rate_idx convention. Blocks all subsequent work. 1 hour operation.",
+      "Status": "Done",
+      "Duration": "1 hour"
+    }
+  },
+  {
+    "id": "recYqIuM6KhosfFG4",
+    "createdTime": "2025-11-10T18:45:07.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.3: BQX Calculation Refactor",
+      "Description": "Modify backward_worker.py to use index values instead of absolute rates",
+      "Status": "Todo",
+      "Duration": "1 hour",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recZqhG5dtCoVKMj2",
+    "createdTime": "2025-11-09T04:45:14.000Z",
+    "fields": {
+      "Stage ID": "0.2 - SageMaker Studio & VPC Configuration",
+      "Stage Code": "BQX-0.2",
+      "Description": "Create SageMaker Studio domain and configure VPC connectivity between SageMaker and Aurora database",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Create SageMaker Studio domain in us-east-1. Configure VPC mode with same VPC as Aurora. Set up security groups allowing SageMaker \u2192 Aurora on port 5432. Create SageMaker notebook and test Aurora query.",
+      "Outcome": "SageMaker Studio operational with VPC connectivity to Aurora validated",
+      "Estimated Cost": 50,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recS9TOwA1teOS8SH"
+    }
+  },
+  {
+    "id": "recZxKhsGSKvzXZ1J",
+    "createdTime": "2025-11-09T03:49:58.000Z",
+    "fields": {
+      "Stage ID": "2.4 - Arbitrage Detection Features",
+      "Stage Code": "BQX-2.4",
+      "Description": "Implement triangulation arbitrage detection across currency triplets (e.g., EURUSD vs EURGBP \u00d7 GBPUSD). Detect arbitrage opportunities and alignment patterns.",
+      "Status": "Todo",
+      "Duration": "12 hours (c7i.8xlarge)",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement triangulation_arbitrage() in data/features.py. Calculate implied rates and detect deviations. Create alignment score features.",
+      "Outcome": "Arbitrage detection features for all currency triplets",
+      "Estimated Cost": 7,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT:**\n- Baseline: 48 hours (2 workers)\n- Upgraded: 12 hours (8 workers)\n- Speedup: 4.0x faster\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recaRmYMIhlnmQYHV",
+    "createdTime": "2025-11-10T18:45:09.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.5: REG Table Recalculation",
+      "Description": "Rebuild REG (regression) tables with rate_index instead of absolute rates.\n\nSCHEMA CHANGES:\n- rate \u2192 rate_index (forex index around 100)\n- REMOVE 18 *_norm fields (quad_norm, lin_norm, resid_norm for all windows)\n- Field reduction: 75 \u2192 57 fields (24% storage savings, ~2.2 GB)\n\nDELIVERABLES:\n- 28 REG parent tables recalculated\n- 448 REG partitions recalculated (2024-07 through 2025-10)\n- Schema documentation for 72 REG features\n- Updated reg_{pair} tables using rate_index (cross-pair comparable)\n\nOPTIMIZATION: With rate_index, normalization fields become redundant as all pairs are on same ~100 scale.",
+      "Status": "Todo",
+      "Duration": "2 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recaVaKoNoD1WRjNw",
+    "createdTime": "2025-11-10T18:45:06.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.1: Baseline Rate Setup",
+      "Description": "Create baseline_rates table with 2024-07-01 rates for all 28 pairs",
+      "Status": "Todo",
+      "Duration": "0.1 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recaXnuy1PHocCMcA",
+    "createdTime": "2025-11-16T22:27:26.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.17C",
+      "Description": "TIER 3 (Medium Priority): Hierarchical Autoencoders (Multi-Scale)\n\n3-level hierarchy: pair-level, currency-level, market-level.\n\nTotal Output: 160 hierarchical embeddings per pair\nExpected Impact: Universal scope 8/10 \u2192 9/10, R\u00b2 +0.5-1.0%, Sharpe +2-4%\nDependencies: BQX-2.17B",
+      "Status": "Todo",
+      "Duration": "25 hours",
+      "Estimated Cost": 40
+    }
+  },
+  {
+    "id": "recbXjhKbt7QdI1qz",
+    "createdTime": "2025-11-09T04:45:28.000Z",
+    "fields": {
+      "Stage ID": "10.1 - Online Learning Pipeline",
+      "Stage Code": "BQX-10.1",
+      "Description": "Implement weekly automated retraining pipeline. Collect new data, retrain with full historical dataset, incremental learning from previous weights, save checkpoints.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Create Step Functions workflow: (1) Extract new week's data from Aurora, (2) Append to S3 training dataset, (3) Launch SageMaker training (warm start from previous checkpoint), (4) Save new checkpoint with metadata (date, R\u00b2, samples), (5) Trigger A/B test. Schedule with EventBridge (every Sunday 2am UTC).",
+      "Outcome": "Automated weekly retraining pipeline operational",
+      "Estimated Cost": 50,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "recc63IOuMwaJgwlK",
+    "createdTime": "2025-11-09T03:50:03.000Z",
+    "fields": {
+      "Stage ID": "5.1 - Extend BQX Windows (w90-w630)",
+      "Stage Code": "BQX-5.1",
+      "Description": "Extend backward_worker.py to calculate 6 total BQX windows: w60 (existing) + w90, w150, w240, w390, w630 (new). Backfill extended features for all 28 pairs.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Modify backward_worker.py to calculate 6 windows. Update BQX table schema. Backfill new columns for all 336 partitions. Verify calculation correctness.",
+      "Outcome": "6 BQX windows operational across all 28 pairs (w60-w630)",
+      "Estimated Cost": 10,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz5xrNe8aN9XL7J"
+    }
+  },
+  {
+    "id": "recc9wH56mKCAaaVv",
+    "createdTime": "2025-11-11T18:46:16.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.4: Real-Time Inference System",
+      "Description": "End-to-end prediction API with feature extraction, selection, inference, and trading signal generation.\n\n**TASKS (5 tasks, 18 hours):**\n\u2022 TSK-3.4.1: Create feature extraction Lambda (6h)\n\u2022 TSK-3.4.2: Create prediction API Lambda (4.5h)\n\u2022 TSK-3.4.3: Create API Gateway integration (3.5h)\n\u2022 TSK-3.4.4: Implement batch prediction pipeline (4.5h)\n\u2022 TSK-3.4.5: Create trading signal generation module (5h)\n\n**DELIVERABLES:**\n\u2022 REST API: POST /predict (pair, timestamp \u2192 prediction + signal)\n\u2022 Feature extraction: <100ms (Aurora query + engineering + lagging)\n\u2022 Batch prediction: SageMaker Batch Transform (1 month in <30 min)\n\u2022 Signal generation: BUY/SELL/HOLD with confidence weighting\n\n**TECHNICAL:**\n\u2022 Feature extraction: Query 228 base \u2192 Apply 4 lags \u2192 Add causality \u2192 809 features\n\u2022 Feature selection: Filter to 70 selected features\n\u2022 Inference: Invoke SageMaker endpoint with 70 features\n\u2022 Signal thresholds: BUY if prediction > +0.0005, SELL if < -0.0005\n\u2022 End-to-end latency: <200ms (100ms features + 10ms inference + 90ms overhead)",
+      "Status": "Todo",
+      "Duration": "18 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "recchnK31kKEzom2a",
+    "createdTime": "2025-11-16T22:27:26.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.16C",
+      "Description": "TIER 2 (High Priority): Dynamic Correlation Features\n\nRegime-dependent and time-of-day correlations (vs static 60-min).\n\nTotal Impact: +36 dynamic correlation features\nExpected Impact: Currency-related scope 8/10 \u2192 9/10, R\u00b2 +0.5-1.0%, Sharpe +3-5%\nDependencies: BQX-2.16B",
+      "Status": "Todo",
+      "Duration": "12 hours",
+      "Estimated Cost": 5
+    }
+  },
+  {
+    "id": "recdGqJBGzMp8yjsP",
+    "createdTime": "2025-11-09T04:45:24.000Z",
+    "fields": {
+      "Stage ID": "9.2 - Temporal Ensemble Weighting",
+      "Stage Code": "BQX-9.2",
+      "Description": "Optimize ensemble weights per horizon. Short horizons (w15, w30) favor RF/XGBoost. Long horizons (w75, w90) favor TFT/LSTM for temporal patterns.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "For each horizon, optimize ensemble weights on validation set. w15/w30: RF=0.4, XGB=0.3, TFT=0.2, LSTM=0.1. w60: Equal weights. w75/w90: TFT=0.4, LSTM=0.3, RF=0.2, XGB=0.1. Test on all 28 pairs.",
+      "Outcome": "Horizon-specific ensemble weights optimized for all pairs",
+      "Estimated Cost": 20,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHpVz0Q1XWMlChr"
+    }
+  },
+  {
+    "id": "recdKhyCd2dw4nyGj",
+    "createdTime": "2025-11-12T19:52:34.000Z",
+    "fields": {
+      "Stage ID": "1.6.11 - Technical BQX Build",
+      "Stage Code": "BQX-1.6.11",
+      "Description": "Build technical indicators on BQX momentum. Same indicators but momentum-of-momentum. 336 partitions.",
+      "Status": "Done",
+      "Duration": "8 hours"
+    }
+  },
+  {
+    "id": "recdcngHdlFbIgB7D",
+    "createdTime": "2025-11-11T18:46:16.000Z",
+    "fields": {
+      "Stage ID": "Stage 3.5: Monitoring & MLOps Infrastructure",
+      "Description": "Comprehensive monitoring with drift detection, performance tracking, automated alerting, and cost optimization.\n\n**TASKS (6 tasks, 19 hours):**\n\u2022 TSK-3.5.1: Configure SageMaker Model Monitor (6h)\n\u2022 TSK-3.5.2: Implement feature drift detection (4.5h)\n\u2022 TSK-3.5.3: Create performance dashboard (4h)\n\u2022 TSK-3.5.4: Set up automated retraining triggers (4h)\n\u2022 TSK-3.5.5: Implement alerting system (3.5h)\n\u2022 TSK-3.5.6: Implement cost monitoring & optimization (3h) [NEW - Gap 7]\n\n**DELIVERABLES:**\n\u2022 Model Monitor: Hourly data quality checks (70 features baseline)\n\u2022 Drift detection: Daily KL divergence analysis (KL > 0.1 warning)\n\u2022 CloudWatch dashboard: 6 panels (invocations, latency, errors, R\u00b2, drift, scaling)\n\u2022 Automated retraining: Triggered on R\u00b2 drop > 0.05 or monthly\n\u2022 Alerting: SNS topics (critical/warning/info) + Slack integration\n\u2022 Cost monitoring: Allocation tags, billing alarms ($400/$500/$600), Cost Explorer dashboard\n\n**TECHNICAL:**\n\u2022 Model Monitor schedule: Every 4 hours (optimized from hourly, -$145/month)\n\u2022 Drift threshold: KL > 0.1 (warning), > 0.3 (critical)\n\u2022 Cost allocation tags: Project, Environment, Component, Pair\n\u2022 Savings Plan: 20% discount (-$98/month)",
+      "Status": "Todo",
+      "Duration": "19 hours",
+      "Phase (Link)": "recORxvEECPHkKdcS"
+    }
+  },
+  {
+    "id": "rece6y5omeJNBA8L8",
+    "createdTime": "2025-11-16T22:27:25.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.4",
+      "Description": "TIER 1 (Critical): Implement Triangular Arbitrage Detection (POPULATE DATA)\n\nCRITICAL: Schema exists but ZERO data populated.\n\nImplementation: Identify 56 currency triplets and calculate arbitrage profit.\n\nTotal Impact: +112 arbitrage features\nExpected Impact: Currency-related scope 6/10 \u2192 7/10, R\u00b2 +1-2%\nDependencies: BQX-2.11, BQX-2.12",
+      "Status": "Todo",
+      "Duration": "20 hours",
+      "Estimated Cost": 8
+    }
+  },
+  {
+    "id": "receKEPTm0FnAuFVk",
+    "createdTime": "2025-11-09T04:45:17.000Z",
+    "fields": {
+      "Stage ID": "2.7 - Export Training Data to S3 Parquet",
+      "Stage Code": "BQX-2.7",
+      "Description": "Export features in time series format (time_idx, group_id) to S3 Parquet. Implement feature scaling with StandardScaler. Create train/val/test splits (80/10/10) chronologically.",
+      "Status": "Todo",
+      "Duration": "6 hours (c7i.8xlarge + S3 Transfer Accel)",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Query Aurora for all 308 features + w60_fwd_return target. Transform to time series format (add time_idx, group_id columns). Apply StandardScaler, save scaler objects. Split chronologically. Export to s3://bqx-ml-training-data/features_v1.parquet",
+      "Outcome": "Time series formatted training data in S3 with scalers saved",
+      "Estimated Cost": 12,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT:**\n- Baseline: 24 hours\n- Upgraded: 6 hours (32 workers + S3 Transfer Acceleration)\n- Speedup: 4.0x faster\n\n**POST-PHASE 2 DOWNGRADE CHECKPOINT:**\nThis is the final Phase 2 stage requiring high-performance EC2.\n\nAfter completion:\n1. Validate S3 export integrity (40-50 GB Parquet files)\n2. Verify all 1,080 features in Aurora\n3. Create final EC2 snapshot (backup)\n4. **DOWNGRADE EC2:** c7i.8xlarge \u2192 t3.xlarge (4 vCPUs, 16GB RAM)\n5. Verify trillium-master operational at lower cost ($121/month)\n6. Proceed to Phase 3 (SageMaker serverless)\n\n**EC2 remains active (not terminated) for:**\n- Phase 3 monitoring and maintenance\n- Other projects: Robkei-Ring, OmniDrive, box\n- Ad-hoc database queries\n- Emergency troubleshooting\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "receNmuJs4vEiMFfG",
+    "createdTime": "2025-11-10T21:15:22.000Z",
+    "fields": {
+      "Stage ID": "Stage 2.2: Technical Indicators",
+      "Description": "Add 45 technical indicators using TA-Lib library on M1 OHLC + rate_index:\n\nMOMENTUM INDICATORS (15):\n- RSI (14, 21 period) - Overbought/oversold (0-100 scale, inherently normalized)\n- Stochastic (%K, %D) - Momentum oscillator\n- Williams %R, Momentum, ROC - Additional momentum measures\n\nTREND INDICATORS (15):\n- MACD (line, signal, histogram) - Trend direction + strength\n- ADX + DI - Trend strength (>25 trending, <20 ranging)\n- Parabolic SAR, Ichimoku, MA slopes\n- CRITICAL: Compute on rate_index (not rate) for cross-pair comparability\n\nVOLATILITY INDICATORS (15):\n- Bollinger Bands (upper, lower, %B, width) - Volatility expansion/contraction\n- ATR (Average True Range) - Absolute volatility in index points\n- Keltner Channels, Donchian Channels\n- CRITICAL: Compute on rate_index for same-scale results across pairs\n\nNORMALIZATION STRATEGY:\n- Momentum: 0-100 output by design (already normalized)\n- Trend: Computed on rate_index (EURUSD ~100, USDJPY ~100 = comparable)\n- Volatility: Computed on rate_index (band widths comparable across pairs)\n\nDELIVERABLES:\n- TA-Lib library installed and configured\n- 45 technical indicator fields per pair\n- technical_indicators.py module (wrapper functions)\n- Backfilled for all 28 pairs \u00d7 16 months\n- Unit tests and validation\n- Documentation: technical_indicators_specification.md\n\nSTORAGE IMPACT: +10 GB\n\nDEPENDENCIES: Stage 1.5.4 complete (need rate_index in M1 tables)",
+      "Status": "Todo",
+      "Duration": "15 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recF53DORbHGdIQ34"
+    }
+  },
+  {
+    "id": "recfdXSDZK6poExOF",
+    "createdTime": "2025-11-16T22:27:26.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.18B",
+      "Description": "TIER 3 (Medium Priority): Meta-Learning Transfer (High \u2192 Low Liquidity)\n\nTransfer learning from high-liquidity to low-liquidity pairs.\n\nStrategy: Pre-train on 7 major pairs, fine-tune on 8 exotic pairs\nExpected Impact: R\u00b2 +10-15% on exotic pairs, Sharpe +20-30%\nDependencies: BQX-2.18",
+      "Status": "Todo",
+      "Duration": "30 hours",
+      "Estimated Cost": 30
+    }
+  },
+  {
+    "id": "recfs1gghdsEPuvT8",
+    "createdTime": "2025-11-09T05:01:30.000Z",
+    "fields": {
+      "Stage ID": "10.7 - Issue Resolution Review",
+      "Stage Code": "BQX-10.7",
+      "Description": "Bi-weekly lookback to investigate and resolve all known issues, errors, blockers, and technical debt. Prevent issue accumulation.",
+      "Status": "Todo",
+      "Duration": "Ongoing (3 hours bi-weekly)",
+      "Assigned To": "QA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Bi-weekly (1st and 15th of month, 10am UTC):\n1. Review all GitHub Issues in bqx-ml repository\n2. Review CloudWatch logs for errors/warnings (past 2 weeks)\n3. Review SageMaker training failures and degraded performance\n4. Review Airtable Notes fields for blockers mentioned\n5. Categorize issues: P0 (critical), P1 (high), P2 (medium), P3 (low)\n6. Create action items for P0/P1 issues\n7. Assign owners and due dates\n8. Track resolution in Airtable Tasks table\n\nIssue Categories:\n- Data quality issues (missing data, anomalies)\n- Model performance degradation (drift detected)\n- Infrastructure failures (Lambda timeouts, SageMaker errors)\n- Cost overruns (budget exceeded)\n- Timeline delays (stage taking longer than estimated)\n\nOutput: Issue resolution report added to bqx-ml/docs/reviews/",
+      "Outcome": "No unresolved P0/P1 issues older than 2 weeks",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "recgSlP8HTVND5rFJ",
+    "createdTime": "2025-11-12T19:52:40.000Z",
+    "fields": {
+      "Stage ID": "1.6.21 - Cross-Sectional Panel",
+      "Stage Code": "BQX-1.6.21",
+      "Description": "\ud83c\udfaf HIGH ROI - Panel ranks, percentiles, dispersion. 20-25% systematic move detection. Single panel table.",
+      "Status": "Done",
+      "Duration": "8 hours"
+    }
+  },
+  {
+    "id": "recgUtU1BVgsrWe3K",
+    "createdTime": "2025-11-13T15:56:56.000Z",
+    "fields": {
+      "Stage ID": "1.9.1 - Advanced Microstructure",
+      "Stage Code": "BQX-1.9.1",
+      "Description": "Institutional-grade microstructure metrics for liquidity and price impact analysis.\n\n**Features (40):**\n- Price Impact: Amihud illiquidity, Kyle lambda, Hasbrouck info share (20 features)\n- Volume-Based: VPIN, order flow toxicity, trade clustering (20 features)\n\n**Tables:** 1,008 (28 pairs \u00d7 2 domains \u00d7 18 partitions)\n**Execution:** 15 seconds\n**Impact:** 15-20% improvement in liquidity-sensitive trading scenarios",
+      "Status": "Done",
+      "Duration": "10-15 seconds",
+      "Notes": "Completed 2025-11-13. Features: 40, Tables: 1008"
+    }
+  },
+  {
+    "id": "rech2TQgrqqPXpSUt",
+    "createdTime": "2025-11-09T03:50:00.000Z",
+    "fields": {
+      "Stage ID": "3.1 - Random Forest Training Script",
+      "Stage Code": "BQX-3.1",
+      "Description": "Implement Random Forest training script in models/baseline.py. Configure hyperparameters: n_estimators=100-500, max_depth=10-20, min_samples_split=10-50.",
+      "Status": "Done",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement RandomForestRegressor training with cross-validation. Save models to .joblib. Log hyperparameters and metrics.",
+      "Outcome": "Random Forest training script operational with cross-validation",
+      "Estimated Cost": 4,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recRkPPEyCcGNV0kn"
+    }
+  },
+  {
+    "id": "rechWn7QXlZvyqAx3",
+    "createdTime": "2025-11-12T19:52:38.000Z",
+    "fields": {
+      "Stage ID": "1.6.17 - Correlation BQX Build",
+      "Stage Code": "BQX-1.6.17",
+      "Description": "CORRELATION BQX CREATION (Option B):\n\n**Action - Create correlation_bqx:**\n- Schema: 45 features (identical to expanded correlation_rate from 1.6.16)\n- Tables: 672 new partitions\n- Features: Same 45-feature structure as correlation_rate but computed from BQX momentum\n- Computed from: BQX cross-pair correlations\n\n**TOTAL: 45 features (BQX only - IDX in Stage 1.6.16)**\n**Dual Architecture Parity: \u2705 correlation_rate (1.6.16) + correlation_bqx (1.6.17) = complete dual architecture**",
+      "Status": "Done",
+      "Duration": "8 hours",
+      "Notes": "Option B Comprehensive: 45 total features (0 IDX N/A (see 1.6.16), 45 BQX CREATE). Tables: 0 IDX, 672 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "recicdsQFRAE2fJOE",
+    "createdTime": "2025-11-09T03:50:05.000Z",
+    "fields": {
+      "Stage ID": "6.2 - Ensemble Model Creation",
+      "Stage Code": "BQX-6.2",
+      "Description": "Create weighted ensemble models combining Random Forest, XGBoost, and TFT. Optimize weights using validation set. Target: ensemble R\u00b2 > 0.95.",
+      "Status": "Todo",
+      "Duration": "4 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Implement ensemble.py with weighted averaging or stacking. Optimize weights per pair. Validate on test set. Select best model per pair (single or ensemble).",
+      "Outcome": "Ensemble models created with final model selection per pair",
+      "Estimated Cost": 70,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recxThmMoJEQrpfoy"
+    }
+  },
+  {
+    "id": "reckY1CKu5ejgpHz5",
+    "createdTime": "2025-11-13T16:29:11.000Z",
+    "fields": {
+      "Stage ID": "2.1.3 - Track 3: MVP Pipeline (159 Features)",
+      "Stage Code": "BQX-2.1.3",
+      "Description": "\u2705 TRACK 3 COMPLETE (100%)\n\n**Status:** 28/28 Parquet files extracted (100%)\n- Total output: 2.2 GB\n- 81 features per pair (corrected from initial assumption of 159)\n- Average: 370K rows \u00d7 82 columns per file\n- 40.2% missing data (expected for rolling window features)\n\n**Feature Breakdown:**\n- Bollinger: 20 features\n- Statistics: 23 features\n- Volume: 10 features\n- Spread: 20 features\n- Time: 8 features\n\n**Output:** /home/ubuntu/bqx-ml/data/extracted/{pair}.parquet\n**Duration:** ~25 minutes\n**Issues Resolved:** Schema mismatches, column name corrections across 5 feature tables\n**Completion Date:** 2025-11-13\n",
+      "Status": "Done",
+      "Duration": "18 days",
+      "Notes": "\u2705 TRACK 3 COMPLETE\n\n**Status:** 28/28 Parquet files extracted (100%)\n- 81 features per pair (not 159 as originally assumed)\n- Average: 370K rows \u00d7 82 columns per pair\n- Total output: 2.2 GB\n- Duration: ~25 minutes\n\n**Issues Fixed:**\n1. Column name mismatches across 5 feature tables\n2. Schema verification: Actual DB schema different from assumptions\n3. Feature count correction: 159 \u2192 81 available features\n\n**Feature Breakdown:**\n- Bollinger: 20 features\n- Statistics: 23 features\n- Volume: 10 features\n- Spread: 20 features\n- Time: 8 features\n\n**Output:** /home/ubuntu/bqx-ml/data/extracted/{pair}.parquet\n"
+    }
+  },
+  {
+    "id": "recm2D0DlD3CKI0jF",
+    "createdTime": "2025-11-09T03:50:07.000Z",
+    "fields": {
+      "Stage ID": "8.2 - Automated Retraining Pipeline",
+      "Stage Code": "BQX-8.2",
+      "Description": "Implement automated retraining pipeline triggered by drift detection. Lambda function to initiate SageMaker training. Update endpoint with new models.",
+      "Status": "Todo",
+      "Duration": "3 days",
+      "Assigned To": "INFRA-001",
+      "Charge": "Create Lambda retraining function. Trigger on Model Monitor drift alerts. Automate model training, validation, endpoint update. Document operational procedures.",
+      "Outcome": "Automated retraining pipeline operational with drift-triggered updates",
+      "Estimated Cost": 20,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recIiSfLpzbRIh8yH"
+    }
+  },
+  {
+    "id": "recmsdfVQZSxDFL4h",
+    "createdTime": "2025-11-09T03:49:59.000Z",
+    "fields": {
+      "Stage ID": "2.6 - Temporal Causality Validation",
+      "Stage Code": "BQX-2.6",
+      "Description": "Validate 61-minute temporal causality lag prevents data leakage. Test train/test split chronologically. Ensure no future data in features.",
+      "Status": "Todo",
+      "Duration": "6 hours (c7i.8xlarge)",
+      "Assigned To": "QA-001",
+      "Charge": "Write validation tests checking feature timestamps vs target timestamps. Ensure min 61-min gap. Test on multiple pairs.",
+      "Outcome": "Temporal causality validation report confirming no data leakage",
+      "Estimated Cost": 3,
+      "Notes": "\n\n**EC2 UPGRADE IMPACT:**\n- Baseline: 24 hours\n- Upgraded: 6 hours\n- Speedup: 4.0x faster\n",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recytKG9xsq7y0wx3"
+    }
+  },
+  {
+    "id": "recoOWbNcBnCeVOig",
+    "createdTime": "2025-11-09T04:45:21.000Z",
+    "fields": {
+      "Stage ID": "7.3 - Real-Time Feature Cache (Redis)",
+      "Stage Code": "BQX-7.3",
+      "Description": "Deploy Redis ElastiCache cluster. Create background worker Lambda (runs every 1 min) to calculate all 387 features for 28 pairs and cache in Redis with 5-min TTL. Modify prediction API to check cache first.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Create ElastiCache Redis cluster (cache.t3.micro, $15/mo). Deploy Lambda function (feature_worker.py) triggered by EventBridge (every 1 min). Calculate 387 features, store in Redis: key=bqx:features:{pair}:{timestamp}, TTL=300s. Update predict_lambda.py to check Redis first (cache hit <100ms, miss 200ms).",
+      "Outcome": "Redis cache operational with API latency < 100ms (p95)",
+      "Estimated Cost": 45,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recCBNGsoQmxb6zf2"
+    }
+  },
+  {
+    "id": "recoVeylOCbymHH7r",
+    "createdTime": "2025-11-09T04:45:25.000Z",
+    "fields": {
+      "Stage ID": "9.3 - Multi-Horizon Production Deployment",
+      "Stage Code": "BQX-9.3",
+      "Description": "Deploy multi-horizon endpoint returning all 6 predictions per request. Test latency < 200ms for complete 6-horizon response.",
+      "Status": "Todo",
+      "Duration": "2 days",
+      "Assigned To": "INFRA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Update SageMaker endpoint to serve multi-horizon models. Modify Lambda API to return JSON with 6 predictions: {w15: {return, price, confidence}, w30: {...}, ..., w90: {...}}. Test latency on all 28 pairs.",
+      "Outcome": "Multi-horizon API operational with <200ms latency",
+      "Estimated Cost": 15,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHpVz0Q1XWMlChr"
+    }
+  },
+  {
+    "id": "recpWKjxm1NyhUObl",
+    "createdTime": "2025-11-16T02:53:23.000Z",
+    "fields": {
+      "Stage ID": "2.11 - reg_rate Schema Enhancement",
+      "Stage Code": "BQX-2.11",
+      "Description": "Add constant_term columns to all reg_rate_* partitions for term-based architecture completion",
+      "Status": "Done",
+      "Duration": "30 minutes",
+      "Estimated Cost": 0.16,
+      "Notes": "\u2705 **LOW RISK** - Additive only, no data loss\n\n## Objective\nAdd missing constant_term column to all 336 reg_rate_* partitions (28 pairs \u00d7 12 months)\n\n## Actions\n1. Add w*_constant_term columns (6 windows \u00d7 336 partitions)\n2. Populate constant_term from w*_c_coef (constant_term = c_coef)\n3. Add schema comments documenting rate_index source\n4. Validate data integrity\n\n## SQL Migration\n- ALTER TABLE ADD COLUMN (6 columns per partition)\n- UPDATE to populate from existing c_coef\n- COMMENT ON TABLE for documentation\n\n## Validation\n```sql\n-- Verify constant_term = c_coef\nSELECT COUNT(*) FROM bqx.reg_eurusd_2024_07\nWHERE ABS(w60_constant_term - w60_c_coef) > 0.000001;\n-- Expected: 0\n\n-- Verify prediction integrity\nSELECT COUNT(*) FROM bqx.reg_eurusd_2024_07\nWHERE ABS(w60_yhat_end - (w60_a_term + w60_b_term + w60_constant_term)) > 0.001;\n-- Expected: 0\n```\n\n## Rollback\n```sql\nALTER TABLE DROP COLUMN w60_constant_term, ...\n```\n\n**Duration:** 30 minutes (5 sec per partition)\n**Cost:** $0.16\n**Features Added:** 6 (constant_term for 6 windows)\n**Partitions:** 336\n**Risk:** LOW\n\n---\n\n**\u2705 EXECUTION COMPLETE: 2025-11-16**\n\n**Actual Metrics:**\n- Duration: 26.6 minutes (vs 30 min estimated)\n- Cost: $0.16 (exact match)\n- Success Rate: 100% (28/28 parent tables)\n- Validation: 336/336 partitions validated\n- Errors: 0\n\n**Results:**\n- Added 6 constant_term columns per table (168 total)\n- Populated from w*_c_coef across all partitions\n- All values validated (difference < 0.000001)\n- prediction = quadratic_term + linear_term + constant_term (verified)\n\n**Database Impact:**\n- 28 parent tables modified (reg_audcad through reg_usdjpy)\n- 336 child partitions automatically updated\n- ~13.6M rows updated (484K avg per pair)\n- Zero data loss, zero downtime\n\n**Log:** `/tmp/logs/remediation/stage_2_11/migration.log`\n\n**Status:** \u2705 Production-ready - All reg_rate tables now have complete term-based architecture"
+    }
+  },
+  {
+    "id": "recpdFdcuEtmqsvpy",
+    "createdTime": "2025-11-09T04:45:23.000Z",
+    "fields": {
+      "Stage ID": "9.1 - Multi-Horizon TFT Architecture",
+      "Stage Code": "BQX-9.1",
+      "Description": "Implement multi-task Temporal Fusion Transformer with 6 output heads (one per horizon: w15, w30, w45, w60, w75, w90). Configure weighted multi-task loss function.",
+      "Status": "Todo",
+      "Duration": "4 days",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 2 - Budget Approved",
+      "Charge": "Implement MultiHorizonTFT class with shared encoder + 6 prediction heads. Multi-task loss: L = 0.10*w15 + 0.15*w30 + 0.20*w45 + 0.25*w60 + 0.20*w75 + 0.10*w90 (weighted by importance). Train on 4 major pairs first. Test on EURUSD.",
+      "Outcome": "Multi-horizon TFT architecture validated on major pairs",
+      "Estimated Cost": 60,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHpVz0Q1XWMlChr"
+    }
+  },
+  {
+    "id": "recq4xB2eJVttCk1x",
+    "createdTime": "2025-11-14T20:47:15.000Z",
+    "fields": {
+      "Stage ID": "2.10 - Infrastructure Management",
+      "Stage Code": "BQX-2.10",
+      "Description": "Temporary EC2 (c7i.8xlarge) for Phase 2 acceleration, then terminate. Optional downgrade of trillium-master to t3.small for cost optimization.",
+      "Status": "In Progress",
+      "Duration": "1.8 days (Phase 2 accelerated)",
+      "Estimated Cost": 19.13,
+      "Notes": "\ud83d\ude80 **TEMPORARY EC2 APPROVED: 2025-11-14**\n\n## Decision: Temporary EC2 (c7i.8xlarge Spot) - NOT In-Place Upgrade\n\n**Architecture:**\n- **trillium-master:** Keep running (optional downgrade to t3.small)\n- **NEW: trillium-phase2-worker:** c7i.8xlarge Spot (TEMPORARY)\n- **Post-Phase 2:** TERMINATE trillium-phase2-worker\n\n**Rationale:** See docs/architecture_decision_temporary_ec2.md\n- Zero downtime on trillium-master\n- Lower risk (isolated failure domain)\n- 87% lower ongoing costs (t3.small vs t3.xlarge)\n- Cleaner separation of concerns\n\n---\n\n## Infrastructure Plan\n\n**trillium-master (Permanent):**\n- **Current:** t3.2xlarge (8 vCPUs, 32GB RAM, $0.33/hr)\n- **Recommended:** t3.small (2 vCPUs, 2GB RAM, $0.0208/hr)\n- **Role:** Monitoring, maintenance, ad-hoc queries\n- **Lifecycle:** Always-on\n- **Monthly Cost:** $15.15 (vs $121 for t3.xlarge = 87% savings)\n\n**trillium-phase2-worker (Temporary):**\n- **Type:** c7i.8xlarge Spot (32 vCPUs, 64GB RAM, ~$0.45/hr)\n- **Role:** Phase 2 parallel processing ONLY\n- **Lifecycle:** 1.8 days, then TERMINATE\n- **Total Cost:** $19.13 (Spot pricing)\n\n---\n\n## Phase 2 Timeline Impact\n\n**Baseline (t3.2xlarge):**\n- Total Duration: 130 hours (5.4 days)\n- Total Cost: $60.86\n\n**Temporary EC2 (c7i.8xlarge Spot):**\n- Total Duration: 42.5 hours (1.8 days)\n- Total Cost: $19.13\n- **Savings: $41.73 (69%) + 87.5 hours (67% faster)**\n\n**Stage-by-Stage Impact:**\n- Stage 2.2: 3.8 hours (vs 15 hours)\n- Stage 2.3: 4 hours (vs 48 hours)\n- Stage 2.4: 12 hours (vs 48 hours)\n- Stage 2.6: 6 hours (vs 24 hours)\n- Stage 2.7: 6 hours (vs 24 hours)\n- Stage 2.8: 6 hours (vs 24 hours)\n- Stage 2.9: 12 hours (vs 48 hours) - BIGGEST IMPACT\n\n---\n\n## Cost Analysis\n\n| Instance | Role | Duration | Cost |\n|----------|------|----------|------|\n| **trillium-master** | Monitoring (permanent) | Ongoing | $15/month |\n| **trillium-phase2-worker** | Phase 2 compute (temp) | 42.5 hours | $19.13 |\n| **Total Phase 2** | - | 1.8 days | **$19.13** |\n\n**Annual Cost Comparison:**\n\n| Approach | Phase 2 Cost | Ongoing (Annual) | Total (1 Year) |\n|----------|--------------|------------------|----------------|\n| **In-Place Upgrade (OLD)** | $19.13 | $1,454.40 | $1,473.53 |\n| **Temporary EC2 (NEW)** | $19.13 | $181.80 | $200.93 |\n| **Savings** | $0.00 | **$1,272.60** | **$1,272.60** |\n\n**Cost Breakdown:**\n- trillium-master (t3.small): $15.15/month \u00d7 12 = $181.80/year\n- trillium-phase2-worker: $19.13 one-time\n- **Total 1-year cost:** $200.93 (vs $1,473.53 = 86% savings)\n\n---\n\n## Implementation Checklist\n\n**Step 1: Downgrade trillium-master (Optional)**\n- [ ] Create pre-downgrade snapshot\n- [ ] Stop trillium-master\n- [ ] Change type: t3.2xlarge \u2192 t3.small\n- [ ] Start trillium-master\n- [ ] Verify: 2 vCPUs, 2GB RAM\n- **Duration:** 30 min (5 min downtime)\n- **Savings:** $106/month\n\n**Step 2: Spin Up Temporary Worker**\n- [ ] Launch c7i.8xlarge Spot instance\n- [ ] Tag: Name=trillium-phase2-worker, Lifecycle=temporary\n- [ ] Configure security groups, key pair\n- [ ] Clone bqx-ml repository\n- [ ] Install dependencies\n- [ ] Configure Aurora credentials\n- **Duration:** 15 min\n- **Cost:** $0.11\n\n**Step 3: Run Phase 2 Stages**\n- [ ] Execute launch_phase_2_post_track2.sh\n- [ ] Monitor progress (Stages 2.2-2.9)\n- [ ] Verify all partitions populated\n- [ ] Validate S3 export (40-50 GB)\n- **Duration:** 42.5 hours\n- **Cost:** $19.13\n\n**Step 4: Terminate Temporary Worker**\n- [ ] Verify Phase 2 100% complete\n- [ ] Create final snapshot (optional)\n- [ ] TERMINATE trillium-phase2-worker\n- [ ] Verify termination (not stopped)\n- [ ] Update cost tracking\n- **Duration:** 5 min\n- **Ongoing Cost:** $0.00\n\n---\n\n## Risk Assessment\n\n**Technical Risk:** LOW\n- \u2705 trillium-master: Zero downtime (stays running)\n- \u2705 Temporary EC2: Isolated failure domain\n- \u2705 All data in Aurora (stateless workers)\n- \u2705 Easy rollback (just terminate temp EC2)\n\n**Cost Risk:** VERY LOW\n- \u2705 Phase 2 limited to 1.8 days\n- \u2705 Immediate termination after completion\n- \u2705 Ongoing cost: $15/month (vs $121/month)\n- \u2705 Total cost $19.13 (cheaper than baseline!)\n\n**Operational Risk:** VERY LOW\n- \u2705 trillium-master unaffected by Phase 2\n- \u2705 Can run both instances simultaneously\n- \u2705 No production dependencies\n- \u2705 Clear cost attribution (separate instances)\n\n---\n\n## Comparison: In-Place vs Temporary EC2\n\n| Criteria | In-Place Upgrade | Temporary EC2 | Winner |\n|----------|------------------|---------------|--------|\n| **Phase 2 Cost** | $19.13 | $19.13 | TIE |\n| **Ongoing Cost** | $121/mo | $15/mo | \u2705 **Temp EC2** (-87%) |\n| **Annual Savings** | $1,464 | $2,737 | \u2705 **Temp EC2** (+87%) |\n| **trillium-master Downtime** | 10 min | 0 min | \u2705 **Temp EC2** |\n| **Production Risk** | Medium | Low | \u2705 **Temp EC2** |\n| **Rollback** | Hard | Easy | \u2705 **Temp EC2** |\n\n**Winner:** \u2705 Temporary EC2 (5 wins, 0 losses, 1 tie)\n\n---\n\n## Phase 3 Considerations\n\n**EC2 Role in Phase 3:**\n- Phase 3 uses SageMaker (serverless architecture)\n- trillium-master (t3.small) provides:\n  - SageMaker experiment monitoring\n  - Ad-hoc database queries\n  - Script development/testing\n  - Emergency maintenance access\n\n**Phase 3 Costs:**\n- SageMaker Training: $9.46/month\n- SageMaker Inference: $391.86/month\n- Storage & Monitoring: $111.06/month\n- EC2 (t3.small): $15.15/month\n- **Total: ~$527/month** (vs $633 with t3.xlarge = $106/month savings)\n\n---\n\n## Timeline\n\n**Estimated Dates:**\n- trillium-master Downgrade: 2025-11-14 (optional, 30 min)\n- Spin Up temp EC2: 2025-11-14 (15 min)\n- Phase 2 Execution: 2025-11-14 to 2025-11-16 (1.8 days)\n- Terminate temp EC2: 2025-11-16 (5 min)\n- Phase 3 Start: 2025-11-16\n\n---\n\n**Status:** \u2705 APPROVED - Ready for implementation\n**Next Action:** Downgrade trillium-master (optional), then spin up temporary EC2\n**Architecture:** Temporary EC2 approach (NOT in-place upgrade)\n**Owner:** Infrastructure Team\n**Updated:** 2025-11-14\n"
+    }
+  },
+  {
+    "id": "recq9BcsRo33IOyoD",
+    "createdTime": "2025-11-14T21:52:32.000Z",
+    "fields": {
+      "Stage ID": "2.14 - S3 Export Script Development",
+      "Stage Code": "BQX-2.14",
+      "Description": "Develop S3 Parquet export script for Phase 2 final deliverable (Stage 2.7)",
+      "Status": "In Progress",
+      "Duration": "1-2 days",
+      "Estimated Cost": 5,
+      "Notes": "## Issue: S3 Export Script Missing\n\n**Problem:** Phase 2 final stage (2.7) requires S3 export that doesn't exist yet.\n\n**Impact:** Blocks Phase 2 final deliverable and Phase 3 data ingestion\n\n**Requirements:**\n- Export format: Parquet (Snappy compression)\n- Volume: 40-50 GB\n- Partitioning: By currency pair + date\n- Schema: Preserve all 1080 features\n- Validation: Row counts, schema checks\n\n**Implementation:**\n- Use: pandas.to_parquet() or pyarrow\n- Parallelization: Export by partition (336 partitions)\n- Progress: Real-time logging\n- Validation: Automated checks\n- Duration: 4-6 hours execution\n\n**S3 Configuration:**\n- Bucket: TBD (identify or create)\n- Path structure: s3://bucket/bqx-features/v1/{pair}/{date}/\n- Access: IAM role for trillium-phase2-worker\n- Lifecycle: Retain indefinitely\n\n**Action Items:**\n- [ ] Identify or create S3 bucket\n- [ ] Configure IAM permissions\n- [ ] Create export script (Python)\n- [ ] Test with sample data\n- [ ] Optimize for 40-50 GB dataset\n- [ ] Add to Stage 2.7 orchestration\n- [ ] Create validation script\n\n**Estimated Cost:**\n- S3 Storage: $1.15/month (50 GB @ $0.023/GB)\n- Data Transfer: $0.00 (within AWS)\n- Requests: $0.05 (PUT/LIST)\n- **Total:** ~$5.00 (one-time setup + 1 month)\n\n**Priority:** MEDIUM\n**Risk:** LOW (standard export operation)\n**Owner:** Data Engineering Team\n"
+    }
+  },
+  {
+    "id": "recqZ2BCK4IhfTHzc",
+    "createdTime": "2025-11-09T04:45:26.000Z",
+    "fields": {
+      "Stage ID": "9.4 - Short-Term Trading Strategies",
+      "Stage Code": "BQX-9.4",
+      "Description": "Document optimal horizon usage per trading strategy. Scalping: w15/w30. Day trading: w45/w60. Intraday swing: w75/w90.",
+      "Status": "Todo",
+      "Duration": "1 day",
+      "Assigned To": "DATA-001",
+      "Autonomy Level": "Level 1 - Fully Autonomous",
+      "Charge": "Create trading strategy guide (docs/TRADING_STRATEGIES.md). Document: Scalping (w15/w30, R\u00b2>0.96, tight stops), Day trading (w45/w60, R\u00b2>0.95, standard sizing), Intraday swing (w75/w90, R\u00b2>0.91, wider stops). Include risk management per horizon.",
+      "Outcome": "Trading strategy guide complete with horizon-specific recommendations",
+      "Estimated Cost": 5,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recHpVz0Q1XWMlChr"
+    }
+  },
+  {
+    "id": "recs3h7OpwmiX9UH5",
+    "createdTime": "2025-11-10T18:45:06.000Z",
+    "fields": {
+      "Stage ID": "Stage 1.5.2: M1 Table Enhancement",
+      "Description": "Add rate_index column to all 28 M1 tables and calculate index values",
+      "Status": "Todo",
+      "Duration": "3 hours",
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recl7nHgbrLjfjD5K"
+    }
+  },
+  {
+    "id": "recsmNFz8ZLP56Z74",
+    "createdTime": "2025-11-12T19:52:38.000Z",
+    "fields": {
+      "Stage ID": "1.6.18 - Error Correction Models",
+      "Stage Code": "BQX-1.6.18",
+      "Description": "\ud83c\udfaf HIGH ROI - Johansen cointegration. ECT predicts 30-60% of 45-75 min movements. 672 partitions.",
+      "Status": "Done",
+      "Duration": "12 hours"
+    }
+  },
+  {
+    "id": "recsozAwQKWu5DUHT",
+    "createdTime": "2025-11-12T19:52:42.000Z",
+    "fields": {
+      "Stage ID": "1.8.1 - Parabolic Term Comparisons",
+      "Stage Code": "BQX-1.8.1",
+      "Description": "Implement normalized parabolic regression terms (a2, a1, b) comparisons cross-pair, cross-window, cross-domain.",
+      "Status": "Done",
+      "Duration": "6 hours"
+    }
+  },
+  {
+    "id": "recspEo5DQyF4b820",
+    "createdTime": "2025-11-12T19:52:37.000Z",
+    "fields": {
+      "Stage ID": "1.6.16 - Correlation IDX Build",
+      "Stage Code": "BQX-1.6.16",
+      "Description": "CORRELATION IDX EXPANSION (Option B):\n\n**Action - Recreate correlation_rate (IDX):**\n- Current: 16 features (tables are EMPTY, 0 rows)\n- Target: 45 features\n- Action: DROP existing empty tables, CREATE with expanded schema\n- Tables: 336 recreated partitions\n- Features: Base/quote correlations (12), Correlation changes (6), Z-scores (6), Relative strength (2), Divergence metrics (4), Stability (3), Lead-lag (3), Cointegration (3), Pair spread (3), Vol ratios (3)\n\n**TOTAL: 45 features (IDX only - BQX in Stage 1.6.17)**\n**Note: Safe to drop/recreate as tables are currently empty**",
+      "Status": "Done",
+      "Duration": "8 hours",
+      "Notes": "Option B Comprehensive: 45 total features (45 IDX RECREATE (16\u219245), 0 BQX N/A (see 1.6.17)). Tables: 336 IDX, 0 BQX. Dual architecture with parity between CAUSE and EFFECT domains."
+    }
+  },
+  {
+    "id": "rectT5bsZNP5Ccw8o",
+    "createdTime": "2025-11-09T03:50:04.000Z",
+    "fields": {
+      "Stage ID": "6.1 - TFT Training on Major Pairs",
+      "Stage Code": "BQX-6.1",
+      "Description": "Train TFT on 4 major pairs (EURUSD, GBPUSD, USDJPY, AUDJPY) using SageMaker ml.p3.2xlarge spot instances. Compare performance vs Random Forest baseline.",
+      "Status": "Todo",
+      "Duration": "7 days",
+      "Assigned To": "DATA-001",
+      "Charge": "Launch SageMaker training jobs for 4 pairs. Monitor training progress. Evaluate test R\u00b2. If TFT R\u00b2 > baseline + 0.04, proceed to train all 28 pairs.",
+      "Outcome": "TFT models trained on 4 major pairs with performance comparison vs baseline",
+      "Estimated Cost": 80,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recxThmMoJEQrpfoy"
+    }
+  },
+  {
+    "id": "recvXUiqeH9G6jbvm",
+    "createdTime": "2025-11-14T21:52:32.000Z",
+    "fields": {
+      "Stage ID": "2.13 - Validation Scripts Creation",
+      "Stage Code": "BQX-2.13",
+      "Description": "Create missing validation and helper SQL scripts for Phase 2 data quality assurance",
+      "Status": "In Progress",
+      "Duration": "1 day",
+      "Estimated Cost": 0,
+      "Notes": "## Issue: Missing Validation Scripts\n\n**Problem:** Orchestration references validation scripts that don't exist.\n\n**Impact:** Manual validation required, automated QA missing\n\n**Missing Scripts:**\n1. scripts/validation/track_2_validation_queries.sql\n2. scripts/refactor/stage_2_3_4_create_helper_views.sql\n\n**Validation Script Requirements:**\n- Row count validation (2,016,000 rows/partition expected)\n- NULL value checks\n- Range validation (R\u00b2, RMSE bounds)\n- Partition completeness checks\n- Timestamp consistency verification\n\n**Helper Views Requirements:**\n- Materialized views for currency indices\n- Helper views for arbitrage calculations\n- Performance optimization views\n- Cross-partition aggregation views\n\n**Action Items:**\n- [ ] Extract validation queries from documentation\n- [ ] Create consolidated validation SQL script\n- [ ] Create helper views SQL script\n- [ ] Test validation on Track 2 data\n- [ ] Document expected outputs\n- [ ] Add to orchestration script\n\n**Priority:** MEDIUM\n**Risk:** LOW (queries exist, need consolidation)\n**Owner:** Data Engineering Team\n"
+    }
+  },
+  {
+    "id": "recwDHLvS6iWu6iLI",
+    "createdTime": "2025-11-12T19:52:41.000Z",
+    "fields": {
+      "Stage ID": "1.7.2 - Database Optimization",
+      "Stage Code": "BQX-1.7.2",
+      "Description": "Add indexes for new features. Optimize query patterns. Vacuum and analyze all tables.",
+      "Status": "Todo",
+      "Duration": "3 hours"
+    }
+  },
+  {
+    "id": "recwWHLfjt5ADumdH",
+    "createdTime": "2025-11-09T05:01:31.000Z",
+    "fields": {
+      "Stage ID": "10.8 - 360 Plan Assessment",
+      "Stage Code": "BQX-10.8",
+      "Description": "Quarterly comprehensive 360-degree assessment of MP-BQX_ML-001 to identify gaps, misalignments, and improvement opportunities. Strategic course correction.",
+      "Status": "Todo",
+      "Duration": "Ongoing (1 day/quarter)",
+      "Assigned To": "ARCH-001",
+      "Autonomy Level": "Level 3 - RM Approval",
+      "Charge": "Quarterly (last Friday of Q1/Q2/Q3/Q4, full day):\n\n**Assessment Dimensions:**\n\n1. Goal Alignment (L4-PRAGMATICS)\n   - Are we still aligned with \"exact prediction of future BQX variables\"?\n   - Is R\u00b2 progression on track (0.95 \u2192 0.99+ path)?\n   - Do horizons (w15-w90) still match user needs?\n\n2. Technical Gaps\n   - Missing features vs original bqx-db masterplan\n   - Infrastructure limitations discovered\n   - Model architecture improvements available\n\n3. Budget & Timeline\n   - Actual vs estimated costs (by phase)\n   - Timeline slippage analysis\n   - ROI assessment (is investment justified?)\n\n4. Success Criteria Validation\n   - Are current criteria still relevant?\n   - Should we add/remove/adjust metrics?\n   - Are we measuring the right things?\n\n5. Risk Assessment\n   - New risks identified since last assessment\n   - Mitigation strategies effectiveness\n   - Contingency plans adequacy\n\n6. Stakeholder Alignment\n   - User expectations still met?\n   - Agent capabilities vs workload\n   - External dependencies status\n\n7. Industry Trends\n   - New ML techniques available (e.g., Transformers)\n   - Competitor analysis\n   - Market shifts (forex volatility patterns)\n\n**Output Artifacts:**\n- 360 Assessment Report (bqx-ml/docs/assessments/Q{X}-2025.md)\n- Gap Remediation Plan (if gaps > 10% of plan)\n- Budget/Timeline Adjustment Proposal (if variance > 15%)\n- Airtable plan updates reflecting adjustments\n\n**Decision Points:**\n- Continue as planned\n- Pivot (adjust strategy)\n- Accelerate (increase investment)\n- Pause (re-evaluate fundamentals)",
+      "Outcome": "Quarterly strategic alignment confirmed or adjustments approved",
+      "Estimated Cost": 0,
+      "Plan (Link)": [
+        "recSb2RvwT60eSu8U"
+      ],
+      "Phase (Link)": "recz83Da9IXxNFubs"
+    }
+  },
+  {
+    "id": "reczizdje5HMYNCkp",
+    "createdTime": "2025-11-16T22:27:25.000Z",
+    "fields": {
+      "Stage Code": "BQX-2.16B",
+      "Description": "TIER 1 (Critical): Expand Cross-Pair Interactions - Currency Blocs\n\nExpand from sister pairs to currency blocs (Commodity, Safe Haven, EUR-Zone, USD).\n\nTotal Impact: +48 currency bloc features\nExpected Impact: Currency-related scope 7/10 \u2192 8/10, Sharpe +5-8%\nDependencies: BQX-2.3, BQX-2.16",
+      "Status": "Todo",
+      "Duration": "15 hours",
+      "Estimated Cost": 6
+    }
+  }
+]
