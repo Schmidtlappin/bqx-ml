@@ -18,13 +18,10 @@ set -e
 INSTANCE_TYPE="c7i.8xlarge"
 SPOT_PRICE="0.50"  # Max price (actual Spot price is ~$0.40/hour)
 AMI_ID="ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS (us-east-1)
-KEY_NAME="trillium-ml-key"
-SECURITY_GROUP="sg-0a3e9f7c8b5d6e4f2"  # Replace with actual SG ID
-SUBNET_ID="subnet-0d5e6f7a8b9c0d1e2"  # Replace with actual subnet ID
 
-# Get current VPC and subnet from trillium-master
-echo "Getting VPC and subnet information from trillium-master..."
-INSTANCE_ID=$(ec2-metadata --instance-id | cut -d' ' -f2)
+# Get current instance info
+echo "Getting configuration from trillium-master..."
+INSTANCE_ID="i-08a8fa9a42491827c"
 
 VPC_ID=$(aws ec2 describe-instances \
     --instance-ids $INSTANCE_ID \
@@ -41,9 +38,15 @@ SECURITY_GROUP=$(aws ec2 describe-instances \
     --query 'Reservations[0].Instances[0].SecurityGroups[0].GroupId' \
     --output text)
 
+KEY_NAME=$(aws ec2 describe-instances \
+    --instance-ids $INSTANCE_ID \
+    --query 'Reservations[0].Instances[0].KeyName' \
+    --output text)
+
 echo "VPC ID: $VPC_ID"
 echo "Subnet ID: $SUBNET_ID"
 echo "Security Group: $SECURITY_GROUP"
+echo "Key Name: $KEY_NAME"
 echo ""
 
 # Create user data script for instance initialization
@@ -88,19 +91,7 @@ LAUNCH_SPEC=$(cat <<JSON
   "InstanceType": "$INSTANCE_TYPE",
   "SubnetId": "$SUBNET_ID",
   "SecurityGroupIds": ["$SECURITY_GROUP"],
-  "UserData": "$(base64 -w 0 /tmp/tier1_user_data.sh)",
-  "TagSpecifications": [
-    {
-      "ResourceType": "instance",
-      "Tags": [
-        {"Key": "Name", "Value": "trillium-tier1-worker"},
-        {"Key": "Purpose", "Value": "TIER 1 Enhancement Execution"},
-        {"Key": "Phase", "Value": "Phase 2 - TIER 1"},
-        {"Key": "Temporary", "Value": "true"},
-        {"Key": "MaxRuntime", "Value": "4 days"}
-      ]
-    }
-  ]
+  "UserData": "$(base64 -w 0 /tmp/tier1_user_data.sh)"
 }
 JSON
 )
@@ -131,6 +122,18 @@ TIER1_INSTANCE_ID=$(aws ec2 describe-spot-instance-requests \
 
 echo "✅ Spot instance launched!"
 echo "Instance ID: $TIER1_INSTANCE_ID"
+echo ""
+
+# Tag the instance
+echo "Tagging instance..."
+aws ec2 create-tags \
+    --resources $TIER1_INSTANCE_ID \
+    --tags \
+        "Key=Name,Value=trillium-tier1-worker" \
+        "Key=Purpose,Value=TIER 1 Enhancement Execution" \
+        "Key=Phase,Value=Phase 2 - TIER 1" \
+        "Key=Temporary,Value=true" \
+        "Key=MaxRuntime,Value=4 days"
 echo ""
 
 # Wait for instance to be running
