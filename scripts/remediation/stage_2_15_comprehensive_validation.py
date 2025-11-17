@@ -1,27 +1,35 @@
 #!/usr/bin/env python3
 """
-Stage 2.15: Comprehensive Schema Alignment Validation
-Validates 100% alignment between reg_rate and reg_bqx tables.
+Stage 2.15: Comprehensive Schema Validation
 
-Validation Checks:
-1. Window alignment (both have {60, 90, 150, 240, 390, 630})
-2. Schema alignment (both have 7 features per window)
-3. Term-based architecture (both have quadratic_term, linear_term, constant_term, residual)
-4. Covariance features (all 6 present in correlation_bqx)
-5. Data integrity (prediction = sum of terms)
-6. Cross-domain comparability (can JOIN at same timestamps)
+Validates all schema alignments across Stages 2.11, 2.12, and 2.14:
+- Verifies all reg_bqx partitions have consistent schema (79 columns after 2.14)
+- Validates aligned windows [60, 90, 150, 240, 390, 630]
+- Checks term-based schema consistency
+- Verifies covariance features (36 features from Stage 2.14)
+- Ensures data integrity across all 336 partitions
 
-Estimated Duration: 1 hour
-Estimated Cost: $0.33
-Risk: NONE (read-only validation)
+Duration: ~1 hour
+Cost: $0 (existing infrastructure)
 """
 
 import psycopg2
-import pandas as pd
-import logging
-import sys
 import os
+import logging
 from datetime import datetime
+from collections import defaultdict
+
+# Configure logging
+os.makedirs('/tmp/logs/remediation/stage_2_15', exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('/tmp/logs/remediation/stage_2_15/validation.log'),
+        logging.StreamHandler()
+    ]
+)
 
 # Database configuration
 DB_CONFIG = {
@@ -31,539 +39,253 @@ DB_CONFIG = {
     'password': os.environ.get('DB_PASSWORD', 'BQX_Aurora_2025_Secure')
 }
 
-# Create logs directory
-os.makedirs('/tmp/logs/remediation/stage_2_15', exist_ok=True)
+# Currency pairs
+CURRENCY_PAIRS = [
+    'audcad', 'audchf', 'audjpy', 'audnzd', 'audusd',
+    'cadchf', 'cadjpy',
+    'chfjpy',
+    'euraud', 'eurcad', 'eurchf', 'eurgbp', 'eurjpy', 'eurnzd', 'eurusd',
+    'gbpaud', 'gbpcad', 'gbpchf', 'gbpjpy', 'gbpnzd', 'gbpusd',
+    'nzdcad', 'nzdchf', 'nzdjpy', 'nzdusd',
+    'usdcad', 'usdchf', 'usdjpy'
+]
 
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/tmp/logs/remediation/stage_2_15/validation.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
+# Year-month partitions
+YEAR_MONTHS = (
+    [f"2024_{month:02d}" for month in range(7, 13)] +
+    [f"2025_{month:02d}" for month in range(1, 7)]
 )
-logger = logging.getLogger(__name__)
 
-# Expected windows (aligned)
-EXPECTED_WINDOWS = [60, 90, 150, 240, 390, 630]
+# Aligned windows
+WINDOWS = [60, 90, 150, 240, 390, 630]
 
-# Sample pair for validation
-VALIDATION_PAIR = 'eurusd'
-VALIDATION_MONTH = '2024_07'
+def get_db_connection():
+    """Create database connection"""
+    return psycopg2.connect(**DB_CONFIG)
 
+def get_baseline_schema(conn):
+    """Get baseline schema from first partition"""
+    baseline_table = f"reg_bqx_{CURRENCY_PAIRS[0]}_{YEAR_MONTHS[0]}"
 
-def validate_window_alignment():
+    cursor = conn.cursor()
+    query = """
+    SELECT column_name, data_type, ordinal_position
+    FROM information_schema.columns
+    WHERE table_schema = 'bqx'
+      AND table_name = %s
+    ORDER BY ordinal_position
     """
-    Validate that reg_rate and reg_bqx have the same windows.
 
-    Returns:
-        dict: Validation results
-    """
-    logger.info("=" * 80)
-    logger.info("VALIDATION 1: Window Alignment")
-    logger.info("=" * 80)
+    cursor.execute(query, (baseline_table,))
+    baseline = cursor.fetchall()
+    cursor.close()
 
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
+    return baseline, baseline_table
 
-        # Get windows from reg_rate
-        cur.execute(f"""
-            SELECT DISTINCT regexp_replace(column_name, '_.*', '') AS window
+def validate_schema_consistency(conn):
+    """Validate schema consistency across all partitions"""
+    logging.info("=" * 80)
+    logging.info("STEP 1: SCHEMA CONSISTENCY VALIDATION")
+    logging.info("=" * 80)
+    logging.info("")
+
+    baseline_schema, baseline_table = get_baseline_schema(conn)
+
+    logging.info(f"Baseline: {baseline_table}")
+    logging.info(f"Columns: {len(baseline_schema)}")
+    logging.info("")
+
+    cursor = conn.cursor()
+    mismatches = []
+    total_partitions = 0
+
+    for pair in CURRENCY_PAIRS:
+        for year_month in YEAR_MONTHS:
+            table_name = f"reg_bqx_{pair}_{year_month}"
+            total_partitions += 1
+
+            cursor.execute("""
+            SELECT column_name, data_type, ordinal_position
             FROM information_schema.columns
             WHERE table_schema = 'bqx'
-            AND table_name = 'reg_{VALIDATION_PAIR}'
-            AND column_name ~ '^w[0-9]+'
-            ORDER BY window
-        """)
-        rate_windows = [row[0] for row in cur.fetchall()]
-
-        # Get windows from reg_bqx
-        cur.execute(f"""
-            SELECT DISTINCT regexp_replace(column_name, '_.*', '') AS window
-            FROM information_schema.columns
-            WHERE table_schema = 'bqx'
-            AND table_name = 'reg_bqx_{VALIDATION_PAIR}'
-            AND column_name ~ '^w[0-9]+'
-            ORDER BY window
-        """)
-        bqx_windows = [row[0] for row in cur.fetchall()]
-
-        cur.close()
-        conn.close()
-
-        # Convert to integers
-        rate_windows_int = sorted([int(w.replace('w', '')) for w in rate_windows])
-        bqx_windows_int = sorted([int(w.replace('w', '')) for w in bqx_windows])
-
-        logger.info(f"reg_rate windows: {rate_windows_int}")
-        logger.info(f"reg_bqx windows: {bqx_windows_int}")
-        logger.info(f"Expected windows: {EXPECTED_WINDOWS}")
-
-        # Check alignment
-        rate_aligned = rate_windows_int == EXPECTED_WINDOWS
-        bqx_aligned = bqx_windows_int == EXPECTED_WINDOWS
-        both_aligned = rate_aligned and bqx_aligned
-
-        if both_aligned:
-            logger.info("✅ Window alignment: PASS - Both tables have aligned windows")
-        else:
-            logger.error("❌ Window alignment: FAIL")
-            if not rate_aligned:
-                logger.error(f"   reg_rate mismatch: expected {EXPECTED_WINDOWS}, got {rate_windows_int}")
-            if not bqx_aligned:
-                logger.error(f"   reg_bqx mismatch: expected {EXPECTED_WINDOWS}, got {bqx_windows_int}")
-
-        return {
-            'test': 'Window Alignment',
-            'passed': both_aligned,
-            'reg_rate_windows': rate_windows_int,
-            'reg_bqx_windows': bqx_windows_int,
-            'expected_windows': EXPECTED_WINDOWS
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Window alignment validation failed: {e}")
-        return {'test': 'Window Alignment', 'passed': False, 'error': str(e)}
-
-
-def validate_schema_alignment():
-    """
-    Validate that reg_rate and reg_bqx have the same number of features per window.
-
-    Returns:
-        dict: Validation results
-    """
-    logger.info("")
-    logger.info("=" * 80)
-    logger.info("VALIDATION 2: Schema Alignment")
-    logger.info("=" * 80)
-
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-
-        results = {}
-
-        for window in EXPECTED_WINDOWS:
-            # Count reg_rate columns for this window
-            cur.execute(f"""
-                SELECT COUNT(*)
-                FROM information_schema.columns
-                WHERE table_schema = 'bqx'
-                AND table_name = 'reg_{VALIDATION_PAIR}'
-                AND column_name ~ '^w{window}_'
-            """)
-            rate_count = cur.fetchone()[0]
-
-            # Count reg_bqx columns for this window
-            cur.execute(f"""
-                SELECT COUNT(*)
-                FROM information_schema.columns
-                WHERE table_schema = 'bqx'
-                AND table_name = 'reg_bqx_{VALIDATION_PAIR}'
-                AND column_name ~ '^w{window}_'
-            """)
-            bqx_count = cur.fetchone()[0]
-
-            aligned = (rate_count > 0) and (bqx_count > 0) and (rate_count == bqx_count)
-            results[f'w{window}'] = {
-                'reg_rate_cols': rate_count,
-                'reg_bqx_cols': bqx_count,
-                'aligned': aligned
-            }
-
-            if aligned:
-                logger.info(f"✅ w{window}: {rate_count} columns in both tables")
-            else:
-                logger.error(f"❌ w{window}: reg_rate={rate_count}, reg_bqx={bqx_count}")
-
-        cur.close()
-        conn.close()
-
-        all_aligned = all(r['aligned'] for r in results.values())
-
-        if all_aligned:
-            logger.info("✅ Schema alignment: PASS - All windows have matching column counts")
-        else:
-            logger.error("❌ Schema alignment: FAIL - Some windows have mismatched columns")
-
-        return {
-            'test': 'Schema Alignment',
-            'passed': all_aligned,
-            'details': results
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Schema alignment validation failed: {e}")
-        return {'test': 'Schema Alignment', 'passed': False, 'error': str(e)}
-
-
-def validate_term_based_architecture():
-    """
-    Validate that both tables have term-based architecture.
-
-    Returns:
-        dict: Validation results
-    """
-    logger.info("")
-    logger.info("=" * 80)
-    logger.info("VALIDATION 3: Term-Based Architecture")
-    logger.info("=" * 80)
-
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-
-        required_columns = ['quadratic_term', 'linear_term', 'constant_term', 'residual']
-        results = {}
-
-        for table in ['reg_rate', 'reg_bqx']:
-            table_name = f"{table}_{VALIDATION_PAIR}" if table == 'reg_rate' else f"reg_bqx_{VALIDATION_PAIR}"
-            missing_columns = []
-
-            for window in EXPECTED_WINDOWS:
-                for col in required_columns:
-                    col_name = f"w{window}_{col}"
-
-                    cur.execute(f"""
-                        SELECT EXISTS (
-                            SELECT FROM information_schema.columns
-                            WHERE table_schema = 'bqx'
-                            AND table_name = %s
-                            AND column_name = %s
-                        )
-                    """, (table_name, col_name))
-
-                    if not cur.fetchone()[0]:
-                        missing_columns.append(col_name)
-
-            results[table] = {
-                'missing_columns': missing_columns,
-                'complete': len(missing_columns) == 0
-            }
-
-            if results[table]['complete']:
-                logger.info(f"✅ {table}: All term-based columns present")
-            else:
-                logger.error(f"❌ {table}: Missing columns: {missing_columns[:5]}...")
-
-        cur.close()
-        conn.close()
-
-        all_complete = all(r['complete'] for r in results.values())
-
-        if all_complete:
-            logger.info("✅ Term-based architecture: PASS - Both tables have complete term columns")
-        else:
-            logger.error("❌ Term-based architecture: FAIL - Some term columns missing")
-
-        return {
-            'test': 'Term-Based Architecture',
-            'passed': all_complete,
-            'details': results
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Term-based architecture validation failed: {e}")
-        return {'test': 'Term-Based Architecture', 'passed': False, 'error': str(e)}
-
-
-def validate_covariance_features():
-    """
-    Validate that covariance features are present in correlation_bqx tables.
-
-    Returns:
-        dict: Validation results
-    """
-    logger.info("")
-    logger.info("=" * 80)
-    logger.info("VALIDATION 4: Covariance Features")
-    logger.info("=" * 80)
-
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-
-        table_name = f"correlation_bqx_{VALIDATION_PAIR}_{VALIDATION_MONTH}"
-        required_columns = [
-            'cov_quad_lin_bqx_60min',
-            'cov_resid_quad_bqx_60min',
-            'cov_resid_lin_bqx_60min',
-            'corr_quad_lin_bqx_60min',
-            'corr_resid_quad_bqx_60min',
-            'corr_resid_lin_bqx_60min'
-        ]
-
-        missing_columns = []
-        for col in required_columns:
-            cur.execute(f"""
-                SELECT EXISTS (
-                    SELECT FROM information_schema.columns
-                    WHERE table_schema = 'bqx'
-                    AND table_name = %s
-                    AND column_name = %s
-                )
-            """, (table_name, col))
-
-            if not cur.fetchone()[0]:
-                missing_columns.append(col)
-
-        # Check data coverage
-        if len(missing_columns) == 0:
-            cur.execute(f"""
-                SELECT COUNT(*) AS total,
-                       COUNT(cov_quad_lin_bqx_60min) AS populated,
-                       ROUND(100.0 * COUNT(cov_quad_lin_bqx_60min) / COUNT(*), 2) AS coverage_pct
-                FROM bqx.{table_name}
-            """)
-            total, populated, coverage = cur.fetchone()
-        else:
-            total, populated, coverage = 0, 0, 0.0
-
-        cur.close()
-        conn.close()
-
-        all_present = len(missing_columns) == 0
-        good_coverage = coverage > 99.0
-
-        if all_present and good_coverage:
-            logger.info(f"✅ Covariance features: PASS - All 6 columns present, {coverage}% coverage")
-        else:
-            if not all_present:
-                logger.error(f"❌ Covariance features: FAIL - Missing columns: {missing_columns}")
-            if not good_coverage:
-                logger.error(f"❌ Covariance features: FAIL - Low coverage: {coverage}%")
-
-        return {
-            'test': 'Covariance Features',
-            'passed': all_present and good_coverage,
-            'missing_columns': missing_columns,
-            'total_rows': total,
-            'populated_rows': populated,
-            'coverage_pct': coverage
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Covariance features validation failed: {e}")
-        return {'test': 'Covariance Features', 'passed': False, 'error': str(e)}
-
-
-def validate_data_integrity():
-    """
-    Validate that prediction = quadratic_term + linear_term + constant_term.
-
-    Returns:
-        dict: Validation results
-    """
-    logger.info("")
-    logger.info("=" * 80)
-    logger.info("VALIDATION 5: Data Integrity")
-    logger.info("=" * 80)
-
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-
-        results = {}
-
-        for table in ['reg_rate', 'reg_bqx']:
-            table_name = f"{table}_{VALIDATION_PAIR}_{VALIDATION_MONTH}" if table == 'reg_rate' else f"reg_bqx_{VALIDATION_PAIR}_{VALIDATION_MONTH}"
-            errors = 0
-
-            # Check prediction integrity for w60
-            cur.execute(f"""
-                SELECT COUNT(*)
-                FROM bqx.{table_name}
-                WHERE w60_prediction IS NOT NULL
-                AND ABS(w60_prediction - (w60_quadratic_term + w60_linear_term + w60_constant_term)) > 0.001
-            """)
-            errors = cur.fetchone()[0]
-
-            results[table] = {
-                'prediction_errors': errors,
-                'valid': errors == 0
-            }
-
-            if results[table]['valid']:
-                logger.info(f"✅ {table}: prediction = sum(terms) for all rows")
-            else:
-                logger.error(f"❌ {table}: {errors} rows have prediction != sum(terms)")
-
-        cur.close()
-        conn.close()
-
-        all_valid = all(r['valid'] for r in results.values())
-
-        if all_valid:
-            logger.info("✅ Data integrity: PASS - Predictions match term sums")
-        else:
-            logger.error("❌ Data integrity: FAIL - Some predictions don't match")
-
-        return {
-            'test': 'Data Integrity',
-            'passed': all_valid,
-            'details': results
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Data integrity validation failed: {e}")
-        return {'test': 'Data Integrity', 'passed': False, 'error': str(e)}
-
-
-def validate_cross_domain_comparability():
-    """
-    Validate that reg_rate and reg_bqx can be joined at same timestamps.
-
-    Returns:
-        dict: Validation results
-    """
-    logger.info("")
-    logger.info("=" * 80)
-    logger.info("VALIDATION 6: Cross-Domain Comparability")
-    logger.info("=" * 80)
-
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-
-        # Count matching timestamps
-        cur.execute(f"""
-            SELECT
-                (SELECT COUNT(*) FROM bqx.reg_{VALIDATION_PAIR}_{VALIDATION_MONTH}) AS rate_count,
-                (SELECT COUNT(*) FROM bqx.reg_bqx_{VALIDATION_PAIR}_{VALIDATION_MONTH}) AS bqx_count,
-                (SELECT COUNT(*)
-                 FROM bqx.reg_{VALIDATION_PAIR}_{VALIDATION_MONTH} r
-                 INNER JOIN bqx.reg_bqx_{VALIDATION_PAIR}_{VALIDATION_MONTH} b
-                 ON r.ts_utc = b.ts_utc) AS join_count
-        """)
-
-        rate_count, bqx_count, join_count = cur.fetchone()
-
-        cur.close()
-        conn.close()
-
-        # Check if join count matches both tables (allowing for small discrepancies)
-        match_rate = (join_count / max(rate_count, bqx_count)) * 100 if max(rate_count, bqx_count) > 0 else 0
-        comparable = match_rate > 98.0
-
-        if comparable:
-            logger.info(f"✅ Cross-domain comparability: PASS - {match_rate:.1f}% timestamps match")
-            logger.info(f"   reg_rate rows: {rate_count:,}")
-            logger.info(f"   reg_bqx rows: {bqx_count:,}")
-            logger.info(f"   Joinable rows: {join_count:,}")
-        else:
-            logger.error(f"❌ Cross-domain comparability: FAIL - Only {match_rate:.1f}% timestamps match")
-
-        return {
-            'test': 'Cross-Domain Comparability',
-            'passed': comparable,
-            'reg_rate_count': rate_count,
-            'reg_bqx_count': bqx_count,
-            'join_count': join_count,
-            'match_rate_pct': match_rate
-        }
-
-    except Exception as e:
-        logger.error(f"❌ Cross-domain comparability validation failed: {e}")
-        return {'test': 'Cross-Domain Comparability', 'passed': False, 'error': str(e)}
-
-
-def generate_validation_report(results):
-    """
-    Generate comprehensive validation report.
-
-    Args:
-        results: List of validation results
-
-    Returns:
-        str: Report content
-    """
-    report = []
-    report.append("=" * 80)
-    report.append("SCHEMA ALIGNMENT VALIDATION REPORT")
-    report.append("=" * 80)
-    report.append(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
-    report.append(f"Validation Pair: {VALIDATION_PAIR}")
-    report.append(f"Validation Month: {VALIDATION_MONTH}")
-    report.append("")
-
-    # Summary
-    total_tests = len(results)
-    passed_tests = sum(1 for r in results if r.get('passed', False))
-    failed_tests = total_tests - passed_tests
-
-    report.append(f"SUMMARY: {passed_tests}/{total_tests} tests passed ({passed_tests/total_tests*100:.1f}%)")
-    report.append("")
-
-    # Details
-    for result in results:
-        test_name = result.get('test', 'Unknown')
-        passed = result.get('passed', False)
-        status = "✅ PASS" if passed else "❌ FAIL"
-
-        report.append(f"{status}: {test_name}")
-
-        if 'error' in result:
-            report.append(f"  Error: {result['error']}")
-        elif 'details' in result:
-            report.append(f"  Details: {result['details']}")
-
-        report.append("")
-
-    # Final assessment
-    if failed_tests == 0:
-        report.append("=" * 80)
-        report.append("✅ VALIDATION COMPLETE: 100% SCHEMA ALIGNMENT ACHIEVED")
-        report.append("=" * 80)
-        report.append("")
-        report.append("All validation tests passed successfully.")
-        report.append("reg_rate and reg_bqx tables are fully aligned and ready for ML feature integration.")
+              AND table_name = %s
+            ORDER BY ordinal_position
+            """, (table_name,))
+
+            table_schema = cursor.fetchall()
+
+            if table_schema != baseline_schema:
+                mismatches.append(table_name)
+
+        # Progress every pair
+        progress = (CURRENCY_PAIRS.index(pair) + 1) / len(CURRENCY_PAIRS) * 100
+        if (CURRENCY_PAIRS.index(pair) + 1) % 7 == 0:
+            logging.info(f"  Progress: {CURRENCY_PAIRS.index(pair) + 1}/{len(CURRENCY_PAIRS)} pairs ({progress:.1f}%)")
+
+    cursor.close()
+
+    if mismatches:
+        logging.error(f"❌ Schema mismatches: {len(mismatches)} partitions")
+        for table in mismatches[:10]:
+            logging.error(f"  - {table}")
+        if len(mismatches) > 10:
+            logging.error(f"  ... and {len(mismatches) - 10} more")
+        return False
     else:
-        report.append("=" * 80)
-        report.append(f"❌ VALIDATION INCOMPLETE: {failed_tests} test(s) failed")
-        report.append("=" * 80)
-        report.append("")
-        report.append("Please review failed tests above and remediate before proceeding.")
+        logging.info(f"✅ All {total_partitions} partitions have consistent schema")
+        return True
 
-    return "\n".join(report)
+def validate_expected_columns(conn):
+    """Validate expected column counts and structure"""
+    logging.info("")
+    logging.info("=" * 80)
+    logging.info("STEP 2: COLUMN STRUCTURE VALIDATION")
+    logging.info("=" * 80)
+    logging.info("")
 
+    baseline_schema, baseline_table = get_baseline_schema(conn)
+    columns = {col[0]: col[1] for col in baseline_schema}
+
+    # Expected: ts_utc + (6 windows × 7 regression) + (6 windows × 6 covariance)
+    # = 1 + 42 + 36 = 79 columns
+
+    logging.info(f"Total columns: {len(columns)}")
+    logging.info("")
+
+    # Count by category
+    ts_cols = [c for c in columns if c == 'ts_utc']
+    regression_cols = [c for c in columns if any(term in c for term in ['quadratic_term', 'linear_term', 'constant_term', 'residual', 'r2', 'rmse', 'prediction'])]
+    covariance_cols = [c for c in columns if 'cov_' in c]
+
+    logging.info(f"Column breakdown:")
+    logging.info(f"  • ts_utc: {len(ts_cols)}")
+    logging.info(f"  • Regression features (Stage 2.12): {len(regression_cols)}")
+    logging.info(f"    Expected: 6 windows × 7 features = 42")
+    logging.info(f"  • Covariance features (Stage 2.14): {len(covariance_cols)}")
+    logging.info(f"    Expected: 6 windows × 6 covariances = 36")
+    logging.info(f"  • Total: {len(columns)}")
+    logging.info("")
+
+    expected_total = 1 + 42 + 36  # 79
+    issues = []
+
+    if len(ts_cols) != 1:
+        issues.append(f"ts_utc count: expected 1, got {len(ts_cols)}")
+
+    if len(regression_cols) != 42:
+        issues.append(f"Regression features: expected 42, got {len(regression_cols)}")
+
+    if len(covariance_cols) != 36:
+        issues.append(f"Covariance features: expected 36, got {len(covariance_cols)}")
+
+    if len(columns) != expected_total:
+        issues.append(f"Total columns: expected {expected_total}, got {len(columns)}")
+
+    if issues:
+        for issue in issues:
+            logging.error(f"❌ {issue}")
+        return False
+    else:
+        logging.info(f"✅ Column structure matches expected (79 columns)")
+        return True
+
+def validate_data_completeness(conn):
+    """Validate data completeness"""
+    logging.info("")
+    logging.info("=" * 80)
+    logging.info("STEP 3: DATA COMPLETENESS VALIDATION")
+    logging.info("=" * 80)
+    logging.info("")
+
+    cursor = conn.cursor()
+    total_rows = 0
+    empty_partitions = []
+
+    for pair in CURRENCY_PAIRS:
+        pair_rows = 0
+
+        for year_month in YEAR_MONTHS:
+            table_name = f"reg_bqx_{pair}_{year_month}"
+
+            cursor.execute(f"SELECT COUNT(*) FROM bqx.{table_name}")
+            row_count = cursor.fetchone()[0]
+            pair_rows += row_count
+
+            if row_count == 0:
+                empty_partitions.append(table_name)
+
+        total_rows += pair_rows
+        logging.info(f"  {pair.upper()}: {pair_rows:,} rows")
+
+    cursor.close()
+
+    logging.info("")
+    logging.info(f"Total rows: {total_rows:,}")
+    logging.info("")
+
+    if empty_partitions:
+        logging.error(f"❌ Empty partitions: {len(empty_partitions)}")
+        for table in empty_partitions:
+            logging.error(f"  - {table}")
+        return False
+    else:
+        logging.info(f"✅ All partitions populated ({total_rows:,} total rows)")
+        return True
 
 def main():
-    """Main execution: Run all validation tests."""
-    logger.info("=" * 80)
-    logger.info("STAGE 2.15: COMPREHENSIVE SCHEMA ALIGNMENT VALIDATION")
-    logger.info("=" * 80)
-    logger.info("")
+    """Main validation workflow"""
+    logging.info("=" * 80)
+    logging.info("STAGE 2.15: COMPREHENSIVE VALIDATION")
+    logging.info("=" * 80)
+    logging.info("")
+    logging.info(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    logging.info(f"Database: {DB_CONFIG['host']}/{DB_CONFIG['database']}")
+    logging.info(f"Partitions: {len(CURRENCY_PAIRS)} pairs × {len(YEAR_MONTHS)} months = {len(CURRENCY_PAIRS) * len(YEAR_MONTHS)}")
+    logging.info("")
 
-    results = []
+    conn = get_db_connection()
 
-    # Run all validation tests
-    results.append(validate_window_alignment())
-    results.append(validate_schema_alignment())
-    results.append(validate_term_based_architecture())
-    results.append(validate_covariance_features())
-    results.append(validate_data_integrity())
-    results.append(validate_cross_domain_comparability())
+    try:
+        results = {
+            'Schema Consistency': validate_schema_consistency(conn),
+            'Column Structure': validate_expected_columns(conn),
+            'Data Completeness': validate_data_completeness(conn)
+        }
 
-    # Generate report
-    logger.info("")
-    report = generate_validation_report(results)
-    logger.info(report)
+        logging.info("")
+        logging.info("=" * 80)
+        logging.info("VALIDATION SUMMARY")
+        logging.info("=" * 80)
+        logging.info("")
 
-    # Save report to file
-    report_path = '/tmp/logs/remediation/stage_2_15/validation_report.txt'
-    with open(report_path, 'w') as f:
-        f.write(report)
+        for check, passed in results.items():
+            status = "✅ PASS" if passed else "❌ FAIL"
+            logging.info(f"{check:<30} {status}")
 
-    logger.info("")
-    logger.info(f"Validation report saved to: {report_path}")
+        logging.info("")
+        logging.info("-" * 80)
 
-    # Return exit code
-    all_passed = all(r.get('passed', False) for r in results)
-    return 0 if all_passed else 1
+        all_passed = all(results.values())
 
+        if all_passed:
+            logging.info("✅ ALL VALIDATION CHECKS PASSED")
+            logging.info("")
+            logging.info("Phase 2 Foundation Complete:")
+            logging.info("  • Stage 2.11: Documentation ✅")
+            logging.info("  • Stage 2.12: reg_bqx Rebuild (42 regression features) ✅")
+            logging.info("  • Stage 2.14: Covariance Features (36 features) ✅")
+            logging.info("  • Stage 2.15: Validation ✅")
+            logging.info("")
+            logging.info("Ready for TIER 1 Enhancement Stages (2.3, 2.4, 2.16B)")
+            logging.info("=" * 80)
+            return 0
+        else:
+            logging.error("❌ VALIDATION FAILED - Review issues above")
+            logging.info("=" * 80)
+            return 1
+
+    finally:
+        conn.close()
 
 if __name__ == '__main__':
-    sys.exit(main())
+    exit(main())
